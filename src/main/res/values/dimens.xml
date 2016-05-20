@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="space_20">20.0dip</dimen>
+	<dimen name="layout_padding_in_project_details">18.0dip</dimen>
+	<dimen name="item_padding_in_publish_fundraises">12dip</dimen>
+	<dimen name="radius_4_half_rectangle">16dip</dimen>
+</resources>

@@ -1,0 +1,33 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <style name="common_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">false</item>
+        <!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:background">@null</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <!-- 周围变暗 -->
+    </style>
+    <style name="common_dialog_style" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="login_dialog" parent="common_dialog_style">
+        <item name="android:windowBackground">@drawable/rounded_white_shape</item>
+    </style>
+    <style name="style_4_popwindow_translate_y">
+        <item name="@android:windowEnterAnimation">@anim/popwindow_y_translate_in</item>
+        <item name="@android:windowExitAnimation">@anim/popwindow_y_translate_out</item>
+    </style>
+</resources>
