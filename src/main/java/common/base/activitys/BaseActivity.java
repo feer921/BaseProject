@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import common.base.R;
 import common.base.netAbout.NetRequestLifeMarker;
@@ -51,8 +52,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (subActivityContentViewResID > 0) {//子类有提供当前Activity的内容视图，则父类来调用初始化方法
             setContentView(subActivityContentViewResID);
             initViews();
+            initData();
         }
-        initData();
     }
 
 
@@ -164,6 +165,20 @@ public abstract class BaseActivity extends AppCompatActivity implements
             return (T) findViewById(viewId);
         }
         return null;
+    }
+
+    /**
+     * 在一个容器视图中依据View ID查找子视图
+     * @param containerView 容器View
+     * @param childViewId 子View ID
+     * @param <T>
+     * @return
+     */
+    protected <T extends View> T findAviewInContainer(ViewGroup containerView, int childViewId) {
+        if (containerView == null || childViewId <= 0) {
+            return null;
+        }
+        return (T) containerView.findViewById(childViewId);
     }
     protected boolean curRequestCanceled(int dataType) {
         if(netRequestLifeMarker != null){
