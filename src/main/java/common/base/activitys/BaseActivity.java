@@ -180,6 +180,26 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
         return (T) containerView.findViewById(childViewId);
     }
+
+    protected void jumpToActivity(Intent startIntent, int requestCode,boolean needReturnResult) {
+        if (startIntent != null) {
+            if (!needReturnResult) {
+                startActivity(startIntent);
+            }
+            else{
+                startActivityForResult(startIntent,requestCode);
+            }
+        }
+    }
+    protected void jumpToActivity(Class<?> targetActivityClass) {
+        Intent startIntent = new Intent(mContext, targetActivityClass);
+        jumpToActivity(startIntent,0,false);
+    }
+
+    protected void jumpToActivity(Class<?> targetActiviyClass, int requestCode, boolean needReturnResult) {
+        Intent startIntent = new Intent(mContext,targetActiviyClass);
+        jumpToActivity(startIntent,requestCode,needReturnResult);
+    }
     protected boolean curRequestCanceled(int dataType) {
         if(netRequestLifeMarker != null){
             return netRequestLifeMarker.curRequestCanceled(dataType);

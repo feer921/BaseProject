@@ -1,6 +1,9 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-
+    <style name="BaseProject_Theme.Base" parent="Theme.AppCompat" >
+        <item name="windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
     <style name="common_dialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <!-- 边框 -->
