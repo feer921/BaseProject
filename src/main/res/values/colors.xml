@@ -79,4 +79,5 @@
     <!-- 账户明细 -->
     <color name="account_detail_blue">#007aff</color>
     <color name="account_detail_orange">#e26158</color>
+    <color name="divider_line_gray_color">#d7dade</color>
 </resources>

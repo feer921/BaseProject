@@ -33,6 +33,7 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(cancelableOutSide);
         setContentView(getContainerView());
         Window w = getWindow();
@@ -47,7 +48,7 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
             lp.height = dialogHeigth;
         }
         else{
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         }
         if(dialogShowGrivity != 0){
             lp.gravity = dialogShowGrivity;
@@ -95,5 +96,28 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
     }
     protected String getStrFromResId(int resID){
         return getContext().getResources().getString(resID);
+    }
+
+    public void setHintMsg(String hintMsg) {
+
+    }
+
+    public void setCancleBtnName(String cancleBtnName) {
+
+    }
+
+    public void setCommitBtnName(String commitBtnName) {
+
+    }
+    public void edtViewCanEdit(boolean needEdit){
+
+    }
+
+    /**
+     * 是否隐藏“取消”按钮
+     * @param hideCancelBtn
+     */
+    public void toggleCancelBtnVisibility(boolean hideCancelBtn){
+
     }
 }

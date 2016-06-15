@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#55000000"
+    android:padding="36dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/rounded_white_shape"
+        android:padding="24dp"
+        >
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/rotate_icon"
+            android:scaleType="centerCrop"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/iv_dialog_loading"
+            android:contentDescription="@null"
+            />
+        <TextView
+            android:layout_below="@id/iv_dialog_loading"
+            style="@style/common_tv_style"
+            android:text="正在加载，请稍候..."
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:textColor="#445979"
+            android:textSize="15sp"
+            android:id="@+id/tv_dialog_load_hint"
+            />
+    </RelativeLayout>
+</RelativeLayout>

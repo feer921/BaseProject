@@ -13,7 +13,10 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import common.base.R;
+import common.base.dialogs.BaseDialog;
 import common.base.dialogs.CommonHintDialog;
+import common.base.dialogs.CommonMdDialog;
+import common.base.dialogs.CommonMdLoadialog;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
 import common.base.views.HintPopuWindow;
@@ -26,9 +29,8 @@ import common.base.views.HintPopuWindow;
  * @author lifei
  */
 public class UIHintAgent {
-    //TODO 后续换成自定义loading dialog
-    private ProgressDialog loadDialog;
-    private CommonHintDialog hintDialog;
+    private CommonMdLoadialog loadDialog;
+    private BaseDialog hintDialog;
     private Context mContext;
     private HintPopuWindow hintPopuWindow;
     private DialogInterface.OnClickListener mClickListenerForDialog;
@@ -59,7 +61,8 @@ public class UIHintAgent {
                 this.commonHintDialogWidth = dm.widthPixels - 80;
                 this.commonHintDialogHeigth = dm.heightPixels / 3;
             }
-            hintDialog = new CommonHintDialog(mContext, this.commonHintDialogWidth, this.commonHintDialogHeigth);
+//            hintDialog = new CommonHintDialog(mContext, this.commonHintDialogWidth, this.commonHintDialogHeigth);
+            hintDialog = new CommonMdDialog(mContext);
             hintDialog.edtViewCanEdit(false);
             hintDialog.setCancelable(hintDialogCancelable);
             if (mClickListenerForDialog != null) {
@@ -184,7 +187,7 @@ public class UIHintAgent {
      */
     public void showLoading(String hintMsg) {
         if (loadDialog == null) {
-            loadDialog = new ProgressDialog(mContext);
+            loadDialog = new CommonMdLoadialog(mContext);
             loadDialog.setCanceledOnTouchOutside(false);
             loadDialog.setCancelable(loadingDialogCancelable);
             loadDialog.setOnCancelListener(new OnCancelListener() {
@@ -196,7 +199,7 @@ public class UIHintAgent {
                 }
             });
         }
-        loadDialog.setMessage(hintMsg);
+        loadDialog.setHintMsg(hintMsg);
         if (!loadDialog.isShowing()) {
             loadDialog.show();
         }
