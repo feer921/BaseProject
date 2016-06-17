@@ -29,6 +29,7 @@ public class CommonMdDialog extends BaseDialog{
     private EditText edtInDialog;
     private ListView lvItems;
     private ContentLayouType curContentLayoutType;
+    private View llBottomBtnsLayout;
 
     /**
      * Dialog中 中间部分的内容布局类型：目前有三种，提示类、编辑输入类、ListView列表选择类
@@ -65,6 +66,7 @@ public class CommonMdDialog extends BaseDialog{
         }
         edtInDialog = ViewUtil.findViewInContainer(containerLayout, R.id.edt_as_dialog_msg_or_edit);
         lvItems = ViewUtil.findViewInContainer(containerLayout, R.id.lv_selection_items);
+        llBottomBtnsLayout = ViewUtil.findViewInContainer(containerLayout, R.id.ll_btns);
     }
 
     public void switchContentLayoutType(ContentLayouType needLayoutType) {
@@ -80,10 +82,16 @@ public class CommonMdDialog extends BaseDialog{
         if (edtInDialog != null) {
             edtInDialog.setVisibility(View.GONE);
         }
+        if (llBottomBtnsLayout != null) {
+            llBottomBtnsLayout.setVisibility(View.VISIBLE);
+        }
         switch (needLayoutType) {
             case LIST_SELECTIONS:
                 if (lvItems != null) {
                     lvItems.setVisibility(View.VISIBLE);
+                }
+                if (llBottomBtnsLayout != null) {
+                    llBottomBtnsLayout.setVisibility(View.GONE);
                 }
                 break;
             case HINT_MSG:

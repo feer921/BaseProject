@@ -64,6 +64,7 @@
             </ListView>
         </FrameLayout>
         <LinearLayout
+            android:id="@+id/ll_btns"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="vertical"
