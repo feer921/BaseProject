@@ -66,6 +66,7 @@ public class CommonMdDialog extends BaseDialog{
         }
         edtInDialog = ViewUtil.findViewInContainer(containerLayout, R.id.edt_as_dialog_msg_or_edit);
         lvItems = ViewUtil.findViewInContainer(containerLayout, R.id.lv_selection_items);
+        lvItems.addHeaderView(getLayoutInflater().inflate(R.layout.gray_divider_line,null));
         llBottomBtnsLayout = ViewUtil.findViewInContainer(containerLayout, R.id.ll_btns);
     }
 

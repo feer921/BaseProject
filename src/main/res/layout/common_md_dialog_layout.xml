@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#55000000"
     android:padding="36dp"
-    android:gravity="center"
-    >
+    android:gravity="center">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,9 +55,10 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/lv_selection_items"
                 android:cacheColorHint="@color/transparent"
-                android:headerDividersEnabled="true"
                 android:divider="@color/divider_line_gray_color"
                 android:visibility="gone"
+                android:listSelector="@null"
+                android:dividerHeight="0.5dp"
                 >
 
             </ListView>
