@@ -17,4 +17,22 @@
         <attr name="rv_zoomScale" format="float" />
 
     </declare-styleable>
+    <declare-styleable name="CommonItemView">
+        <!-- item的类型icon资源id -->
+        <attr name="itme_type_icon_res" format="reference" />
+        <attr name="item_hide_type_icon" format="boolean"/>
+        <!-- item 名称描述 -->
+        <attr name="item_type_name_desc" format="string" />
+        <attr name="item_name_text_color" format="reference|color" />
+        <attr name="item_name_textSize" format="dimension"/>
+        <attr name="item_name_margin_icon" format="dimension"/>
+        <!-- 右侧附加信息、补充描述控件属性 -->
+        <attr name="item_extra_desc" format="string" />
+        <attr name="item_extra_desc_textColor" format="reference|color" />
+        <attr name="item_extra_desc_textSize" format="dimension" />
+        <attr name="item_extra_margin_right_arrow" format="dimension" />
+        <!-- 右侧，指示可进入的箭头或者自定义的图标的视图相关 -->
+        <attr name="item_hide_right_arrow" format="boolean"/>
+        <attr name="item_right_arrow_res_id" format="reference" />
+    </declare-styleable>
 </resources>
