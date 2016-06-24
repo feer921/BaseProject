@@ -1,7 +1,10 @@
 package common.base.netclients;
 
+import java.util.WeakHashMap;
+
 import common.base.retrofitCase.JsonConverterFactory;
 import common.base.utils.Util;
+import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -11,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Date: 2016-05-16
  * Time: 16:19
  * DESC: 基于Retrofit的网络请求客户端
- *  retrofit2官网地址：https://github.com/square/retrofit/
+ * retrofit2官网地址：https://github.com/square/retrofit/
  */
 public class RetrofitClient {
     private static RetrofitClient retrofitClient;
@@ -20,6 +23,8 @@ public class RetrofitClient {
      * 使用之前先配置一下要访问的服务器的基础地址
      */
     public static String HOST_BASE_URL;
+    private WeakHashMap<Integer, Call> cachedCalls;
+
     private RetrofitClient() {
         if (mRetrofit == null) {
             mRetrofit = new Retrofit.Builder()
@@ -32,6 +37,7 @@ public class RetrofitClient {
 
     /**
      * 如果有自定义的ConverterFactory，则依设置进来的对象重新构建Retrofit
+     *
      * @param baseUrl
      * @param converterFactory
      */
@@ -61,6 +67,7 @@ public class RetrofitClient {
 
     /**
      * 通过Retrofit 创建访问服务器的接口
+     *
      * @param iServiceClass
      * @param <T>
      * @return
@@ -70,5 +77,13 @@ public class RetrofitClient {
             return mRetrofit.create(iServiceClass);
         }
         return null;
+    }
+
+    public void cacheCall(Call curCallRequest) {
+
+    }
+
+    public void cancelCall(int callRequestType) {
+
     }
 }

@@ -19,14 +19,21 @@ public interface INetEvent<T>{
     /**
      * 网络请求失败
      * @param requestDataType 当前请求类型
-     * @param errorInfo
+     * @param errorInfo 错误信息
      */
     abstract void onErrorResponse(int requestDataType,String errorInfo);
 //    abstract void initNetEventListener();
     /**
      * 网络请求的响应
-     * @param requestDataType
-     * @param result
+     * @param requestDataType 当前网络请求数据类型
+     * @param result 响应实体
      */
     abstract void onResponse(int requestDataType,T result);
+
+    /**
+     * 错误回调，在还没有开始请求之前，比如：一些参数错误
+     * @param curRequestDataType 当前网络请求类型
+     * @param errorType 错误类型
+     */
+    void onErrorBeforeRequest(int curRequestDataType, int errorType);
 }

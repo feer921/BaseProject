@@ -12,7 +12,7 @@ import retrofit2.Response;
  * DESC: 网络请求的回调监听者,其中的范型T代表当前的请求具体要返回何种类型的数据
  */
 public class NetDataAndErrorListener<T> implements Callback<T>{
-    int requestType;
+    public int requestType;
     private INetEvent<T> netEvent;
     public NetDataAndErrorListener(int curRequestType,INetEvent<T> netEventCallback) {
         this.requestType = curRequestType;
@@ -64,5 +64,15 @@ public class NetDataAndErrorListener<T> implements Callback<T>{
      */
     protected void callbackExtraInfo(Response<T> response) {
         //do nothing here
+    }
+
+    /**
+     * 在网络请求之前的回调错误,比如调用API时参数传入有误之类的
+     * @param paramsErrorType 参数错误类型
+     */
+    public void callBackFailureBeforeRequest(int paramsErrorType) {
+        if (netEvent != null) {
+            netEvent.onErrorBeforeRequest(requestType,paramsErrorType);
+        }
     }
 }
