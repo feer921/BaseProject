@@ -12,10 +12,12 @@ import retrofit2.Response;
  * DESC: 网络请求的回调监听者,其中的范型T代表当前的请求具体要返回何种类型的数据
  */
 public class NetDataAndErrorListener<T> implements Callback<T>{
-    public int requestType;
+    /**
+     * 默认请求类型为-1，表示没有赋值请求类型
+     */
+    public int requestType = -1;
     private INetEvent<T> netEvent;
-    public NetDataAndErrorListener(int curRequestType,INetEvent<T> netEventCallback) {
-        this.requestType = curRequestType;
+    public NetDataAndErrorListener(INetEvent<T> netEventCallback) {
         this.netEvent = netEventCallback;
     }
 

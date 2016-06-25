@@ -2,6 +2,7 @@ package common.base.utils;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,5 +49,22 @@ public class ViewUtil{
             return myView.getLeft();
         else
             return myView.getLeft() + getRelativeLeft((View) myView.getParent());
+    }
+
+    /**
+     * 改变一个View背景的资源的颜色
+     * @param view
+     * @param argbColor
+     */
+    public static void changeViewBgDrawableColor(View view, int argbColor) {
+        if (view != null) {
+            GradientDrawable gradientDrawable;
+            try {
+                gradientDrawable = (GradientDrawable) view.getBackground();
+                gradientDrawable.setColor(argbColor);
+            } catch (Exception e) {
+
+            }
+        }
     }
 }

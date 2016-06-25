@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pageerrLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:gravity="center"
+    >
+
+    <LinearLayout
+        android:padding="5dp"
+        android:id="@+id/ll_load_and_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" 
+        >
+
+        <ImageView
+            android:id="@+id/img_error_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="30dp"
+            android:minWidth="30dp"
+            android:background="@drawable/pagefailed_bg"
+            android:contentDescription="@null"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/animProgress"
+            style="@style/circle_pb_loading_style"
+            android:layout_width="30dip"
+            android:layout_height="30dip" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_error_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_load_and_hint"
+        android:lines="2"
+        android:text="点击重新加载"
+        android:textColor="@color/text_color_4_subtitle"
+        android:textSize="14sp" 
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        />
+
+</RelativeLayout>

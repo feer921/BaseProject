@@ -28,10 +28,31 @@ public class BaseApi{
         return RetrofitClient.getMe().createNetService(serviceClass);
     }
 
-    protected static <T> void cacheRequestCall(Call<T> curCallRequest) {
+    /**
+     * 缓存一个已经执行的请求
+     * @param curCallRequest
+     * @param callRequestType
+     */
+    protected static void cacheRequestCall(Call curCallRequest,int callRequestType) {
         if (curCallRequest == null) {
             return;
         }
+        RetrofitClient.getMe().cacheCall(curCallRequest,callRequestType);
+    }
 
+    /**
+     * 取消对应的请求
+     * @param toCancelCallRequestType 对应的网络请求类型
+     */
+    public void cacelCurCall(int toCancelCallRequestType) {
+        RetrofitClient.getMe().cancelCall(toCancelCallRequestType);
+    }
+    protected static void doCall(Call curCall, NetDataAndErrorListener curCallBack,boolean needCache) {
+        if (curCall != null) {
+            curCall.enqueue(curCallBack);
+            if(needCache){
+                cacheRequestCall(curCall,curCallBack.requestType);
+            }
+        }
     }
 }

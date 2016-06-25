@@ -49,4 +49,11 @@
     <style name="common_load_dialog_style" parent="android:Theme.Translucent">
         <item name="android:windowEnterAnimation">@anim/modal_in</item>
     </style>
+    <!-- 加载进度条样式 -->
+    <style name="circle_pb_loading_style">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateDrawable">@drawable/indeterminate_progressbar_drawable</item>
+        <item name="android:indeterminateDuration">1000</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
 </resources>

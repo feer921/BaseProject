@@ -1,7 +1,7 @@
 package common.base.activitys;
 
 
-import common.base.netAbout.ServerResult;
+import common.base.netAbout.BaseServerResult;
 
 /**
  * 代理者处理事件回调接口
@@ -17,7 +17,7 @@ public interface IProxyCallback {
      * @param result
      * @return true:[被代理者]处理了 false:交由[代理者]处理
      */
-     public boolean ownerDealWithServerResult(int requestDataType, ServerResult result);
+     public boolean ownerDealWithServerResult(int requestDataType, BaseServerResult result);
     
 
     /**

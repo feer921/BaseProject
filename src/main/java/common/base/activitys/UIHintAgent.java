@@ -108,29 +108,29 @@ public class UIHintAgent {
     public void onClickInDialog(DialogInterface dialog, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
 //            switch (hintDialog.curDialogInCase) {
-//                case ServerResult.CODE_NON_LOGINED:// 未登陆
+//                case BaseServerResult.CODE_NON_LOGINED:// 未登陆
 //                    UiHelper.jumpToLogin(mContext);
 //                    switchActivity(false);
 //                    break;
-//                case ServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
+//                case BaseServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
 //                    Intent toIntent = new Intent(mContext, RealNameVertifyActivity.class);
 //                    UiHelper.jumpToActivity(mContext, toIntent);
 //                    switchActivity(false);
 //                    break;
-//                case ServerResult.CODE_PHONE_IN_BLACKLIST:// 帐号黑名单了，拨打客服电话
+//                case BaseServerResult.CODE_PHONE_IN_BLACKLIST:// 帐号黑名单了，拨打客服电话
 //                    Util.callService(mContext);
 //                    break;
-//                case ServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足，去充值
+//                case BaseServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足，去充值
 //                    Intent toReChargeIntent = new Intent(mContext, AccountRechargeActivity.class);
 //                    UiHelper.jumpToActivity(mContext, toReChargeIntent);
 //                    switchActivity(false);
 //                    break;
-//                case ServerResult.CODE_ERROR_NO_NET://没有网络,点击则去设置网络
+//                case BaseServerResult.CODE_ERROR_NO_NET://没有网络,点击则去设置网络
 //                    Intent toSettingNetIntent = new Intent(Settings.ACTION_SETTINGS);
 //                    UiHelper.jumpToActivity(mContext, toSettingNetIntent);
 //                    switchActivity(false);
 //                    break;
-//                case ServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://未授权自动还款权限，点击确定后跳转进筹款记录之“还款中”项目列表界面
+//                case BaseServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://未授权自动还款权限，点击确定后跳转进筹款记录之“还款中”项目列表界面
 //                    //如果 提现界面需要点击该确定按钮后关闭自己，则需要自己实现所继承的基类的拦截dialog的点击事件，并作以下处理
 //                    Intent toLookFundraiseRecord = new Intent(mContext, FundRaisingRecordActivity.class);
 //                    toLookFundraiseRecord.putExtra(TjjConfig.INTENT_KEY_TO_PRODUCT_STATUS, TjjConfig.RECORD_PRODUCT_STATUS_4_RETURNING);
@@ -222,7 +222,7 @@ public class UIHintAgent {
     public boolean isLoadingDialogShowing(){
         return loadDialog!= null && loadDialog.isShowing();
     }
-//    public void dealWithServerResult(int requestDataType,ServerResult result) {
+//    public void dealWithServerResult(int requestDataType,BaseServerResult result) {
 //        if (!result.isOk) {
 //            if (loadDialog != null) {
 //                loadDialog.dismiss();
@@ -234,32 +234,32 @@ public class UIHintAgent {
 //            String cancleBtnName = "";
 //            String ensureBtnName = "";
 //            switch (result.serverResponseCode) {
-//                case ServerResult.CODE_NON_LOGINED:// 未登陆或者登陆状态失效
+//                case BaseServerResult.CODE_NON_LOGINED:// 未登陆或者登陆状态失效
 //                    hintMsg = serverErrorToLocalInfo;
 //                    ensureBtnName = "确认";
 ////                    CubeApp.getMe().setLogined(false);
 //                    break;
-//                case ServerResult.CODE_PHONE_IN_BLACKLIST:// 被加入黑名单
+//                case BaseServerResult.CODE_PHONE_IN_BLACKLIST:// 被加入黑名单
 //                    hintMsg = "抱歉,您的手机号码被列为黑名单了.";
 //                    ensureBtnName = "咨询客服";
 //                    break;
-//                case ServerResult.CODE_REGIESTED_ALREADY:// 本号码已经被注册了
+//                case BaseServerResult.CODE_REGIESTED_ALREADY:// 本号码已经被注册了
 //                    hintMsg = "该手机号码已注册";
 //                    ensureBtnName = "去登录";
 //                    break;
-//                case ServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
+//                case BaseServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
 //                    hintMsg = "您的帐号未进行实名认证";
 //                    ensureBtnName = "去认证";
 //                    break;
-//                case ServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足
+//                case BaseServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足
 //                    hintMsg = "抱歉,当前帐户余额不足";
 //                    ensureBtnName = "充值";
 //                    break;
-//                case ServerResult.CODE_A_PROJECT_AREADY_IN_CHECKING://已经有一个项目在审核中
+//                case BaseServerResult.CODE_A_PROJECT_AREADY_IN_CHECKING://已经有一个项目在审核中
 //                    hintMsg = serverErrorToLocalInfo;
 //                    ensureBtnName = "我想去看看";
 //                    break;
-//                case ServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://用户未授权自动还款
+//                case BaseServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://用户未授权自动还款
 //                    hintMsg = serverErrorToLocalInfo;
 //                    ensureBtnName = "查看项目";
 //                    break;
@@ -281,7 +281,7 @@ public class UIHintAgent {
         }
         if (!NetHelper.isNetworkConnected(mContext) && !INetEvent.MANULLY_DELAY_OVER.equals(errorInfo)) {
             dialogHint("提示", "当前网络无效,请设置", null, "去设置网络", 0
-                    //ServerResult.CODE_ERROR_NO_NET
+                    //BaseServerResult.CODE_ERROR_NO_NET
                     );
         } 
         else {
@@ -340,7 +340,7 @@ public class UIHintAgent {
         if (hintDialog != null) {
             return hintDialog.curDialogInCase;
         }
-//        return ServerResult.CODE_DEF_NO_MEANING;
+//        return BaseServerResult.CODE_DEF_NO_MEANING;
         return 0;
     }
 

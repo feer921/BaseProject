@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import common.base.R;
 import common.base.netAbout.NetRequestLifeMarker;
-import common.base.netAbout.ServerResult;
+import common.base.netAbout.BaseServerResult;
 import common.base.utils.CommonLog;
 
 /**
@@ -48,15 +48,32 @@ public abstract class BaseActivity extends AppCompatActivity implements
         uiHintAgent = new UIHintAgent(mContext);
         uiHintAgent.setHintDialogOnClickListener(this);
         uiHintAgent.setProxyCallback(this);
+        boolean needInitAuto = false;
         int subActivityContentViewResID = getProvideContentViewResID();
         if (subActivityContentViewResID > 0) {//子类有提供当前Activity的内容视图，则父类来调用初始化方法
             setContentView(subActivityContentViewResID);
+            needInitAuto = true;
+        }
+        else{
+            View providedContentView = providedContentView();
+            if(providedContentView != null){
+                setContentView(providedContentView);
+                needInitAuto = true;
+            }
+        }
+        if (needInitAuto) {
             initViews();
             initData();
         }
     }
 
-
+    /**
+     * 提供的内容视图
+     * @return
+     */
+    protected View providedContentView() {
+        return null;
+    }
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
      * @return 当前Activity需要展示的内容视图资源ID
@@ -127,7 +144,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * @return true:[被代理者]处理了 false:交由[代理者]处理
      */
     @Override
-    public boolean ownerDealWithServerResult(int requestDataType, ServerResult result) {
+    public boolean ownerDealWithServerResult(int requestDataType, BaseServerResult result) {
         return false;
     }
 
@@ -301,16 +318,25 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * 结束/finish()自已
+     * @param needTransitionAnim 是否需要过场动画
+     */
+    protected void finishSelf(boolean needTransitionAnim) {
+        finish();
+        if (needTransitionAnim) {
+            switchActivity(true);
+        }
+    }
     @Override
     public void finish() {
-        super.finish();
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
         }
         if(uiHintAgent != null){
             uiHintAgent.finishAgentFollowUi();
         }
-        switchActivity(true);
+        super.finish();
     }
 
     @Override

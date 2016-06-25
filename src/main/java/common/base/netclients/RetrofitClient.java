@@ -1,5 +1,7 @@
 package common.base.netclients;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import common.base.retrofitCase.JsonConverterFactory;
@@ -23,8 +25,8 @@ public class RetrofitClient {
      * 使用之前先配置一下要访问的服务器的基础地址
      */
     public static String HOST_BASE_URL;
-    private WeakHashMap<Integer, Call> cachedCalls;
-
+    private WeakHashMap<Call,Integer> cachedCalls;
+    private final Object syncLockObj = new Object();
     private RetrofitClient() {
         if (mRetrofit == null) {
             mRetrofit = new Retrofit.Builder()
@@ -79,11 +81,62 @@ public class RetrofitClient {
         return null;
     }
 
-    public void cacheCall(Call curCallRequest) {
-
+    /**
+     * 缓存当前的一个网络请求
+     * @param curCallRequest 当前网络请求
+     * @param curRequestType 网络请求类型
+     */
+    public void cacheCall(Call curCallRequest,int curRequestType) {
+        if (cachedCalls == null) {
+            cachedCalls = new WeakHashMap<>();
+        }
+        synchronized (syncLockObj) {
+            cachedCalls.put(curCallRequest,curRequestType);
+        }
     }
 
+    /**
+     * 取消对应的一个网络请求
+     * @param callRequestType 要对应取消的网络请求类型
+     */
     public void cancelCall(int callRequestType) {
+        if (cachedCalls == null || cachedCalls.isEmpty()) {
+            return;
+        }
+        Call toCancelCall = null;
+        synchronized (syncLockObj) {
+            Iterator entrySetIterator = cachedCalls.entrySet().iterator();
+            while (entrySetIterator.hasNext()) {
+                Map.Entry<Call,Integer> entry = (Map.Entry<Call, Integer>) entrySetIterator.next();
+                int curValue = entry.getValue();
+                if (curValue == callRequestType) {
+                    toCancelCall = entry.getKey();
+                    break;
+                }
+            }
+            if (toCancelCall != null) {
+                cachedCalls.remove(toCancelCall);
+                toCancelCall.cancel();
+            }
+        }
+    }
 
+    /**
+     * 取消所以添加过的网络请求
+     */
+    public void cancelAllCall() {
+        if (cachedCalls == null || cachedCalls.isEmpty()) {
+            return;
+        }
+        synchronized (syncLockObj) {
+            Iterator<Call> callIterator = cachedCalls.keySet().iterator();
+            while (callIterator.hasNext()) {
+                Call curCall = callIterator.next();
+                if (curCall != null) {
+                    curCall.cancel();
+                }
+            }
+            cachedCalls.clear();
+        }
     }
 }

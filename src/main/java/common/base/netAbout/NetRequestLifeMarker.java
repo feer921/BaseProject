@@ -2,6 +2,8 @@ package common.base.netAbout;
 
 import android.util.SparseArray;
 
+import common.base.netclients.RetrofitClient;
+
 /**
  * note: 暂时不考虑多线程问题，因为目前所有的网络请求发起时都在主线程
  * 后续如果有在工作线程中发起，则需要考虑多线程问题
@@ -69,7 +71,8 @@ public class NetRequestLifeMarker {
         }
         return result;
     }
-//    /**
+
+    //    /**
 //     * 标记 请求为取消状态，并作取消
 //     * @param requestDataType 数据请求类型，小于0时为取消当前所有请求
 //     */
@@ -91,4 +94,25 @@ public class NetRequestLifeMarker {
 //            }
 //        }
 //    }
+
+    /**
+     * 取消相应请求并标记该请求为被取消的
+     * @param curCallRequestType >0 时取消对应的请求、否则取消全部
+     */
+    public void cancelCallRequest(int curCallRequestType) {
+        int requestCount = allRequestTypesAndStates.size();
+        if(requestCount == 0) return;
+        RetrofitClient retrofitClient = RetrofitClient.getMe();
+        if (curCallRequestType > 0) {
+            retrofitClient.cancelCall(curCallRequestType);
+            allRequestTypesAndStates.put(curCallRequestType,REQUEST_STATE_CANCELED);
+        }
+        else{
+            retrofitClient.cancelAllCall();
+            for(int i = 0; i < requestCount ; i++) {
+                int requestTypeKey = allRequestTypesAndStates.keyAt(i);
+                allRequestTypesAndStates.put(requestTypeKey,REQUEST_STATE_CANCELED);
+            }
+        }
+    }
 }

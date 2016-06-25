@@ -323,6 +323,15 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
     }
 
     /**
+     * 清空数据
+     */
+    public void clearData() {
+        if (mData != null) {
+            mData.clear();
+            notifyDataSetChanged();
+        }
+    }
+    /**
      * Get the data item associated with the specified position in the data set.
      *
      * @param position Position of the item whose data we want within the adapter's
@@ -386,6 +395,13 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
         return count;
     }
 
+    /**
+     * 获取仅仅为列表实体数据的数量
+     * @return
+     */
+    public int getJustDataCount() {
+        return mData == null ? 0 : mData.size();
+    }
     /**
      * Get the type of View that will be created by {@link #getItemView(int, ViewGroup)} for the specified item.
      *
