@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -179,8 +180,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView
         this.pager = pager;
 
         if (pager.getAdapter() == null) { throw new IllegalStateException("ViewPager does not have adapter instance."); }
+        //modified by fee 2016-06-27
+        pager.addOnPageChangeListener(pageListener);//本地要监听外部ViewPager的页面切换，以自动滑动水平的选项卡
 
-        pager.setOnPageChangeListener(pageListener);
+//        pager.setOnPageChangeListener(pageListener);
 
         notifyDataSetChanged();
     }
@@ -410,9 +413,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView
 
             currentPosition = position;
             currentPositionOffset = positionOffset;
-
+            if (tabsContainer.getChildAt(position) == null) {
+                return;
+            }
             scrollToChild(position, (int) (positionOffset * tabsContainer.getChildAt(position).getWidth()));
-
             invalidate();
 
             if (delegatePageListener != null)

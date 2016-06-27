@@ -569,7 +569,19 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
     }
 
     protected BaseViewHolder onCreateDefViewHolder(ViewGroup parent, int viewType) {
+        //modified by fee 2016-06-27
+        if (mLayoutResId <= 0) {
+            mLayoutResId = providedContentViewResId();
+        }
         return createBaseViewHolder(parent, mLayoutResId);
+    }
+
+    /**
+     * 子类提供的默认item的内容布局资源ID
+     * @return
+     */
+    protected int providedContentViewResId() {
+        return 0;
     }
 
     protected BaseViewHolder createBaseViewHolder(ViewGroup parent, int layoutResId) {
