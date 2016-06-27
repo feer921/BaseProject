@@ -50,14 +50,14 @@ public class CommonMdLoadialog extends BaseDialog{
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        loadingAnimation.start();
+    public void show() {
+        ivLoadIcon.setAnimation(loadingAnimation);
+        super.show();
     }
 
     @Override
-    public void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        loadingAnimation.cancel();
+    public void dismiss() {
+        ivLoadIcon.clearAnimation();
+        super.dismiss();
     }
 }
