@@ -7,4 +7,10 @@ package common.base.netAbout;
  * DESC: 服务端响应结果
  */
 public class BaseServerResult {
+    /**
+     * 错误类型：没有网络
+     */
+    public static final int ERROR_CODE_NO_NET = 10;
+    public boolean isOk = false;
+
 }

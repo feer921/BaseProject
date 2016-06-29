@@ -3,20 +3,18 @@ package common.base.activitys;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 import common.base.R;
 import common.base.dialogs.BaseDialog;
-import common.base.dialogs.CommonHintDialog;
 import common.base.dialogs.CommonMdDialog;
 import common.base.dialogs.CommonMdLoadialog;
+import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
 import common.base.views.HintPopuWindow;
@@ -49,18 +47,18 @@ public class UIHintAgent {
     public UIHintAgent(Context curContext) {
         this.mContext = curContext;
     }
-    int commonHintDialogWidth,commonHintDialogHeigth;
-    public void configCommonHintDialogWH(int toSetHintDialogWidth, int toSetHintDialogHeight) {
-        this.commonHintDialogWidth = toSetHintDialogWidth;
-        this.commonHintDialogHeigth = toSetHintDialogHeight;
-    }
+//    int commonHintDialogWidth,commonHintDialogHeigth;
+//    public void configCommonHintDialogWH(int toSetHintDialogWidth, int toSetHintDialogHeight) {
+//        this.commonHintDialogWidth = toSetHintDialogWidth;
+//        this.commonHintDialogHeigth = toSetHintDialogHeight;
+//    }
     private void initHintDialog() {
         if (hintDialog == null) {
-            if (this.commonHintDialogWidth == 0) {
-                DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-                this.commonHintDialogWidth = dm.widthPixels - 80;
-                this.commonHintDialogHeigth = dm.heightPixels / 3;
-            }
+//            if (this.commonHintDialogWidth == 0) {
+//                DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+//                this.commonHintDialogWidth = dm.widthPixels - 80;
+//                this.commonHintDialogHeigth = dm.heightPixels / 3;
+//            }
 //            hintDialog = new CommonHintDialog(mContext, this.commonHintDialogWidth, this.commonHintDialogHeigth);
             hintDialog = new CommonMdDialog(mContext);
             hintDialog.edtViewCanEdit(false);
@@ -107,39 +105,7 @@ public class UIHintAgent {
     }
     public void onClickInDialog(DialogInterface dialog, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
-//            switch (hintDialog.curDialogInCase) {
-//                case BaseServerResult.CODE_NON_LOGINED:// 未登陆
-//                    UiHelper.jumpToLogin(mContext);
-//                    switchActivity(false);
-//                    break;
-//                case BaseServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
-//                    Intent toIntent = new Intent(mContext, RealNameVertifyActivity.class);
-//                    UiHelper.jumpToActivity(mContext, toIntent);
-//                    switchActivity(false);
-//                    break;
-//                case BaseServerResult.CODE_PHONE_IN_BLACKLIST:// 帐号黑名单了，拨打客服电话
-//                    Util.callService(mContext);
-//                    break;
-//                case BaseServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足，去充值
-//                    Intent toReChargeIntent = new Intent(mContext, AccountRechargeActivity.class);
-//                    UiHelper.jumpToActivity(mContext, toReChargeIntent);
-//                    switchActivity(false);
-//                    break;
-//                case BaseServerResult.CODE_ERROR_NO_NET://没有网络,点击则去设置网络
-//                    Intent toSettingNetIntent = new Intent(Settings.ACTION_SETTINGS);
-//                    UiHelper.jumpToActivity(mContext, toSettingNetIntent);
-//                    switchActivity(false);
-//                    break;
-//                case BaseServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://未授权自动还款权限，点击确定后跳转进筹款记录之“还款中”项目列表界面
-//                    //如果 提现界面需要点击该确定按钮后关闭自己，则需要自己实现所继承的基类的拦截dialog的点击事件，并作以下处理
-//                    Intent toLookFundraiseRecord = new Intent(mContext, FundRaisingRecordActivity.class);
-//                    toLookFundraiseRecord.putExtra(TjjConfig.INTENT_KEY_TO_PRODUCT_STATUS, TjjConfig.RECORD_PRODUCT_STATUS_4_RETURNING);
-//                    UiHelper.jumpToActivity(mContext, toLookFundraiseRecord);
-//                    switchActivity(false);
-//                    break;
-//                default:
-//                    break;
-//            }
+           //本来一些通用的点击提示对话框的肯定性按钮时 的通用处理，比如：对话框提示了未登陆，点击确定，本意可以统一在这处理，但由于框架不知道对话框所处的显示情景，所以不能在此处理了
         }
         dialog.dismiss();
     }
@@ -222,66 +188,22 @@ public class UIHintAgent {
     public boolean isLoadingDialogShowing(){
         return loadDialog!= null && loadDialog.isShowing();
     }
-//    public void dealWithServerResult(int requestDataType,BaseServerResult result) {
-//        if (!result.isOk) {
-//            if (loadDialog != null) {
-//                loadDialog.dismiss();
-//            }
-//            String serverErrorToLocalInfo = getString(result.getErrorInfoResIdBaseCode());
-//            String dialogTitle = "提示";
-//            String hintMsg = null;
-////            String cancleBtnName = "我知道了";
-//            String cancleBtnName = "";
-//            String ensureBtnName = "";
-//            switch (result.serverResponseCode) {
-//                case BaseServerResult.CODE_NON_LOGINED:// 未登陆或者登陆状态失效
-//                    hintMsg = serverErrorToLocalInfo;
-//                    ensureBtnName = "确认";
-////                    CubeApp.getMe().setLogined(false);
-//                    break;
-//                case BaseServerResult.CODE_PHONE_IN_BLACKLIST:// 被加入黑名单
-//                    hintMsg = "抱歉,您的手机号码被列为黑名单了.";
-//                    ensureBtnName = "咨询客服";
-//                    break;
-//                case BaseServerResult.CODE_REGIESTED_ALREADY:// 本号码已经被注册了
-//                    hintMsg = "该手机号码已注册";
-//                    ensureBtnName = "去登录";
-//                    break;
-//                case BaseServerResult.CODE_USER_ACCOUNT_NOT_VERTIFIED:// 未实名认证
-//                    hintMsg = "您的帐号未进行实名认证";
-//                    ensureBtnName = "去认证";
-//                    break;
-//                case BaseServerResult.CODE_USER_ACCOUNT_NO_ENOUGH_MONEY:// 帐户余额不足
-//                    hintMsg = "抱歉,当前帐户余额不足";
-//                    ensureBtnName = "充值";
-//                    break;
-//                case BaseServerResult.CODE_A_PROJECT_AREADY_IN_CHECKING://已经有一个项目在审核中
-//                    hintMsg = serverErrorToLocalInfo;
-//                    ensureBtnName = "我想去看看";
-//                    break;
-//                case BaseServerResult.CODE_NOT_AUTHORISE_AUTO_REPAY://用户未授权自动还款
-//                    hintMsg = serverErrorToLocalInfo;
-//                    ensureBtnName = "查看项目";
-//                    break;
-//                default:
-//                    if(mProxyCallback != null && mProxyCallback.ownerDealWithServerResult(requestDataType,result)){
-//                        break;
-//                    }
-//                    popupHint(serverErrorToLocalInfo);
-//                    break;
-//            }
-//            if (!Util.isTextEmpty(ensureBtnName)) {
-//                dialogHint(dialogTitle, hintMsg, cancleBtnName, ensureBtnName, result.serverResponseCode);
-//            }
-//        }
-//    }
+    public void dealWithServerResult(int requestDataType,BaseServerResult result) {
+        if (!result.isOk) {
+            //本意为针对所有的网络请求，服务器返回请求不成功时的 各种原因的统一通用处理(弹出提示对话框)
+            //但由于框架无法得知具体的APP的服务器返回请求不成功的原因，所以目前无法在此统一处理,可以交给各APP的统一基类来处理
+            if (loadDialog != null) {
+                loadDialog.dismiss();
+            }
+        }
+    }
     public void dealWithServerError(int requestDataType,String errorInfo) {
         if (loadDialog != null) {
             loadDialog.dismiss();
         }
         if (!NetHelper.isNetworkConnected(mContext) && !INetEvent.MANULLY_DELAY_OVER.equals(errorInfo)) {
-            dialogHint("提示", "当前网络无效,请设置", null, "去设置网络", 0
-                    //BaseServerResult.CODE_ERROR_NO_NET
+            dialogHint("提示", "当前网络无效,请设置", null, "去设置网络",
+                    BaseServerResult.ERROR_CODE_NO_NET
                     );
         } 
         else {

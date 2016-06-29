@@ -24,6 +24,12 @@ public class BaseApi{
     protected static final int API_CATEGORY_ABOUT_PRODUCT = API_CATEGORY_ABOUT_ACCOUNT + 1;
     //and so on.
 
+    /**
+     * 依据Retrofit 获取接口实例化对象
+     * @param serviceClass
+     * @param <T>
+     * @return
+     */
     protected static <T> T getApiService(Class<T> serviceClass) {
         return RetrofitClient.getMe().createNetService(serviceClass);
     }
@@ -44,7 +50,7 @@ public class BaseApi{
      * 取消对应的请求
      * @param toCancelCallRequestType 对应的网络请求类型
      */
-    public void cacelCurCall(int toCancelCallRequestType) {
+    public static void cacelCurCall(int toCancelCallRequestType) {
         RetrofitClient.getMe().cancelCall(toCancelCallRequestType);
     }
     protected static void doCall(Call curCall, NetDataAndErrorListener curCallBack,boolean needCache) {

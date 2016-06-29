@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -66,5 +67,34 @@ public class ViewUtil{
 
             }
         }
+    }
+
+    /**
+     * 校验文本输入框当前是否输入的是空格
+     * @param curEditText
+     * @return true 当前输入的是空格; falase:不是
+     */
+    public static boolean checkEditTextInputedNull(EditText curEditText) {
+        boolean curInputedNull = false;
+        if (curEditText == null) {
+            return curInputedNull;
+        }
+        String textAfterInputed = curEditText.getText().toString();
+        int newLen = textAfterInputed.length();
+        if (newLen > 0) {
+            char[] chars = textAfterInputed.toCharArray();
+            curInputedNull = chars[newLen - 1] == ' ';
+            if (curInputedNull) {
+                if (newLen == 1) {
+                    curEditText.setText("");//替换成空字符串，此空字符串的Len = 0;
+                }
+                else{//输入后的文本不只有1个字符的情况，把空字符给去除掉
+                    String trimedStr = textAfterInputed.trim();
+                    curEditText.setText(trimedStr);
+                    curEditText.setSelection(trimedStr.length());//并将光标移到文本末尾
+                }
+            }
+        }
+        return curInputedNull;
     }
 }

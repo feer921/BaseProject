@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import common.base.R;
 import common.base.netAbout.NetRequestLifeMarker;
@@ -265,6 +266,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
     protected void popupHint(int hintMsgResID){
         popupHint(getString(hintMsgResID));
+    }
+
+    protected void toast(String msg) {
+        Toast.makeText(appContext,msg,200).show();
+    }
+
+    protected void toast(int msgResId) {
+        toast(getString(msgResId));
     }
     //------------------------- 生命周期方法----------(我是不漂亮的分隔线)------------------
     @Override
