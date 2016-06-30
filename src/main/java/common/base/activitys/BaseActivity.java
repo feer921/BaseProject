@@ -10,12 +10,12 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import common.base.R;
-import common.base.netAbout.NetRequestLifeMarker;
 import common.base.netAbout.BaseServerResult;
+import common.base.netAbout.NetRequestLifeMarker;
 import common.base.utils.CommonLog;
+import common.base.views.ToastUtil;
 
 /**
  * User: fee(lifei@cloudtone.com.cn)
@@ -45,6 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onCreate()");
         }
         appContext = getApplicationContext();
+        ToastUtil.setContext(appContext);
         mContext = this;
         uiHintAgent = new UIHintAgent(mContext);
         uiHintAgent.setHintDialogOnClickListener(this);
@@ -106,7 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     /**
      * 避免内存泄漏的Handler以供各子类需要使用Handler时调用initHandler()方法进行初始化并重载handlerMessage()方法对发送的消息进行处理
      */
-    private static class StaticHandler extends WeakHandler{
+    protected static class StaticHandler extends WeakHandler{
         public StaticHandler(Activity owner) {
             super(owner);
         }
@@ -268,12 +269,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
         popupHint(getString(hintMsgResID));
     }
 
-    protected void toast(String msg) {
-        Toast.makeText(appContext,msg,200).show();
+    protected void topToast(String msg) {
+        ToastUtil.topShow(msg);
     }
 
-    protected void toast(int msgResId) {
-        toast(getString(msgResId));
+    protected void topToast(int msgResId) {
+        topToast(getString(msgResId));
     }
     //------------------------- 生命周期方法----------(我是不漂亮的分隔线)------------------
     @Override

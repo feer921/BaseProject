@@ -1,5 +1,8 @@
 package common.base.netclients;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -10,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
  * User: fee(lifei@cloudtone.com.cn)
@@ -29,10 +33,15 @@ public class RetrofitClient {
     private final Object syncLockObj = new Object();
     private RetrofitClient() {
         if (mRetrofit == null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            //屏蔽因为Json字符串中或者Java对象中不认识的属性而导致解析失败
+            objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
             mRetrofit = new Retrofit.Builder()
                     .baseUrl(HOST_BASE_URL)
                     .addConverterFactory(new JsonConverterFactory())
-                    .addConverterFactory(GsonConverterFactory.create())
+
+//                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                     .build();
         }
     }

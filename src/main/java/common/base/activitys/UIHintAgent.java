@@ -106,6 +106,7 @@ public class UIHintAgent {
     public void onClickInDialog(DialogInterface dialog, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
            //本来一些通用的点击提示对话框的肯定性按钮时 的通用处理，比如：对话框提示了未登陆，点击确定，本意可以统一在这处理，但由于框架不知道对话框所处的显示情景，所以不能在此处理了
+            //可以交给各APP的统一基类来处理
         }
         dialog.dismiss();
     }
