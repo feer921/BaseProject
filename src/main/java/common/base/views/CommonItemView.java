@@ -145,10 +145,10 @@ public class CommonItemView extends RelativeLayout{
     }
 
     public TextView setItemExtraDesc(String itemExtraDesc) {
-        if (tvItemExtraDesc != null && !Util.isEmpty(itemExtraDesc)) {
-            tvItemExtraDesc.setText(itemExtraDesc);
+        if (!Util.isEmpty(itemExtraDesc)) {
             tvItemExtraDesc.setVisibility(View.VISIBLE);
         }
+        tvItemExtraDesc.setText(itemExtraDesc);
         return tvItemExtraDesc;
     }
     public TextView setItemExtraDesc(int itemExtraDescResId) {

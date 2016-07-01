@@ -225,6 +225,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
         return false;
     }
+
+    /***
+     * 取消网络请求
+     * @param curRequestType
+     */
+    protected void cancelNetRequest(int curRequestType) {
+        if (netRequestLifeMarker != null) {
+            netRequestLifeMarker.cancelCallRequest(curRequestType);
+        }
+    }
     /**
      * 标记当前网络请求的状态 : 正在请求、已完成、已取消等
      * @see {@link NetRequestLifeMarker#REQUEST_STATE_ING}

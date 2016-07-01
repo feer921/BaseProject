@@ -50,7 +50,27 @@ public class ParamsFileWriter {
             this.filePath = filePath;
         }
     }
-
+    public Properties getProper(File theProperFile){
+        if(theProperFile == null || !theProperFile.exists()) return null;
+        Properties result = null;
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(theProperFile);
+            result = new Properties();
+            result.load(fis);
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        }
+        finally {
+            if(fis != null){
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+        return result;
+    }
     public Properties getProper(String filePath) {
         Properties result = null;
         // if(refs.containsKey(filePath)){

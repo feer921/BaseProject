@@ -3,6 +3,7 @@ package common.base.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -66,5 +67,10 @@ public class BaseUiHelper{
                 inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         }
+    }
+
+    public static void jumpToSystemSetting(Context context) {
+        Intent toSettingActionIntent = new Intent(Settings.ACTION_SETTINGS);
+        jumpToActivity(context,toSettingActionIntent,0,false);
     }
 }

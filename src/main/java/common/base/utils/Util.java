@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -91,21 +90,6 @@ public class Util {
                 + Thread.currentThread().getPriority() + "\nthread state = " + Thread.currentThread().getState());
     }
 
-    /**
-     * 检查是不是miui系统
-     * 
-     * @param context
-     * @return
-     */
-    public static boolean isMIUI(Context context) {
-        boolean result = false;
-        Intent i = new Intent("miui.intent.action.APP_PERM_EDITOR");
-        i.setClassName("com.android.settings", "com.miui.securitycenter.permission.AppPermissionsEditor");
-        if (isIntentAvailable(context, i)) {
-            result = true;
-        }
-        return result;
-    }
 
     public static boolean isIntentAvailable(Context context, Intent intent) {
         PackageManager packageManager = context.getPackageManager();
@@ -113,26 +97,6 @@ public class Util {
         return list.size() > 0;
     }
 
-    /**
-     * 进入权限管理
-     */
-    public static void intentMini(Context context) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo info = null;
-        try {
-            info = pm.getPackageInfo(context.getPackageName(), 0);
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        Intent i = new Intent("miui.intent.action.APP_PERM_EDITOR");
-        i.setClassName("com.android.settings", "com.miui.securitycenter.permission.AppPermissionsEditor");
-        i.putExtra("extra_package_uid", info.applicationInfo.uid);
-        try {
-            context.startActivity(i);
-        } catch (Exception e) {
-
-        }
-    }
 
     @SuppressLint("NewApi")
     public static void importSMS(Context mContext) {
@@ -343,102 +307,6 @@ public class Util {
         }
         return isValid;
     }
-
-
-
-
-    /**
-     * 从一个集合中提取出所需要的信息
-     *
-     * @param <T>
-     * @param modelList
-     * @return Object[0]:集合中所有的数据数量； Object[1]:集合中所有数据的总文件大小；
-     *         Object[2]:集合中所有数据的ID集合
-     */
-//    public static <T extends BaseModel> Object[] extractInfosFromList(List<T> modelList) {
-//        if (modelList == null || modelList.size() == 0) {
-//            return null;
-//        }
-//        int totalCount = modelList.size();
-//        long allFileSize = 0;
-//        ArrayList<Long> ids = new ArrayList<Long>();
-//        for (T mode : modelList) {
-//            allFileSize += mode.getSize();
-//            ids.add(mode._id);
-//        }
-//        Object[] result = new Object[3];
-//        result[0] = totalCount;
-//        result[1] = allFileSize;
-//        result[2] = ids;
-//        return result;
-//    }
-
-    /**
-     * 计算一个集合中所有模式对象的文件大小
-     *
-     * @param <T>
-     * @param modelList
-     * @return 一个集合中所有数据的文件大小
-     */
-//    public static <T extends BaseModel> long countFileSize(List<T> modelList) {
-//        long allFileSize = 0;
-//        for (T mode : modelList) {
-//            allFileSize += mode.getSize();
-//        }
-//        return allFileSize;
-//    }
-
-    // /** 分组集合中默认选中（处理）的数量 等于 集合的Size**/
-    // public static final byte INDEX_DEF_SELECTED_COUNT = 0;
-    /** Map集合中 所有数据的数量 **/
-    public static final byte INDEX_TOTAL_DATA_COUNT = 0;
-    /** Map集合中所有数据的文件大小 **/
-    public static final byte INDEX_TOTAL_DATA_SIZE = 1;
-    /** Map集合中 默认选中（处理）的所有数据的文件大小 **/
-    public static final byte INDEX_DEF_SELECTED_DATA_SIZE = 2;
-    /** Map集合中默认选中（处理）的所有数据的ID集合 **/
-    public static final byte INDEX_DEF_SELECTED_DATA_IDS = 3;
-
-    /**
-     * 从分组的Map集合中（如重复APK、重复文档、重复音乐）提取出 一些需要的数据. eg. 依结果下标 0：总共的数据数量；
-     * 1：总共的数据文件大小； 2：默认选中的数据文件总共大小； 3：默认选中的数据的ID集合 --> 该集合大小即为 默认选中（处理）的数量
-     *
-     * @param splitGroupData
-     * @return 返回信息数组对象结果，数组内存储的信息参考下标 eg: {@link #INDEX_TOTAL_DATA_COUNT} and
-     *         so on
-     */
-//    public static <T extends BaseModel> Object[] extractInfosFromSplitGroup(Map<String, List<T>> splitGroupData) {
-//        if (splitGroupData == null || splitGroupData.size() == 0)
-//            return null;
-//        // 总共数据数量
-//        int totalDataCount = 0;
-//        // 总共的数据文件大小
-//        long totalDataFileSize = 0;
-//        // 默认勾选的数据总大小
-//        long selectedDataFileSize = 0;
-//        ArrayList<Long> defSelectedIds = new ArrayList<Long>();
-//        Iterator<Entry<String, List<T>>> mIterator = splitGroupData.entrySet().iterator();
-//        while (mIterator.hasNext()) {
-//            Entry<String, List<T>> entry = mIterator.next();
-//            List<T> aGroupList = entry.getValue();
-//            totalDataCount += aGroupList.size();
-//            totalDataFileSize += countFileSize(aGroupList);
-//            // 默认只留下第一个不勾选
-//            aGroupList.remove(0);
-//            Object[] defSelectedInfos = extractInfosFromList(aGroupList);
-//            if (defSelectedInfos != null) {// 屏蔽
-//                                           // aGroupList中只有一个元素（源头错误）但正被871行代码移除了，而导致空指针的情况
-//                selectedDataFileSize += (Long) defSelectedInfos[1];
-//                defSelectedIds.addAll((ArrayList<Long>) defSelectedInfos[2]);
-//            }
-//        }
-//        Object[] result = new Object[4];
-//        result[INDEX_TOTAL_DATA_COUNT] = totalDataCount;
-//        result[INDEX_TOTAL_DATA_SIZE] = totalDataFileSize;
-//        result[INDEX_DEF_SELECTED_DATA_SIZE] = selectedDataFileSize;
-//        result[INDEX_DEF_SELECTED_DATA_IDS] = defSelectedIds;
-//        return result;
-//    }
 
     /**
      * 隐式启动对应action的Service 兼容Android5.0的不能显示通过action方式启动Service

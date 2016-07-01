@@ -16,7 +16,7 @@
             style="@style/tv_fill_w_h_style"
             android:layout_height="wrap_content"
             android:text="请选择支付方式"
-            android:padding="27dp"
+            android:padding="20dp"
             android:textColor="#445979"
             android:textSize="18sp"
             android:id="@+id/tv_dialog_title"
@@ -39,6 +39,7 @@
                 android:textSize="14sp"
                 android:textColor="#445979"
                 android:lineSpacingExtra="3dp"
+                android:paddingBottom="15dp"
                 />
             <EditText
                 android:id="@+id/edt_as_dialog_msg_or_edit"
@@ -66,7 +67,7 @@
         <LinearLayout
             android:id="@+id/ll_btns"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="47dp"
             android:orientation="vertical"
             android:layout_below="@+id/content_views"
             >

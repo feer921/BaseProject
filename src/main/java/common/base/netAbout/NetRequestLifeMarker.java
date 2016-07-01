@@ -108,9 +108,11 @@ public class NetRequestLifeMarker {
             allRequestTypesAndStates.put(curCallRequestType,REQUEST_STATE_CANCELED);
         }
         else{
-            retrofitClient.cancelAllCall();
+            //modified by fee 2016-07-01: 不取消全局的所有网络请求，而是取消本次【本界面】添加进来的
+//            retrofitClient.cancelAllCall();
             for(int i = 0; i < requestCount ; i++) {
                 int requestTypeKey = allRequestTypesAndStates.keyAt(i);
+                retrofitClient.cancelCall(requestTypeKey);
                 allRequestTypesAndStates.put(requestTypeKey,REQUEST_STATE_CANCELED);
             }
         }

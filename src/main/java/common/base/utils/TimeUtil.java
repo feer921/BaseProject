@@ -13,10 +13,10 @@ import java.util.Locale;
 public class TimeUtil {
     /**
      * 
-     * @param timePattern 时间正则格式 eg. YYYY-MM-dd HH:mm:ss
+     * @param timePattern 时间正则格式 eg. yyyy-MM-dd HH:mm:ss
      * @return
      */
-    public static String getTime(String timePattern){
+    public static String getFormatTime(String timePattern){
         SimpleDateFormat sdf = new SimpleDateFormat(timePattern,Locale.getDefault());
         return sdf.format(new Date());
     }
