@@ -3,6 +3,7 @@ package common.base.views;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import common.base.R;
+import common.base.utils.CommonLog;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
@@ -24,6 +26,7 @@ public class CommonItemView extends RelativeLayout{
     private TextView tvItmeName;
     private TextView tvItemExtraDesc;
     private ImageView ivRightArrow;
+    private ImageView ivItemLoading;
     public CommonItemView(Context context) {
         this(context, null);
     }
@@ -39,6 +42,7 @@ public class CommonItemView extends RelativeLayout{
         tvItmeName = ViewUtil.findViewInContainer(this, R.id.tv_item_name);
         tvItemExtraDesc = ViewUtil.findViewInContainer(this, R.id.tv_item_extra_desc);
         ivRightArrow = ViewUtil.findViewInContainer(this, R.id.iv_item_right_arrow);
+//        ivItemLoading = ViewUtil.findViewInContainer(this, R.id.iv_in_item_4_loading);
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CommonItemView, defStyleAttr,0);
         ColorStateList tvExtraDescTextColor = null;
         ColorStateList tvItemNameTextColor = null;
@@ -147,6 +151,8 @@ public class CommonItemView extends RelativeLayout{
     public TextView setItemExtraDesc(String itemExtraDesc) {
         if (!Util.isEmpty(itemExtraDesc)) {
             tvItemExtraDesc.setVisibility(View.VISIBLE);
+            if(ivItemLoading != null)
+            ivItemLoading.setVisibility(INVISIBLE);
         }
         tvItemExtraDesc.setText(itemExtraDesc);
         return tvItemExtraDesc;
@@ -162,5 +168,16 @@ public class CommonItemView extends RelativeLayout{
             }
         }
         return ivRightArrow;
+    }
+
+    public void itemLoading() {
+        CommonLog.e("info","----------------> itemLoading()..." + ivItemLoading);
+        if (ivItemLoading == null) {
+            return;
+        }
+        tvItemExtraDesc.setVisibility(View.INVISIBLE);
+        ivItemLoading.setVisibility(View.VISIBLE);
+        AnimationDrawable drawable = (AnimationDrawable) ivItemLoading.getDrawable();
+        drawable.run();
     }
 }

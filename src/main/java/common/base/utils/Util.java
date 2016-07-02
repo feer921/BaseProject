@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -32,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -462,5 +464,108 @@ public class Util {
         for (ResolveInfo resolveInfo : intentServiceInfos) {
 //            ComponentName
         }
+    }
+
+    /**
+     * 从SharedPreferences文件中获取数据
+     * @param context
+     * @param sharedPreferFileName
+     * @param preferKey
+     * @param defValue
+     * @param <T>
+     * @return
+     */
+    @SuppressLint("NewApi")
+    public static <T> T sharedPreferenceGetData(Context context, String sharedPreferFileName, String preferKey, T defValue) {
+        T resultData = null;
+        if (isEmpty(sharedPreferFileName) || isEmpty(preferKey)) {
+            return resultData;
+        }
+        SharedPreferences sp = context.getSharedPreferences(sharedPreferFileName, Context.MODE_PRIVATE);
+        if (defValue == null) {
+            resultData = (T) sp.getString(preferKey, null);
+        }
+        else{
+            switch (defValue.getClass().getSimpleName()) {
+                case "String":
+                    resultData = (T) sp.getString(preferKey, (String) defValue);
+                    break;
+                case "Integer":
+                    Integer defValueInt = (Integer) defValue;
+                    resultData = (T) (defValueInt = sp.getInt(preferKey, defValueInt));
+                    break;
+                case "Boolean":
+                    Boolean defBoolean = (Boolean) defValue;
+                    resultData = (T) (defBoolean = sp.getBoolean(preferKey, defBoolean));
+                    break;
+                case "Float":
+                    Float defFloat = (Float) defValue;
+                    resultData = (T) (defFloat = sp.getFloat(preferKey, defFloat));
+                    break;
+                case "Long":
+                    Long defLong = (Long) defValue;
+                    resultData = (T) (defLong = sp.getLong(preferKey, defLong));
+                    break;
+                case "Set":
+                    try {
+                        Set<String> defSetStr = (Set<String>) defValue;
+                        if(isCompateApi(11))
+                        resultData = (T) (defSetStr = sp.getStringSet(preferKey, defSetStr));
+                    } catch (Exception e) {
+                    }
+                    break;
+            }
+        }
+        return resultData;
+    }
+
+    @SuppressLint("NewApi")
+    public static void saveData2SharedPreferences(Context context, String spFileName, String preferKey, Object valueData) {
+        if (isEmpty(spFileName) || isEmpty(preferKey)) {
+            return;
+        }
+        SharedPreferences sp = context.getSharedPreferences(spFileName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        if (valueData == null) {
+            editor.putString(preferKey, null);
+        }
+        else{
+            if (valueData instanceof String) {
+                editor.putString(preferKey, (String) valueData);
+            } else if (valueData instanceof Integer) {
+                editor.putInt(preferKey, (Integer) valueData);
+            } else if (valueData instanceof Boolean) {
+                editor.putBoolean(preferKey, (Boolean) valueData);
+            } else if (valueData instanceof Float) {
+                editor.putFloat(preferKey, (Float) valueData);
+            } else if (valueData instanceof Set) {
+                if(isCompateApi(11))
+                editor.putStringSet(preferKey, (Set<String>) valueData);
+            } else if (valueData instanceof Long) {
+                editor.putLong(preferKey, (Long) valueData);
+            }
+//            switch (valueData.getClass().getSimpleName()) {
+//                case "String":
+//                    editor.putString(preferKey, (String) valueData);
+//                    break;
+//                case "Integer":
+//                    editor.putInt(preferKey, (Integer) valueData);
+//                    break;
+//                case "Long":
+//                    editor.putLong(preferKey, (Long) valueData);
+//                    break;
+//                case "Float":
+//                    editor.putFloat(preferKey, (Float) valueData);
+//                    break;
+//                case "Boolean":
+//                    editor.putBoolean(preferKey, (Boolean) valueData);
+//                    break;
+//                case "Set":
+//                    if(isCompateApi(11))
+//                    editor.putStringSet(preferKey, (Set<String>) valueData);
+//                    break;
+//            }
+        }
+        editor.commit();
     }
 }
