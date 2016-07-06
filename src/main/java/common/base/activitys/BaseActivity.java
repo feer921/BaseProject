@@ -308,6 +308,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onResume()");
         }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (LIFE_CIRCLE_DEBUG) {
+            CommonLog.i(TAG,"--> onNewIntent() intent = " + intent);
+        }
+    }
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -370,7 +379,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG,"---> onActivityResult()");
+            CommonLog.i(TAG,"---> onActivityResult() requestCode = " + requestCode +" resultCode = " + resultCode + " data = " + data);
         }
     }
     @Override

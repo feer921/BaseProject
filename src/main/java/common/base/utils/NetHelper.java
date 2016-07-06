@@ -308,4 +308,32 @@ public class NetHelper {
     public static Context getAppContext(){
         return appContext;
     }
+
+
+    public static void enableMobileData(Context context) {
+        boolean isMobileDataEnabled = isMobileDataEnabled(context);
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (!isMobileDataEnabled) {
+            //开启
+            Boolean boolArg = true;
+            ReflectUtil.invokeMethod(connectivityManager,"setMobileDataEnabled", boolArg);
+        }
+    }
+
+    /***
+     * 移动网络是否开启了
+     * @param context
+     * @return
+     */
+    public static boolean isMobileDataEnabled(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Object[] methodArgs = null;
+        Object result = ReflectUtil.invokeMethod(connectivityManager,"getMobileDataEnabled",methodArgs);
+        if (result != null) {
+            return (boolean) result;
+        }
+        return false;
+    }
+
+
 }

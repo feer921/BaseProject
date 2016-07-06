@@ -27,12 +27,12 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initNetDataListener();
         if (adapter4RecyclerView == null) {
             adapter4RecyclerView = getRecyclerViewAdapter();
             adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
         }
+        super.onCreate(savedInstanceState);
+        initNetDataListener();
     }
     @Override
     protected void dealWithErrorResponse(int curRequestDataType, String errorInfo) {

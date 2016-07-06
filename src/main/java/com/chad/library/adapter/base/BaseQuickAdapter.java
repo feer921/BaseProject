@@ -306,6 +306,11 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
         notifyDataSetChanged();
     }
 
+    public void addData(T newData) {
+        int oldSize = this.mData.size();
+        this.mData.add(newData);
+        notifyItemInserted(oldSize);
+    }
     /**
      * set a loadingView
      * @param loadingView

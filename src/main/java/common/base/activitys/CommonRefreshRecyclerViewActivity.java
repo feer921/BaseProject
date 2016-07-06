@@ -46,6 +46,7 @@ public abstract class CommonRefreshRecyclerViewActivity<T,TListData> extends Bas
 
     /**
      * 如果子类在getProvideContentViewResID()方法提供了视图资源，那么子类的初始化视图可在此方法中完成
+     * 方法定为final因为本基类提供通用布局视图
      */
     @Override
     protected final void initViews() {

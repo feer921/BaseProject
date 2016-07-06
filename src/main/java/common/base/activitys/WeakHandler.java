@@ -8,9 +8,9 @@ import java.lang.ref.WeakReference;
  * User: fee(1176610771@qq.com)
  * Date: 2016-05-17
  * Time: 17:51
- * DESC:
+ * DESC: 将宿主弱引用的Handler
  */
-public abstract class WeakHandler<T> extends Handler{
+public class WeakHandler<T> extends Handler{
 
     private WeakReference<T> mOwner;
     /**
