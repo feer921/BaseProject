@@ -302,6 +302,9 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
      * @param data
      */
     public void addData(List<T> data) {
+        if (data == null) {
+            return;
+        }
         this.mData.addAll(data);
         notifyDataSetChanged();
     }
