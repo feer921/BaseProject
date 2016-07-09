@@ -40,6 +40,9 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
 
     @Override
     protected void dealWithErrorResponse(int curRequestDataType, String errorInfo) {
+        if (LIFE_DEBUG) {
+            i(null, "--> dealWithErrorResponse() curRequestDataType = " + curRequestDataType + " errorInfo = " + errorInfo);
+        }
         if (curRequestDataType == requestTypeAboutListData) {
             listDataRequestFinish(adapter4RecyclerView.getJustDataCount()!= 0 ,errorInfo);
         }
@@ -50,12 +53,19 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
 
     @Override
     protected void dealWithResponse(int requestDataType, T result) {
+        if (LIFE_DEBUG) {
+            i(null,"--> dealWithResponse() requestDataType = " + requestDataType + " result = " + result);
+        }
         if (requestDataType == requestTypeAboutListData) {
             //1、解析返回的数据成列表数据
             BaseListEntity<TListData> parsedListEntity = parseResponseResut(result);
             //2、从(含集合类的实体)中取出集合,并填充数据到适配器中
             if (parsedListEntity != null) {
                 listDataRequestSuccess(parsedListEntity.getListData());
+            } else if (parsedListEntity == null) {
+                //modified/added by fee 2016-07-09 考虑：有时服务器的返回结果T result,并不能方便的解析成并转换成BaseListEntity的形式,为了通用，再增加一个方法
+                //让子类直接转换成对应的集合数据
+                listDataRequestSuccess(parseResponseResut2List(result));
             }
             //3通知一次成功的请求完成
             listDataRequestFinish(adapter4RecyclerView.getJustDataCount() != 0,null);
@@ -65,9 +75,10 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
         }
     }
 
+
+
     /**
-     * 列表数据请求成功,在此方法中做填充新增数据的逻辑
-     *
+     * 列表数据请求成功,在此方法中做填充新增数据并做去重处理的逻辑
      * @param newData
      */
     @Override
@@ -104,6 +115,12 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
      */
     protected abstract BaseListEntity<TListData> parseResponseResut(T result);
 
+    /**
+     * 将网络请求的响应结果T result交给子类直接转换成集合数据
+     * @param result
+     * @return
+     */
+    protected abstract List<TListData> parseResponseResut2List(T result);
     /**
      * 通过比较要新添加的数据与老列表数据，判断是否重复的数据
      * 如果重复的数据一般就不添加进原来的列表

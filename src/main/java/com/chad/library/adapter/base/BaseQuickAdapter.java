@@ -866,5 +866,17 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
         return position;
     }
 
+    protected String getStrFromRes(int strResId) {
+        if (strResId <= 0) {
+            return "";
+        }
+        return mContext.getResources().getString(strResId);
+    }
 
+    protected String getStrFromRes(int strResId, Object... matchArgs) {
+        if (strResId <= 0) {
+            return "";
+        }
+        return mContext.getString(strResId, matchArgs);
+    }
 }

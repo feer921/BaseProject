@@ -78,6 +78,10 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
         }
     }
 
+    /**
+     * 如果一个Fragment界面中可能需求多个网络请求，则可调用该方法生成对应的网络响应监听者
+     * @return
+     */
     protected NetDataAndErrorListener createANetListener() {
         return new NetDataAndErrorListener<T>(this);
     }

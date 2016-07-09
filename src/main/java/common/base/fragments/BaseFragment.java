@@ -37,7 +37,8 @@ public abstract class BaseFragment extends Fragment implements
     /**
      * 是否开启生命周期打印调试
      */
-    protected boolean life_debug = false;
+    protected boolean LIFE_DEBUG = false;
+    protected String extraInfoInLifeDebug = "";
     protected UIHintAgent someUiHintAgent;
     protected NetRequestLifeMarker netRequestLifeMarker = new NetRequestLifeMarker();
 
@@ -46,8 +47,8 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onActivityCreated() savedInstanceState = " + savedInstanceState);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onActivityCreated() savedInstanceState = " + savedInstanceState);
         }
     }
 
@@ -59,32 +60,32 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onAttach() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onAttach() ");
         }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onCreate() savedInstanceState = " + savedInstanceState);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onCreate() savedInstanceState = " + savedInstanceState);
         }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onStart() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onStart() ");
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onResume() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onResume() ");
         }
         if (someUiHintAgent != null) {
             someUiHintAgent.setOwnerVisibility(true);
@@ -98,16 +99,16 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onPause() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onPause() ");
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onStop() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onStop() ");
         }
         if (someUiHintAgent != null) {
             someUiHintAgent.setOwnerVisibility(false);
@@ -117,32 +118,32 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onDetach() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onDetach() ");
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onDestroyView() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onDestroyView() ");
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onHiddenChanged() hidden = " + hidden);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onHiddenChanged() hidden = " + hidden);
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onDestroy() ");
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onDestroy() ");
         }
     }
     private View rootView;
@@ -151,9 +152,9 @@ public abstract class BaseFragment extends Fragment implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onCreateView() container id = " + container.getId() +" savedInstanceState = " + savedInstanceState);
-            CommonLog.i(TAG,"--> onCreateView() rootView = " + rootView);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onCreateView() container id = " + container.getId() +" savedInstanceState = " + savedInstanceState);
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onCreateView() rootView = " + rootView);
         }
         mLayoutInflater = inflater;
         context = getActivity();
@@ -228,8 +229,8 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (life_debug) {
-            CommonLog.i(TAG,"--> onActivityResult() requestCode = " + requestCode + " resultCode = " + resultCode + " data = " + data);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onActivityResult() requestCode = " + requestCode + " resultCode = " + resultCode + " data = " + data);
         }
     }
     protected void addRequestMark(int requestDataType,byte requestLifeState){
@@ -426,5 +427,19 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void popupHint(int hintMsgResID) {
         popupHint(getString(hintMsgResID));
+    }
+
+    protected void i(String tag,Object... logBodys) {
+        if (tag == null) {
+            tag = TAG + "[" + extraInfoInLifeDebug + "]";
+        }
+        CommonLog.i(tag, logBodys);
+    }
+
+    protected void e(String tag, Object... logBodys) {
+        if (tag == null) {
+            tag = TAG + "[" + extraInfoInLifeDebug + "]";
+        }
+        CommonLog.e(tag, logBodys);
     }
 }

@@ -131,7 +131,7 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
      */
     @Override
     public void onAnimationStart(Animation animation) {
-        CommonLog.e("info",TAG  + " --> onAnimationStart() ");
+        CommonLog.e(TAG, " --> onAnimationStart() ");
         if (countDownTimer != null) {//如果是广告展示，动画开始时则开始倒计时
             countDownTimer.start();
         }
@@ -145,7 +145,7 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
      */
     @Override
     public void onAnimationEnd(Animation animation) {
-        CommonLog.e("info",TAG  + " --> onAnimationEnd() ");
+        CommonLog.e(TAG," --> onAnimationEnd() ");
         if (animation == splashAnimation) {
             if (countDownTimer == null) {//如果没有倒计时，则依据闪屏动画完成了来自动跳转，否则依据用户直接点击跳过或者倒计时完成
                 //动画完成了，跳转到目标界面，子类区分实现

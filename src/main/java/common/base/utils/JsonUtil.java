@@ -103,7 +103,7 @@ public final class JsonUtil {
     public static <T> List<T> jsonArrayStr2ListObject(String jsonArrayStr, Class<T> elementClass) {
         JavaType resultJavaBeanType = mapper.getTypeFactory().constructParametricType(List.class, elementClass);
         try {
-            mapper.readValue(jsonArrayStr, resultJavaBeanType);
+            return mapper.readValue(jsonArrayStr, resultJavaBeanType);
         } catch (IOException e) {
             e.printStackTrace();
         }
