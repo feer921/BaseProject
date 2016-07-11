@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_contaner_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f0f1f2"
+    android:orientation="vertical">
+    <!-- 可添加自定义头部视图 -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refreshlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ViewSwitcher
+            android:id="@+id/vs_view_switcher"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inAnimation="@anim/switcher_in"
+            android:outAnimation="@anim/switcher_out">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycleview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <common.base.views.EmptyLayout
+                android:id="@+id/empty_layout_4_loading"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center" />
+        </ViewSwitcher>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

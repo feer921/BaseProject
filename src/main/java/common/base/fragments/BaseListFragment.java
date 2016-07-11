@@ -62,7 +62,7 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
             //2、从(含集合类的实体)中取出集合,并填充数据到适配器中
             if (parsedListEntity != null) {
                 listDataRequestSuccess(parsedListEntity.getListData());
-            } else if (parsedListEntity == null) {
+            } else{
                 //modified/added by fee 2016-07-09 考虑：有时服务器的返回结果T result,并不能方便的解析成并转换成BaseListEntity的形式,为了通用，再增加一个方法
                 //让子类直接转换成对应的集合数据
                 listDataRequestSuccess(parseResponseResut2List(result));

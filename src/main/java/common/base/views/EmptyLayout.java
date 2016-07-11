@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import common.base.R;
 import common.base.utils.NetHelper;
+import common.base.utils.Util;
 
 
 /**
@@ -152,7 +153,7 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
                 // animProgress.setBackgroundDrawable(SkinsUtil.getDrawable(context,"loadingpage_bg"));
                 animProgress.setVisibility(View.VISIBLE);
                 img.setVisibility(View.GONE);
-                tvHint.setText("加载中...");
+                tvHint.setText("正在加载,请稍候...");
                 clickEnable = false;
                 break;
             case NODATA:
@@ -202,7 +203,7 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
     }
 
     public void setTvNoDataContent() {
-        if (!strNoDataContent.equals(""))
+        if (!Util.isEmpty(strNoDataContent))
             tvHint.setText(strNoDataContent);
         else
             tvHint.setText("暂无数据");

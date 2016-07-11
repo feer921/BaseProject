@@ -53,6 +53,11 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
             if (parsedListEntity != null) {
                 listDataRequestSuccess(parsedListEntity.getListData());
             }
+            else{
+                //modified/added by fee 2016-07-11 考虑：有时服务器的返回结果T result,并不能方便的解析成并转换成BaseListEntity的形式,为了通用，再增加一个方法
+                //让子类直接转换成对应的集合数据
+                listDataRequestSuccess(parseResponseToListData(result));
+            }
             //3通知一次成功的请求完成
             listDataRequestFinish(adapter4RecyclerView.getJustDataCount() != 0,null);
         }
@@ -60,6 +65,13 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
             dealWithBeyondListResponse(requestDataType, result);
         }
     }
+
+    /**
+     * 将服务器响应的结果转换成集合数据
+     * @param result
+     * @return
+     */
+    protected abstract List<TListData> parseResponseToListData(T result);
 
 
     protected void listDataRequestSuccess(List<TListData> newDataFromNetWork) {

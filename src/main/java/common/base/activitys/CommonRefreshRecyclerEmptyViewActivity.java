@@ -3,21 +3,27 @@ package common.base.activitys;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
-import common.base.views.CommonRefreshRecyclerView;
+import common.base.views.CommonRecyclerViewEmptyView;
 
 /**
  * User: fee(1176610771@qq.com)
  * Date: 2016-06-27
  * Time: 12:52
- * DESC: 指定了通用界面视图布局(CommonRefreshRecyclerView[不带空布局])的列表界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
+ * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView[内部包含空布局])的列表界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
  */
-public abstract class CommonRefreshRecyclerViewActivity<T,TListData> extends BaseListActivity<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
-    protected CommonRefreshRecyclerView commonRefreshRecyclerView;
+public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extends BaseListActivity<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
+    protected CommonRecyclerViewEmptyView commonRecyclerViewEmptyView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private View customHeaderView;
+    /***
+     * 子类是否需要使用通用控件CommonRecyclerViewEmptyView 内部的空布局视图
+     * 注：默认为需要使用
+     */
+    protected boolean needUseInnerEmptyView = true;
     /**
      * final此方法，因为本基类已经提供了通用的界面布局CommonRecyclerViewEmptyView
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
@@ -34,15 +40,18 @@ public abstract class CommonRefreshRecyclerViewActivity<T,TListData> extends Bas
      */
     @Override
     protected final View providedContentView() {
-        if (commonRefreshRecyclerView == null) {
-            commonRefreshRecyclerView = new CommonRefreshRecyclerView(mContext);
+        if (commonRecyclerViewEmptyView == null) {
+            commonRecyclerViewEmptyView = new CommonRecyclerViewEmptyView(mContext);
         }
         customHeaderView = getCustomHeaderView();
-        swipeRefreshLayout = commonRefreshRecyclerView.getSwipeRefreshLayout();
-        recyclerView = commonRefreshRecyclerView.getRecyclerView();
-        commonRefreshRecyclerView.addCustomHeaderView(customHeaderView);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        return commonRefreshRecyclerView;
+        swipeRefreshLayout = commonRecyclerViewEmptyView.getSwipeRefreshLayout();
+        recyclerView = commonRecyclerViewEmptyView.getRecyclerView();
+        commonRecyclerViewEmptyView.addCustomHeaderView(customHeaderView);
+        if (needUseInnerEmptyView) {
+            commonRecyclerViewEmptyView.needInnerEmptyView();
+        }
+        commonRecyclerViewEmptyView.setOutsideRefreshListener(this);
+        return commonRecyclerViewEmptyView;
     }
 
     /**

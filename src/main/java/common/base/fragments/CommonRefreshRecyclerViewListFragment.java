@@ -4,16 +4,16 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import common.base.views.CommonRecyclerViewEmptyView;
+import common.base.views.CommonRefreshRecyclerView;
 
 /**
  * User: fee(1176610771@qq.com)
  * Date: 2016-06-27
  * Time: 14:26
- * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView)的列表碎片界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
+ * DESC: 指定了通用界面视图布局(即CommonRefreshRecyclerView)的列表碎片界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
  */
 public abstract class CommonRefreshRecyclerViewListFragment<T,TListData> extends BaseListFragment<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
-    protected CommonRecyclerViewEmptyView commonRecyclerViewEmptyView;
+    protected CommonRefreshRecyclerView commonRecyclerViewEmptyView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
     private View customHeaderView;
@@ -36,7 +36,7 @@ public abstract class CommonRefreshRecyclerViewListFragment<T,TListData> extends
     @Override
     protected final View providedFragmentView() {
         if (commonRecyclerViewEmptyView == null) {
-            commonRecyclerViewEmptyView = new CommonRecyclerViewEmptyView(context);
+            commonRecyclerViewEmptyView = new CommonRefreshRecyclerView(context);
         }
         customHeaderView = getCustomHeaderView();
         swipeRefreshLayout = commonRecyclerViewEmptyView.getSwipeRefreshLayout();
