@@ -235,6 +235,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
             netRequestLifeMarker.cancelCallRequest(curRequestType);
         }
     }
+
+    /**
+     * 查询当前网络请求的状态
+     * @param curRequestType
+     * @return
+     */
+    protected byte curNetRequestState(int curRequestType) {
+        if (netRequestLifeMarker != null) {
+            return netRequestLifeMarker.curRequestLifeState(curRequestType);
+        }
+        return NetRequestLifeMarker.REQUEST_STATE_NON;
+    }
     /**
      * 标记当前网络请求的状态 : 正在请求、已完成、已取消等
      * @see {@link NetRequestLifeMarker#REQUEST_STATE_ING}
@@ -419,5 +431,25 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (dialog == uiHintAgent.getCommonHintDialog()) {
             uiHintAgent.onClickInDialog(dialog,which);
         }
+    }
+
+    /**
+     * 基类提供普通Log输出之error级信息输出
+     * 注意一点：因为第二个参数是可变参数，该方法允许只传一个参数eg.: e("")
+     * @param logTag log的TAG，如果为null,会使用{@link #TAG}
+     * @param logBody
+     */
+    protected void e(String logTag, Object... logBody) {
+        CommonLog.e(null == logTag ? TAG : logTag, logBody);
+    }
+
+    /**
+     * 基类提供普通Log输出之info级信息输出
+     * 注意一点：因为第二个参数是可变参数，该方法允许只传一个参数eg.: e("")
+     * @param logTag log的TAG，如果为null,会使用{@link #TAG}
+     * @param logBody Log内的具体要打印的信息
+     */
+    protected void i(String logTag,Object... logBody) {
+        CommonLog.i(null == logTag ? TAG : logTag,logBody);
     }
 }

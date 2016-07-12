@@ -21,6 +21,10 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
      */
     protected int curPage = 1;
     /**
+     * 每页的数据数量 默认为20条数据
+     */
+    protected int perPageDataCount = 20;
+    /**
      * 即本列表的数据来源于哪个网络请求类型
      */
     protected int requestTypeAboutListData;
@@ -29,10 +33,12 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
     protected void onCreate(Bundle savedInstanceState) {
         if (adapter4RecyclerView == null) {
             adapter4RecyclerView = getRecyclerViewAdapter();
-            adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
+            if (adapter4RecyclerView != null) {
+                adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
+            }
         }
-        super.onCreate(savedInstanceState);
         initNetDataListener();
+        super.onCreate(savedInstanceState);
     }
     @Override
     protected void dealWithErrorResponse(int curRequestDataType, String errorInfo) {
