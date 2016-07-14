@@ -78,11 +78,15 @@ public class CommonHintDialog extends BaseDialog{
     }
     public void setCancleBtnName(String cancelBtnName){
         if(tvBtnCancle != null){
+            tvBtnCancle.setVisibility(View.VISIBLE);
             if(Util.isEmpty(cancelBtnName)){
                 tvBtnCancle.setText(R.string.cancel);
             }
             else{
                 tvBtnCancle.setText(cancelBtnName);
+                if ("hide".equals(cancelBtnName)) {
+                    tvBtnCancle.setVisibility(View.GONE);
+                }
             }
         }
     }

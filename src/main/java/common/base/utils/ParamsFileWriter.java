@@ -58,8 +58,8 @@ public class ParamsFileWriter {
             fis = new FileInputStream(theProperFile);
             result = new Properties();
             result.load(fis);
-        } catch (FileNotFoundException e) {
-        } catch (IOException e) {
+        } catch (Exception e) {
+            CommonLog.e("info",TAG + "--> getProper() occur e: " + e);
         }
         finally {
             if(fis != null){
