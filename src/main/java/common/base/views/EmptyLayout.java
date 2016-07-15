@@ -34,6 +34,7 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
      * 没有更多数据可加载了
      */
     public static final int NO_MORE_DATA_DISABLE_CLICK = 8;
+    public static final int NET_WORK_LOADING_NO_PROGRESS = 9;
     private ProgressBar animProgress;
     private boolean clickEnable = true;
     private final Context context;
@@ -154,6 +155,12 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
                 animProgress.setVisibility(View.VISIBLE);
                 img.setVisibility(View.GONE);
                 tvHint.setText("正在加载,请稍候...");
+                clickEnable = false;
+                break;
+            case NET_WORK_LOADING_NO_PROGRESS:
+                animProgress.setVisibility(View.GONE);
+                img.setVisibility(View.GONE);
+                tvHint.setText("正在获取数据,请稍候...");
                 clickEnable = false;
                 break;
             case NODATA:

@@ -75,7 +75,7 @@ public class CommonRecyclerViewEmptyView extends FrameLayout implements SwipeRef
         //显示loading
         if (needInnerEmptyView) {
             if (vs.getCurrentView() == emptyLayout) {
-                emptyLayout.setErrorType(EmptyLayout.NETWORK_LOADING);
+                emptyLayout.setErrorType(EmptyLayout.NET_WORK_LOADING_NO_PROGRESS);
             }
         }
         if (outsideRefreshListener != null) {
