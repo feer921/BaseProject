@@ -1,103 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#55000000"
-    android:padding="36dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="36dp">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_white_shape"
-        >
+        android:background="@drawable/rounded_white_shape">
+
         <TextView
+            android:id="@+id/tv_dialog_title"
             style="@style/tv_fill_w_h_style"
             android:layout_height="wrap_content"
-            android:text="请选择支付方式"
             android:padding="20dp"
+            android:text="请选择支付方式"
             android:textColor="#445979"
-            android:textSize="18sp"
-            android:id="@+id/tv_dialog_title"
-            />
+            android:textSize="18sp" />
+
         <FrameLayout
             android:id="@+id/content_views"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="23dp"
-            android:paddingRight="23dp"
-            android:minHeight="40dp"
             android:layout_below="@id/tv_dialog_title"
-            >
+            android:minHeight="40dp"
+            android:paddingLeft="23dp"
+            android:paddingRight="23dp">
+
             <TextView
                 android:id="@+id/tv_4_dialog_msg"
                 style="@style/tv_fill_w_h_style"
-                android:text="您的余额不足，请及时充值。"
-                android:singleLine="false"
                 android:layout_gravity="center_horizontal"
-                android:textSize="14sp"
-                android:textColor="#445979"
                 android:lineSpacingExtra="3dp"
                 android:paddingBottom="15dp"
-                />
+                android:singleLine="false"
+                android:text="您的余额不足，请及时充值。"
+                android:textColor="#445979"
+                android:textSize="14sp" />
+
             <EditText
                 android:id="@+id/edt_as_dialog_msg_or_edit"
-                android:hint="请输入密码"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@null"
                 android:layout_gravity="center"
+                android:background="@null"
+                android:hint="请输入密码"
                 android:inputType="text"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
+
             <ListView
+                android:id="@+id/lv_selection_items"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/lv_selection_items"
                 android:cacheColorHint="@color/transparent"
                 android:divider="@color/divider_line_gray_color"
-                android:visibility="gone"
-                android:listSelector="@null"
                 android:dividerHeight="0.5dp"
-                >
+                android:listSelector="@null"
+                android:visibility="gone">
 
             </ListView>
         </FrameLayout>
+
         <LinearLayout
             android:id="@+id/ll_btns"
             android:layout_width="match_parent"
             android:layout_height="47dp"
-            android:orientation="vertical"
             android:layout_below="@+id/content_views"
-            >
-            <include layout="@layout/gray_divider_line"
-                />
+            android:orientation="vertical">
+
+            <include layout="@layout/gray_divider_line" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
+
                 <TextView
-                    android:text="@string/cancel"
-                    android:layout_weight="1"
-                    style="@style/tv_fill_w_h_style"
-                    android:textSize="16sp"
-                    android:textColor="#445979"
                     android:id="@id/tv_btn_dialog_cancel"
-                    />
-                <View android:layout_width="0.5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/divider_line_gray_color"
-                    />
-                <TextView
                     style="@style/tv_fill_w_h_style"
-                    android:text="@string/confirm"
                     android:layout_weight="1"
+                    android:text="@string/cancel"
+                    android:textColor="#445979"
                     android:textSize="16sp"
-                    android:textColor="#3fa2ff"
-                    android:id="@id/tv_btn_dialog_commit"
+                    android:background="@drawable/selector_4_bottom_left_rounded"
                     />
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divider_line_gray_color" />
+
+                <TextView
+                    android:id="@id/tv_btn_dialog_commit"
+                    style="@style/tv_fill_w_h_style"
+                    android:layout_weight="1"
+                    android:background="@drawable/selector_4_bottom_right_rounded"
+                    android:text="@string/confirm"
+                    android:textColor="#3fa2ff"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
