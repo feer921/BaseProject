@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#55000000"
@@ -59,8 +58,9 @@
                 android:cacheColorHint="@color/transparent"
                 android:divider="@color/divider_line_gray_color"
                 android:dividerHeight="0.5dp"
-                android:listSelector="@null"
-                android:visibility="gone">
+                android:listSelector="@drawable/selector_4_list_item"
+                android:visibility="gone"
+                >
 
             </ListView>
         </FrameLayout>

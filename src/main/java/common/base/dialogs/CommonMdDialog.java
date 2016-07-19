@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -153,11 +152,15 @@ public class CommonMdDialog extends BaseDialog{
     @Override
     public void setCancleBtnName(String cancleBtnName) {
         if (tvDialogCancle != null) {
+            tvDialogCancle.setVisibility(View.VISIBLE);
             if (Util.isEmpty(cancleBtnName)) {
                 tvDialogCancle.setText(R.string.cancel);
             }
             else{
                 tvDialogCancle.setText(cancleBtnName);
+                if ("hide".equals(cancleBtnName)) {
+                    tvDialogCancle.setVisibility(View.GONE);
+                }
             }
         }
     }

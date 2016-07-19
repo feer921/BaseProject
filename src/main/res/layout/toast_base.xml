@@ -12,7 +12,7 @@
         android:layout_gravity="top"
         android:layout_marginLeft="10.0dip"
         android:layout_marginRight="10.0dip"
-        android:background="@drawable/toast_background"
+        android:background="@drawable/rounded_black_bg"
         android:gravity="center"
         android:orientation="horizontal" >
 
