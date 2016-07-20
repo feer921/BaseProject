@@ -16,7 +16,7 @@ public class TimeUtil {
      * @param timePattern 时间正则格式 eg. yyyy-MM-dd HH:mm:ss
      * @return
      */
-    public static String getFormatTime(String timePattern){
+    public static String getFormatTimeForNow(String timePattern){
         SimpleDateFormat sdf = new SimpleDateFormat(timePattern,Locale.getDefault());
         return sdf.format(new Date());
     }
@@ -27,7 +27,7 @@ public class TimeUtil {
      * @return
      */
     public static String getCurTimeStr() {
-        return getFormatTime("yyyy-MM-dd HH:mm:ss");
+        return getFormatTimeForNow("yyyy-MM-dd HH:mm:ss");
     }
 
     public static String convertServerTime(String serverTime, String timeFormat) {
