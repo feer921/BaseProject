@@ -34,7 +34,8 @@ public class UIHintAgent {
     private DialogInterface.OnClickListener mClickListenerForDialog;
     private IProxyCallback  mProxyCallback;
     private boolean isOwnerVisible = true;
-    private boolean hintDialogCancelable = true;
+    private boolean isHintDialogCancelable = true;
+    private boolean isHintDialogCancelableOutSide = false;
     private Handler mHandler;
     /**
      * 提示加载对话框是否可按back键取消 默认为不可取消
@@ -62,7 +63,8 @@ public class UIHintAgent {
 //            hintDialog = new CommonHintDialog(mContext, this.commonHintDialogWidth, this.commonHintDialogHeigth);
             hintDialog = new CommonMdDialog(mContext);
             hintDialog.edtViewCanEdit(false);
-            hintDialog.setCancelable(hintDialogCancelable);
+            hintDialog.setCancelable(isHintDialogCancelable);
+            hintDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
             if (mClickListenerForDialog != null) {
                 hintDialog.setDialogClickListener(mClickListenerForDialog);
             } 
@@ -91,7 +93,14 @@ public class UIHintAgent {
         if(hintDialog != null){
             hintDialog.setCancelable(cancelable);
         }
-        hintDialogCancelable = cancelable;
+        isHintDialogCancelable = cancelable;
+    }
+
+    public void toggleHintDialogCancelableOutSide(boolean hintDialogCancelable) {
+        if (hintDialog != null) {
+            hintDialog.setCanceledOnTouchOutside(hintDialogCancelable);
+        }
+
     }
     /**
      * 开关 : 加载对话框 是否可按back键取消

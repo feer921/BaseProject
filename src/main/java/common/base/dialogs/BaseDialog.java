@@ -114,6 +114,20 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
     }
 
     /**
+     * Sets whether this dialog is canceled when touched outside the window's
+     * bounds. If setting to true, the dialog is set to be cancelable if not
+     * already set.
+     *
+     * @param cancel Whether the dialog should be canceled when touched outside
+     *               the window.
+     */
+    @Override
+    public void setCanceledOnTouchOutside(boolean cancel) {
+        super.setCanceledOnTouchOutside(cancel);
+        this.cancelableOutSide = cancel;
+    }
+
+    /**
      * 是否隐藏“取消”按钮
      * @param hideCancelBtn
      */
