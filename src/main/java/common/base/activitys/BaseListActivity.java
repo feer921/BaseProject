@@ -17,9 +17,13 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
     // TODO: 2016/6/25 此处的适配器还可以想办法通用ListView的适配器
     protected BaseQuickAdapter<TListData> adapter4RecyclerView;
     /**
-     * 当前列表显示的页序
+     * 当前列表显示的
      */
     protected int curPage = 1;
+    /**
+     * 服务器上总共有的数据分布数
+     */
+    protected int totalPages = 1;
     /**
      * 每页的数据数量 默认为20条数据
      */

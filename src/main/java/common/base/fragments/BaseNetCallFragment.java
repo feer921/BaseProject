@@ -19,6 +19,9 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      */
     @Override
     public final void onErrorResponse(int requestDataType, String errorInfo) {
+        if (LIFE_DEBUG) {
+            i(null, "--> onErrorResponse() curRequestDataType = " + requestDataType + " errorInfo = " + errorInfo);
+        }
         //如果用户主动取消了当前网络请求即Loading dialog被取消了(实际上该请求已到达服务端,因而会响应回调)
         //则不让各子类处理已被用户取消了的请求
         if (curRequestCanceled(requestDataType)) {
@@ -39,6 +42,9 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      */
     @Override
     public final void onResponse(int requestDataType, T result) {
+        if (LIFE_DEBUG) {
+            i(null,"--> onResponse() requestDataType = " + requestDataType + " result = " + result);
+        }
         if (curRequestCanceled(requestDataType)) {
             return;
         }

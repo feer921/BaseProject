@@ -23,6 +23,14 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
      */
     protected int curPage = 1;
     /**
+     * 每页从服务器上获取的数量
+     */
+    protected int perPageDataCount = 20;
+    /**
+     * 总页数
+     */
+    protected int totalPages = 1;
+    /**
      * 即本列表的数据来源于哪个网络请求类型
      * 由子类指定
      */
@@ -40,9 +48,6 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
 
     @Override
     protected void dealWithErrorResponse(int curRequestDataType, String errorInfo) {
-        if (LIFE_DEBUG) {
-            i(null, "--> dealWithErrorResponse() curRequestDataType = " + curRequestDataType + " errorInfo = " + errorInfo);
-        }
         if (curRequestDataType == requestTypeAboutListData) {
             listDataRequestFinish(adapter4RecyclerView.getJustDataCount()!= 0 ,errorInfo);
         }
@@ -53,9 +58,6 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
 
     @Override
     protected void dealWithResponse(int requestDataType, T result) {
-        if (LIFE_DEBUG) {
-            i(null,"--> dealWithResponse() requestDataType = " + requestDataType + " result = " + result);
-        }
         if (requestDataType == requestTypeAboutListData) {
             //1、解析返回的数据成列表数据
             BaseListEntity<TListData> parsedListEntity = parseResponseResut(result);
