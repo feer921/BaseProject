@@ -248,9 +248,9 @@ public abstract class BaseFragment extends Fragment implements
     }
     protected void switchActivity(boolean finishSelf) {
         if (finishSelf) {
-            getActivity().overridePendingTransition(R.anim.common_left_in, R.anim.common_left_out);
+            getActivity().overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
         } else {
-            getActivity().overridePendingTransition(R.anim.common_right_in, R.anim.common_right_out);
+            getActivity().overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
         }
     }
     /**

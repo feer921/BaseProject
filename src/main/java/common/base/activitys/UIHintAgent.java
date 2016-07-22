@@ -127,9 +127,9 @@ public class UIHintAgent {
     protected void switchActivity(boolean finishSelf) {
         if(mContext instanceof Activity){
             if (finishSelf) {
-                ((Activity) mContext).overridePendingTransition(R.anim.common_left_in, R.anim.common_left_out);
+                ((Activity) mContext).overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
             } else {
-                ((Activity) mContext).overridePendingTransition(R.anim.common_right_in, R.anim.common_right_out);
+                ((Activity) mContext).overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
             }
         }
     }
