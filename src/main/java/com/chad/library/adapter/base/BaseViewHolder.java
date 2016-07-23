@@ -286,6 +286,9 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     public BaseViewHolder setOnClickListener(int viewId, BaseQuickAdapter.OnItemChildClickListener listener) {
+        if (viewId < 1 || listener == null) {
+            return this;
+        }
         View view = getView(viewId);
         listener.mViewHolder = this;
         view.setOnClickListener(listener);

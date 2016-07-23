@@ -321,6 +321,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onResume()");
         }
+        //added by fee 2016-07-23
+        uiHintAgent.setOwnerVisibility(true);
     }
 
     @Override
@@ -345,6 +347,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onPause()");
         }
+        //added by fee 2016-07-23
+        uiHintAgent.setOwnerVisibility(false);
     }
     @Override
     protected void onStop() {

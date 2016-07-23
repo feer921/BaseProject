@@ -50,9 +50,10 @@ public final class StorageUtil {
     public static File getCacheParent(Context context) {
         File externalStorageFile = getExternalStorageDirectory();
         if (null == externalStorageFile) {
-            // return context.getDir(CxConfig.HUANJI_BASE_PATH,
+            // return context.getDir(Config.APP_BASE_PATH,
             // Context.MODE_WORLD_WRITEABLE);
-            return context.getCacheDir();
+            return context.getCacheDir();//该目录下的文件在系统内存紧张时，会被清空文件，来腾出空间供系统使用
+//            return context.getFilesDir(); //File("data/data/[包名]/files/")//卸载会被删除，其他的状况不会
         } else {
             return externalStorageFile;
         }
@@ -175,5 +176,42 @@ public final class StorageUtil {
     public static String getThumbnailsDir() {
         return Environment.getExternalStorageDirectory() + "/DCIM/.thumbnails";
     }
-   
+
+    /**
+     * 有SD卡情况下：File("/storage/emulated/0/Android/data/应用包名/cache/")
+     * 没有SD卡情况下：File("/data/data/应用包名/files")
+     * @param context
+     * @return
+     */
+    public static File getAppCacheRootDirWithOutPermission(Context context) {
+        if (getExternalStorageDirectory() == null) {
+            //没有SD卡的情况下
+            return context.getFilesDir();
+        }
+        return context.getExternalCacheDir();
+    }
+
+    public static File getFileInExternalCacheDir(Context context, String fileName) {
+        File targetFile = new File(getAppCacheRootDirWithOutPermission(context), fileName);
+        File targetFileParentDir = targetFile.getParentFile();
+        if (!targetFileParentDir.exists()) {
+            targetFileParentDir.mkdirs();
+        }
+        if (!targetFile.exists()) {
+            try {
+                targetFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return targetFile;
+    }
+
+    public static File getDirInExternalCacheDir(Context context, String dirName) {
+        File targetDirFile = new File(getAppCacheRootDirWithOutPermission(context), dirName);
+        if (!targetDirFile.exists()) {
+            targetDirFile.mkdirs();
+        }
+        return targetDirFile;
+    }
 }

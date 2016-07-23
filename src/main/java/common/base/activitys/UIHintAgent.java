@@ -100,7 +100,7 @@ public class UIHintAgent {
         if (hintDialog != null) {
             hintDialog.setCanceledOnTouchOutside(hintDialogCancelable);
         }
-
+        isHintDialogCancelableOutSide = hintDialogCancelable;
     }
     /**
      * 开关 : 加载对话框 是否可按back键取消
