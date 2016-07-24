@@ -2,6 +2,7 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,7 +30,8 @@ public class CommonMdDialog extends BaseDialog{
     private ListView lvItems;
     private ContentLayouType curContentLayoutType;
     private View llBottomBtnsLayout;
-
+    private View mdDialogContentLayout;
+    private int contentLayoutTop,contentLayoutBottom;
     /**
      * Dialog中 中间部分的内容布局类型：目前有三种，提示类、编辑输入类、ListView列表选择类
      */
@@ -53,6 +55,8 @@ public class CommonMdDialog extends BaseDialog{
     @Override
     protected void initViews(View containerView) {
         ViewGroup containerLayout = (ViewGroup) containerView;
+        mdDialogContentLayout = ViewUtil.findViewInContainer(containerLayout, R.id.common_md_dialog_content_layout);
+
         tvDialogTitle = ViewUtil.findViewInContainer(containerLayout, R.id.tv_dialog_title);
         tvDialogHint = ViewUtil.findViewInContainer(containerLayout, R.id.tv_4_dialog_msg);
         tvDialogCancle = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_cancel);
@@ -204,5 +208,27 @@ public class CommonMdDialog extends BaseDialog{
         if (lvItems != null) {
             lvItems.setOnItemClickListener(itemClickListener);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (cancelableOutSide) {
+                    if (contentLayoutTop == 0) {
+                        contentLayoutTop = mdDialogContentLayout.getTop();
+                    }
+                    if (contentLayoutBottom == 0) {
+                        contentLayoutBottom = mdDialogContentLayout.getBottom();
+                    }
+                    float toutchedY = event.getY();
+                    if (toutchedY < contentLayoutTop || toutchedY > contentLayoutBottom) {
+                        cancel();
+                    }
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }

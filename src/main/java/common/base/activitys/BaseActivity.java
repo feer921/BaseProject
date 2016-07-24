@@ -399,6 +399,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onActivityResult() requestCode = " + requestCode +" resultCode = " + resultCode + " data = " + data);
         }
+        uiHintAgent.setOwnerVisibility(true);
     }
     @Override
     public void onBackPressed() {
@@ -411,7 +412,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG,"---> onConfigurationChanged()");
+            CommonLog.i(TAG,"---> onConfigurationChanged() newConfig = " + newConfig);
         }
     }
     //---------------------up up up 生命周期方法 up up up ----------(我是不漂亮的分隔线)---------------

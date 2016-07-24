@@ -8,6 +8,7 @@
     android:padding="36dp">
 
     <RelativeLayout
+        android:id="@+id/common_md_dialog_content_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white_shape">
