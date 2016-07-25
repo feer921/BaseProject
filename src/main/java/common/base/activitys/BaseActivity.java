@@ -337,7 +337,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG,"---> onRestoreInstanceState()");
+            CommonLog.i(TAG,"---> onRestoreInstanceState() savedInstanceState = " + savedInstanceState);
         }
     }
 
