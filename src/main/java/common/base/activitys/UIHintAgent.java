@@ -98,6 +98,9 @@ public class UIHintAgent {
         if(hintDialog != null){
             hintDialog.setCancelable(cancelable);
         }
+        if (sweetAlertDialog != null) {
+            sweetAlertDialog.setCancelable(cancelable);
+        }
         isHintDialogCancelable = cancelable;
     }
 
@@ -366,10 +369,12 @@ public class UIHintAgent {
                 .changeAlertType(sweetDialogContentCase);
         sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));
         sweetAlertDialog.showContentText(!Util.isEmpty(hintInfo));
+        sweetAlertDialog.show();
     }
     private void initSweetAlertDialog() {
         if (sweetAlertDialog == null) {
             sweetAlertDialog = new SweetAlertDialog(mContext);
+            sweetAlertDialog.setCancelable(isHintDialogCancelable);
         }
     }
     private LoadingDialogCancelListener cancelDialogListener;
@@ -384,7 +389,9 @@ public class UIHintAgent {
     private SweetAlertDialog.OnSweetClickListener comfimBtnClickListener = new SweetAlertDialog.OnSweetClickListener() {
         @Override
         public void onClick(SweetAlertDialog sweetAlertDialog) {
-            onClickInDialog(sweetAlertDialog, DialogInterface.BUTTON_POSITIVE);
+            if (mClickListenerForDialog != null) {
+                mClickListenerForDialog.onClick(sweetAlertDialog,DialogInterface.BUTTON_POSITIVE);
+            }
         }
     };
 }
