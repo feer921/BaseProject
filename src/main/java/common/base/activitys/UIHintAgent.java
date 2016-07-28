@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import common.base.R;
 import common.base.dialogs.BaseDialog;
 import common.base.dialogs.CommonMdDialog;
@@ -17,6 +18,7 @@ import common.base.dialogs.CommonMdLoadialog;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
+import common.base.utils.Util;
 import common.base.views.HintPopuWindow;
 
 
@@ -41,6 +43,9 @@ public class UIHintAgent {
      * 提示加载对话框是否可按back键取消 默认为不可取消
      */
     private boolean loadingDialogCancelable = false;
+    //added by fee 2016-07-28
+    private SweetAlertDialog sweetAlertDialog;
+    private SweetAlertDialog sweetLoadingDialog;
     public void setProxyCallback(IProxyCallback curProxyOwner){
         mProxyCallback = curProxyOwner;
     }
@@ -166,14 +171,10 @@ public class UIHintAgent {
             loadDialog = new CommonMdLoadialog(mContext);
             loadDialog.setCanceledOnTouchOutside(false);
             loadDialog.setCancelable(loadingDialogCancelable);
-            loadDialog.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    if(mProxyCallback != null){
-                        mProxyCallback.ownerToCanceleRequest();
-                    }
-                }
-            });
+            if (cancelDialogListener == null) {
+                cancelDialogListener = new LoadingDialogCancelListener();
+            }
+            loadDialog.setOnCancelListener(cancelDialogListener);
         }
         loadDialog.setHintMsg(hintMsg);
         if (!loadDialog.isShowing()) {
@@ -193,6 +194,10 @@ public class UIHintAgent {
     public void loadDialogDismiss() {
         if (loadDialog != null) {
             loadDialog.dismiss();
+        }
+        //added by fee 2016-07-28
+        if (sweetLoadingDialog != null) {
+            sweetLoadingDialog.dismissWithAnimation();
         }
     }
     public boolean isLoadingDialogShowing(){
@@ -266,6 +271,13 @@ public class UIHintAgent {
             mHandler.removeCallbacksAndMessages(null);
         }
         mHandler = null;
+
+        if (sweetAlertDialog != null) {
+            sweetAlertDialog.dismiss();
+        }
+        if (sweetLoadingDialog != null) {
+            sweetLoadingDialog.dismiss();
+        }
     }
 
     public int getHintDialogInCase() {
@@ -273,7 +285,7 @@ public class UIHintAgent {
             return hintDialog.curDialogInCase;
         }
 //        return BaseServerResult.CODE_DEF_NO_MEANING;
-        return 0;
+        return sweetDialogInCase;//changed to get the sweet dialog in case,def also is 0
     }
 
     public Dialog getCommonHintDialog() {
@@ -309,4 +321,70 @@ public class UIHintAgent {
             mHandler.removeCallbacksAndMessages(null);
         }
     }
+
+    public int getSweetDialogInCase() {
+        return sweetDialogInCase;
+    }
+
+    //added sweetAlertDialog codes by fee 2016-07-28
+    private int sweetDialogInCase = 0;
+    public void sweetLoading(String loadhintMsg) {
+        if (sweetLoadingDialog == null) {
+            sweetLoadingDialog = new SweetAlertDialog(mContext);
+            sweetLoadingDialog.setCancelable(loadingDialogCancelable);
+            sweetLoadingDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
+            if (cancelDialogListener == null) {
+                cancelDialogListener = new LoadingDialogCancelListener();
+            }
+            sweetLoadingDialog.setOnCancelListener(cancelDialogListener);
+        }
+        sweetLoadingDialog.setTitleText(loadhintMsg);
+        if (!sweetLoadingDialog.isShowing()) {
+            sweetLoadingDialog.show();
+        }
+    }
+
+    public void sweetHintSuc(String successInfo,String comfimInfo,int sweetDialogInCase) {
+        sweetDialogHint(successInfo, null, null, comfimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
+    }
+
+    public void sweetHintFail(String failHintInfo, String comfimInfo, int sweetDialogInCase) {
+        sweetDialogHint(failHintInfo, null, null, comfimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
+    }
+    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String comfimInfo, int curDialogInCase,int sweetDialogContentCase) {
+        if (!isOwnerVisible) {
+            return;
+        }
+        sweetDialogInCase = curDialogInCase;
+        initSweetAlertDialog();
+//        sweetAlertDialog.setOnCancelListener(null);
+        sweetAlertDialog.setTitleText(titleInfo)
+                .setContentText(hintInfo)
+                .setCancelText(cancelInfo)
+                .setConfirmText(comfimInfo)
+                .setConfirmClickListener(comfimBtnClickListener)
+                .changeAlertType(sweetDialogContentCase);
+        sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));
+        sweetAlertDialog.showContentText(!Util.isEmpty(hintInfo));
+    }
+    private void initSweetAlertDialog() {
+        if (sweetAlertDialog == null) {
+            sweetAlertDialog = new SweetAlertDialog(mContext);
+        }
+    }
+    private LoadingDialogCancelListener cancelDialogListener;
+    private class LoadingDialogCancelListener implements OnCancelListener{
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (mProxyCallback != null) {
+                mProxyCallback.ownerToCanceleRequest();
+            }
+        }
+    }
+    private SweetAlertDialog.OnSweetClickListener comfimBtnClickListener = new SweetAlertDialog.OnSweetClickListener() {
+        @Override
+        public void onClick(SweetAlertDialog sweetAlertDialog) {
+            onClickInDialog(sweetAlertDialog, DialogInterface.BUTTON_POSITIVE);
+        }
+    };
 }
