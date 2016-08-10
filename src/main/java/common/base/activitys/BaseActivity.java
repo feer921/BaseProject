@@ -331,6 +331,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG,"--> onNewIntent() intent = " + intent);
         }
+        uiHintAgent.setOwnerVisibility(true);
     }
 
     @Override
