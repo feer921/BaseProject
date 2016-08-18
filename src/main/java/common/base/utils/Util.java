@@ -423,6 +423,11 @@ public class Util {
         }
     }
 
+    /**
+     * 是否向下兼容某个系统版本
+     * @param apiLevle 要兼容的某个版本
+     * @return true:兼容，即当前系统版本大于或者等于目标要兼容的版本；false：不兼容，即当前系统版本小于目标版本
+     */
     public static boolean isCompateApi(int apiLevle){
         if(apiLevle <= 0) return  false;
         if(apiLevle <= Build.VERSION.SDK_INT){

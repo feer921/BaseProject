@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="tv_btn_dialog_cancel" type="id"/>
+    <item name="view_double_click_tag_id" type="id" />
 </resources>

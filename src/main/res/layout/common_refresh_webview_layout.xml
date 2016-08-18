@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#f0f1f2"
+    >
+    <!-- add custom header view -->
+    <!-- also can replace the progressbar -->
+    <ProgressBar
+        android:id="@+id/pb_load_web"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:progressDrawable="@drawable/progressbar_style_light_green_progress"
+        android:max="100"
+        />
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/swipe_refreshlayout"
+        >
+        <common.base.views.CommonWebView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/common_webview"
+            />
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

@@ -453,7 +453,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     /**
      * 基类提供普通Log输出之info级信息输出
-     * 注意一点：因为第二个参数是可变参数，该方法允许只传一个参数eg.: e("")
+     * 注意一点：因为第二个参数是可变参数，该方法允许只传一个参数eg.: i("")
      * @param logTag log的TAG，如果为null,会使用{@link #TAG}
      * @param logBody Log内的具体要打印的信息
      */

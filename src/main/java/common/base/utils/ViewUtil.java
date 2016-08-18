@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import common.base.R;
+
 /**
  * User: fee(1176610771@qq.com)
  * Date: 2016-06-14
@@ -96,5 +98,30 @@ public class ViewUtil{
             }
         }
         return curInputedNull;
+    }
+
+    /**
+     * 阻止快速点击视图
+     * @param clickedView 被点击的View控件
+     * @param needGapMillTimes 两次点击需要间隔的毫秒时间
+     * @return true:需要阻止此次点击；false:不需要，即为有效点击
+     */
+    public static boolean preventFastClickView(View clickedView, long needGapMillTimes) {
+        int tagKey = R.id.view_double_click_tag_id;
+        String lastClickTimeStr = (String) clickedView.getTag(tagKey);
+        boolean need2PreVent = false;
+        long lastClickMillTime = 0;
+        if (!Util.isEmpty(lastClickTimeStr)) {
+            try {
+                lastClickMillTime = Long.parseLong(lastClickTimeStr);
+            } catch (Exception e) {
+            }
+        }
+        long curClickMillTime = System.currentTimeMillis();
+        if ((curClickMillTime - lastClickMillTime) < needGapMillTimes) {
+            need2PreVent = true;
+        }
+        clickedView.setTag(tagKey,curClickMillTime);
+        return need2PreVent;
     }
 }
