@@ -266,9 +266,10 @@ public class Util {
      */
     public static boolean isEmpty(CharSequence str) {
         if (str == null || str.toString() == null || str.toString().trim()
-        .length() == 0 || str.length() == 0)
+                .length() == 0 || str.length() == 0 || "null".equalsIgnoreCase(str.toString())) {
             return true;
-        else
+        } else {
+        }
             return false;
     }
 

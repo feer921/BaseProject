@@ -262,6 +262,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     /**
+     * 开始追踪、标记一个对应的网络请求类型的请求状态
+     * @param curRequestDataType
+     */
+    protected void trackARequestState(int curRequestDataType) {
+        if (netRequestLifeMarker != null) {
+            netRequestLifeMarker.addRequestToMark(curRequestDataType, NetRequestLifeMarker.REQUEST_STATE_ING);
+        }
+    }
+    /**
      * 注意：该提示性PopupWindow适用与在一个界面的顶部经由上至下的动画弹出
      * @param anchorView 一般为顶部的一个控件
      * @param xOffset X方向的偏移量

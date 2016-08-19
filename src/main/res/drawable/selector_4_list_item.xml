@@ -42,13 +42,13 @@
     <item>
         <shape>
             <gradient
-                android:startColor="#ffffff"
-                android:endColor="#ffffff"
+                android:startColor="#00000000"
+                android:endColor="#00000000"
                 />
-            <stroke
-                android:width="0.5dp"
-                android:color="@color/grey_line"
-                />
+            <!--<stroke-->
+                <!--android:width="0.5dp"-->
+                <!--android:color="@color/grey_line"-->
+                <!--/>-->
         </shape>
     </item>
 </selector>

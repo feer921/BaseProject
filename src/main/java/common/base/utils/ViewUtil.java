@@ -121,7 +121,7 @@ public class ViewUtil{
         if ((curClickMillTime - lastClickMillTime) < needGapMillTimes) {
             need2PreVent = true;
         }
-        clickedView.setTag(tagKey,curClickMillTime);
+        clickedView.setTag(tagKey, curClickMillTime + "");
         return need2PreVent;
     }
 }
