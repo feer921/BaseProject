@@ -623,6 +623,7 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
                 addLoadMore(holder);
                 break;
             case HEADER_VIEW:
+                converHeaderView((BaseViewHolder) holder);
                 break;
             case EMPTY_VIEW:
                 break;
@@ -1090,5 +1091,9 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
      */
     protected int providedContentViewResId() {
         return 0;
+    }
+
+    protected void converHeaderView(BaseViewHolder viewHolder) {
+
     }
 }
