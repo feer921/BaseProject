@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ViewSwitcher;
@@ -165,5 +166,12 @@ public class CommonRecyclerViewEmptyView extends FrameLayout implements SwipeRef
         if (viewId == R.id.img_error_layout) {
             autoLoadingData();
         }
+    }
+    public void configContentViewInAnimation(Animation inAnimation) {
+//        vs.setInAnimation(inAnimation);
+    }
+
+    public void configContentViewOutAnimation(Animation outAnimation) {
+//        vs.setOutAnimation(outAnimation);
     }
 }

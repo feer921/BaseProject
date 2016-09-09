@@ -12,6 +12,15 @@ import java.util.Locale;
  */
 public class TimeUtil {
     /**
+     * 一般的格式化时间样式：年月日 时分秒 eg.: 2016-09-09 13:28:20
+     */
+    public static final String NORMAL_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 只需要年月日的时间格式 eg.: 2016-09-09
+     */
+    public static final String YMD_TIME_FORMAT = "yyyy-MM-dd";
+    /**
      * 
      * @param timePattern 时间正则格式 eg. yyyy-MM-dd HH:mm:ss
      * @return
@@ -27,17 +36,17 @@ public class TimeUtil {
      * @return
      */
     public static String getCurTimeStr() {
-        return getFormatTimeForNow("yyyy-MM-dd HH:mm:ss");
+        return getFormatTimeForNow(NORMAL_TIME_FORMAT);
     }
 
-    public static String convertServerTime(String serverTime, String timeFormat) {
-        if (serverTime == null) {
+    public static String formatMillsTimes(String millsTime, String timeFormat) {
+        if (millsTime == null) {
             return "";
         }
         if (timeFormat == null) {
-            return serverTime;
+            timeFormat = NORMAL_TIME_FORMAT;
         }
-        int serverTimeLen = serverTime.length();
+        int serverTimeLen = millsTime.length();
         long localSystemTime = System.currentTimeMillis();
         int localSystemTimeLen = (localSystemTime + "").length();
         int timeGap = localSystemTimeLen - serverTimeLen;
@@ -45,11 +54,19 @@ public class TimeUtil {
         while (timeGap-- > 0) {
             appendedZero += "0";
         }
-        serverTime+= appendedZero;
+        millsTime+= appendedZero;
         SimpleDateFormat sdf = new SimpleDateFormat(timeFormat,Locale.getDefault());
-        return sdf.format(convetStr2Date(serverTime));
+        return sdf.format(convetStr2Date(millsTime));
     }
 
+    /**
+     * 以年月日 时分秒 的样式{@linkplain #NORMAL_TIME_FORMAT}格式化
+     * @param millsTime
+     * @return
+     */
+    public static String formatMillsTimes(String millsTime) {
+        return formatMillsTimes(millsTime, NORMAL_TIME_FORMAT);
+    }
     public static Date convetStr2Date(String dateStr) {
         Date theDate = new Date(Long.parseLong(dateStr));
         return theDate;

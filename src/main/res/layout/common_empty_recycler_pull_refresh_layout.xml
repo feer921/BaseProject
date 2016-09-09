@@ -16,7 +16,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inAnimation="@anim/switcher_in"
-            android:outAnimation="@anim/switcher_out">
+            android:outAnimation="@anim/switcher_out"
+            android:animateLayoutChanges="true"
+            >
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycleview"
