@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.View;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -151,7 +152,10 @@ public class UIHintAgent {
      * @param dialogInCase
      */
     public void dialogHint(String title, String hintMsg, String cancleBtnName, String sureBtnName, int dialogInCase) {
-        if(!isOwnerVisible){
+        dialogHint(title, hintMsg, Gravity.CENTER_HORIZONTAL, cancleBtnName, sureBtnName, dialogInCase);
+    }
+    public void dialogHint(String title,String hintMsg,int hintMsgGravity,String cancleBtnName, String sureBtnName, int dialogInCase) {
+        if (!isOwnerVisible) {
             return;
         }
         if (hintDialog == null) {
@@ -159,12 +163,12 @@ public class UIHintAgent {
         }
         hintDialog.setTitle(title);
         hintDialog.setHintMsg(hintMsg);
+        hintDialog.setHintMsgGravity(hintMsgGravity);
         hintDialog.curDialogInCase = dialogInCase;
         hintDialog.setCancleBtnName(cancleBtnName);
         hintDialog.setCommitBtnName(sureBtnName);
         hintDialog.show();
     }
-
     /**
      * 显示加载loading...对话框
      * @param hintMsg

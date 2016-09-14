@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
+
 import common.base.R;
 
 public abstract class BaseDialog extends Dialog implements View.OnClickListener{
@@ -102,6 +104,17 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
 
     }
 
+    public TextView getTvHintMsg() {
+        return null;
+    }
+
+    /**
+     * 由于可能一些界面上需要提示信息以不同的对齐方式显示，故添加此方法
+     * @param gravity
+     */
+    public void setHintMsgGravity(int gravity) {
+
+    }
     public void setCancleBtnName(String cancleBtnName) {
 
     }

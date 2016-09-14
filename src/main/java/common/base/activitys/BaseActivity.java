@@ -288,6 +288,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void dialogHint(String dialogTitle,String hintMsg,String cancelBtnName,String sureBtnName,int dialogInCase){
         uiHintAgent.dialogHint(dialogTitle, hintMsg, cancelBtnName, sureBtnName, dialogInCase);
     }
+
+    protected void dialogHint(String dialogTitle, String hintMsg, int hintMsgGravity, String cancelBtnName, String sureBtnName, int dialogInCase) {
+        uiHintAgent.dialogHint(dialogTitle, hintMsg, hintMsgGravity,cancelBtnName, sureBtnName, dialogInCase);
+    }
     protected void dialogHint(int titleResID,int hintMsgResID,int cancelBtnNameResID,int sureBtnNameResID,int dialogInCase){
         String dialogTitle = getString(titleResID);
         String hintMsg = getString(hintMsgResID);

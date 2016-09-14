@@ -3,6 +3,8 @@ package common.base.utils;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -574,4 +576,28 @@ public class Util {
         }
         editor.commit();
     }
+    @SuppressLint("NewApi")
+    public static void copyTextToClipboard(Context context, CharSequence toCopyChars) {
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData textClipData = ClipData.newPlainText("text", toCopyChars);
+        clipboardManager.setPrimaryClip(textClipData);
+    }
+
+    /**
+     * 使用中间的字符连接前后两个字符串. eg.: AStr--Bstr,"--"即为中间的连接字符
+     * @param frontStr
+     * @param behindStr
+     * @param concatChars eg.:前后两字符串需要换行，则连接字符为:"\n"
+     * @return
+     */
+    public static String concat2StrWithChars(String frontStr, String behindStr, String concatChars) {
+        if (isEmpty(frontStr)) {
+            return behindStr;
+        }
+        if (isEmpty(behindStr)) {
+            return frontStr;
+        }
+        return frontStr + concatChars + behindStr;
+    }
+
 }

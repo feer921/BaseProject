@@ -231,4 +231,16 @@ public class CommonMdDialog extends BaseDialog{
         }
         return super.onTouchEvent(event);
     }
+
+    @Override
+    public TextView getTvHintMsg() {
+        return this.tvDialogHint;
+    }
+
+    @Override
+    public void setHintMsgGravity(int gravity) {
+        if (tvDialogHint != null) {
+            tvDialogHint.setGravity(gravity);
+        }
+    }
 }
