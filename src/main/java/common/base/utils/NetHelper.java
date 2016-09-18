@@ -12,11 +12,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * 网络检测工具类
  * <br/>
  * 2015年12月23日-下午2:26:53
+ *
  * @author lifei
  */
 public class NetHelper {
@@ -38,19 +41,19 @@ public class NetHelper {
 
     /**
      * public static int getNetType(Context context) { int type = -1;
-     * 
+     * <p>
      * ConnectivityManager
      * cm=(ConnectivityManager)context.getSystemService(Context
      * .CONNECTIVITY_SERVICE);
-     * 
+     * <p>
      * NetworkInfo mobileInfo =
      * cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE); NetworkInfo wifiInfo
      * = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-     * 
+     * <p>
      * if(null != mobileInfo && mobileInfo.isConnected()) { type =
      * ConnectivityManager.TYPE_MOBILE; } if(null != wifiInfo &&
      * wifiInfo.isConnected()) { type = ConnectivityManager.TYPE_WIFI; }
-     * 
+     * <p>
      * return type; }
      */
 
@@ -139,9 +142,8 @@ public class NetHelper {
     }
 
     /**
-     * 
      * 当wifi不能访问网络时，mobile才会起作用
-     * 
+     *
      * @return GPRS是否连接可用
      */
 
@@ -159,6 +161,7 @@ public class NetHelper {
 
     /**
      * 判断Wifi是否已连接
+     *
      * @param context
      * @return
      */
@@ -175,6 +178,7 @@ public class NetHelper {
 
     /**
      * 网络是否有效
+     *
      * @param context
      * @return
      */
@@ -189,9 +193,10 @@ public class NetHelper {
         }
         return false;
     }
+
     /**
      * 获取网络类型[未经验证]
-     * 
+     *
      * @param context
      * @return
      */
@@ -257,8 +262,10 @@ public class NetHelper {
                 return false;
         }
     }
+
     /**
      * 根据以太网抽象路径，获取MAC地址
+     *
      * @return
      */
     public static String getEthMac() {
@@ -282,7 +289,6 @@ public class NetHelper {
     }
 
     /**
-     * 
      * 获取mac
      */
     public static String getMacString(Context context) {
@@ -303,9 +309,11 @@ public class NetHelper {
         }
         return mac == null ? "" : mac.replace(":", "");
     }
-    //temp 
+
+    //temp
     private static Context appContext;
-    public static Context getAppContext(){
+
+    public static Context getAppContext() {
         return appContext;
     }
 
@@ -316,24 +324,85 @@ public class NetHelper {
         if (!isMobileDataEnabled) {
             //开启
             Boolean boolArg = true;
-            ReflectUtil.invokeMethod(connectivityManager,"setMobileDataEnabled", boolArg);
+            ReflectUtil.invokeMethod(connectivityManager, "setMobileDataEnabled", boolArg);
         }
     }
 
     /***
      * 移动网络是否开启了
+     *
      * @param context
      * @return
      */
     public static boolean isMobileDataEnabled(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         Object[] methodArgs = null;
-        Object result = ReflectUtil.invokeMethod(connectivityManager,"getMobileDataEnabled",methodArgs);
+        Object result = ReflectUtil.invokeMethod(connectivityManager, "getMobileDataEnabled", methodArgs);
         if (result != null) {
             return (boolean) result;
         }
         return false;
     }
 
+    /**
+     * 经常用来 ping的测试服务器--百度
+     */
+    private static final String OFTEN_PING_HOST_BAIDU = "www.baidu.com";
+    public static boolean isNetReallyValidBasePing(String pingTargetServer) {
+        String pingResult = null;
+        String pingCmd = "ping -c 3 -w 100 " + pingTargetServer;//ping 目标服务器3次
+        Process pingProcess = null;
+        try {
+            pingProcess = Runtime.getRuntime().exec(pingCmd);
+            //读取Ping的内容 可以不需要加
+//            InputStream is = pingProcess.getInputStream();
+//            BufferedReader bfr = new BufferedReader(new InputStreamReader(is));
+//            String content = "";
+//            while ((content = bfr.readLine()) != null) {
+//                pingResult += content;
+//            }
+            //ping 的状态
+            int pingStatus = pingProcess.waitFor();
+            if (pingStatus == 0) {
+                return true;
+            }
+        } catch (IOException e) {
 
+        } catch (InterruptedException e) {
+
+        }
+        finally {
+            if (pingProcess != null) {
+                pingProcess.destroy();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNetReallyValidBasePing() {
+        return isNetReallyValidBasePing(OFTEN_PING_HOST_BAIDU);
+    }
+
+    public static String pingHostAndGainContent(String pingTargetServer) {
+        String pingResult = "";
+        String pingCmd = "ping -c 3 -w 100 " + pingTargetServer;//ping 目标服务器3次
+        Process pingProcess = null;
+        try {
+            pingProcess = Runtime.getRuntime().exec(pingCmd);
+            InputStream is = pingProcess.getInputStream();
+            BufferedReader bfr = new BufferedReader(new InputStreamReader(is));
+            String content = "";
+            while ((content = bfr.readLine()) != null) {
+                pingResult += content;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (pingProcess != null) {
+                pingProcess.destroy();
+            }
+        }
+        return pingResult;
+    }
 }

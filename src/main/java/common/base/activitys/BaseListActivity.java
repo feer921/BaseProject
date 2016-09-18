@@ -123,7 +123,7 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
      */
     protected abstract boolean compareData(List<TListData> oldDatas, TListData willAddedOne);
     /**
-     * 列表数据请求结束
+     * 列表数据请求结束(含网络异常情况下的请求结束)
      * @param hasListDataResult 一次请求完成后加上上一次的数据最终是否有列表数据,true表示有数据，false表示没有
      * @param errorInfoIfRequestFail 如果是请求失败时的错误信息
      */
