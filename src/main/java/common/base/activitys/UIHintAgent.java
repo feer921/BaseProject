@@ -52,7 +52,7 @@ public class UIHintAgent {
     }
 
     public UIHintAgent(Context curContext) {
-        this.mContext = curContext.getApplicationContext();//为了预防因Dialog造成的内存泄漏，此处上下文对象改为Application级
+        this.mContext = curContext;
     }
 
     private void initHintDialog() {
