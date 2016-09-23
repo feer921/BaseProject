@@ -134,7 +134,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * 被代理者(宿主)想主动取消(网络)数据的请求,在各自实现中实现各网络请求的取消并标志好该请求已取消
      */
     @Override
-    public void ownerToCanceleRequest() {
+    public void ownerToCancelLoadingRequest() {
+
+    }
+
+    @Override
+    public void ownerToCancelHintDialog() {
 
     }
 

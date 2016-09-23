@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
-
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import common.base.R;
 import common.base.dialogs.BaseDialog;
@@ -39,6 +38,7 @@ public class UIHintAgent {
     private boolean isOwnerVisible = true;
     private boolean isHintDialogCancelable = true;
     private boolean isHintDialogCancelableOutSide = false;
+    private boolean isNeedListenHintDialogCancel = false;
     private Handler mHandler;
     /**
      * 提示加载对话框是否可按back键取消 默认为不可取消
@@ -52,13 +52,9 @@ public class UIHintAgent {
     }
 
     public UIHintAgent(Context curContext) {
-        this.mContext = curContext;
+        this.mContext = curContext.getApplicationContext();//为了预防因Dialog造成的内存泄漏，此处上下文对象改为Application级
     }
-//    int commonHintDialogWidth,commonHintDialogHeigth;
-//    public void configCommonHintDialogWH(int toSetHintDialogWidth, int toSetHintDialogHeight) {
-//        this.commonHintDialogWidth = toSetHintDialogWidth;
-//        this.commonHintDialogHeigth = toSetHintDialogHeight;
-//    }
+
     private void initHintDialog() {
         if (hintDialog == null) {
 //            if (this.commonHintDialogWidth == 0) {
@@ -82,6 +78,12 @@ public class UIHintAgent {
                     }
                 });
             }
+            if (isNeedListenHintDialogCancel) {
+                if (hintDialogCancelListener == null) {
+                    hintDialogCancelListener = new HintDialogCancelListener();
+                }
+                hintDialog.setOnCancelListener(hintDialogCancelListener);
+            }
         }
     }
 
@@ -91,6 +93,31 @@ public class UIHintAgent {
             hintDialog.setDialogClickListener(mClickListenerForDialog);
         }
     }
+
+    /**
+     * 是否需要监听本类中hintDialog被用户取消展示的动作，一般来讲是不需要监听提示性的Dialog的被取消的动作的。
+     *
+     * 但由用户选定一个数据体并弹出需要对数据体进行某种操作而弹出提示性Dialog时，一般程序会使用临时变量存放该数据体，eg.:Object temp2OptObj;
+     * 而当用户在所弹出的提示性Dialog中取消了对所选定的数据体的操作时，应该将临时存放的数据体给置空(因为用户取消了该数据体的操作，所以程序应该也取消对该数据体的引用，不然
+     * 可能会造成一些bug，当然如果其他程序块中不会对上次所选定的数据体进行操作，也不会出什么问题)，上面这种场景下，则有一定必要来监听用户的取消操作
+     * so:此处提供该功能，设置了监听后，请在当前界面中的实现{@linkplain IProxyCallback#ownerToCancelHintDialog()}中处理.
+     * @param isNeed true:需要; false:不需要
+     */
+    public void needListenHintDialogCancelCase(boolean isNeed) {
+        isNeedListenHintDialogCancel = isNeed;
+        if (hintDialog != null) {
+            if (isNeed) {
+                if (hintDialogCancelListener == null) {
+                    hintDialogCancelListener = new HintDialogCancelListener();
+                }
+                hintDialog.setOnCancelListener(hintDialogCancelListener);
+            }
+            else{
+                hintDialog.setOnCancelListener(null);
+            }
+        }
+    }
+
     /**
      * 开关 : 提示用Dialog 是否可按back键取消
      * @param cancelable
@@ -386,7 +413,16 @@ public class UIHintAgent {
         @Override
         public void onCancel(DialogInterface dialog) {
             if (mProxyCallback != null) {
-                mProxyCallback.ownerToCanceleRequest();
+                mProxyCallback.ownerToCancelLoadingRequest();
+            }
+        }
+    }
+    private HintDialogCancelListener hintDialogCancelListener;
+    private class HintDialogCancelListener implements OnCancelListener{
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            if (mProxyCallback != null) {
+                mProxyCallback.ownerToCancelHintDialog();
             }
         }
     }

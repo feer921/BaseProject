@@ -17,7 +17,7 @@ public interface IProxyCallback {
      * @param result
      * @return true:[被代理者]处理了 false:交由[代理者]处理
      */
-     public boolean ownerDealWithServerResult(int requestDataType, BaseServerResult result);
+     boolean ownerDealWithServerResult(int requestDataType, BaseServerResult result);
     
 
     /**
@@ -26,9 +26,16 @@ public interface IProxyCallback {
      * @param errorInfo
      * @return true:[被代理者]处理了 false:交由[代理者]处理
      */
-    public boolean ownerDealWithServerError(int requestDataType, String errorInfo);
+    boolean ownerDealWithServerError(int requestDataType, String errorInfo);
     /**
-     * 被代理者(宿主)想主动取消(网络)数据的请求,在各自实现中实现各网络请求的取消并标志好该请求已取消
+     * 被代理者(宿主)主动取消了Loading Dialog的方法回调
+     * (eg.:此Loading Dialog正在提示网络数据的请求,用户主动取消后,该方法回调
+     * ,则需要在各自实现中实现各网络请求的取消并标志好该请求已取消)
      */
-    public void ownerToCanceleRequest();
+    void ownerToCancelLoadingRequest();
+
+    /**
+     * 被代理者(宿主)主动取消了提示性Dialog的回调，各实现类可在此处理当前具体的提示性Dialog被取消了后的逻辑
+     */
+    void ownerToCancelHintDialog();
 }
