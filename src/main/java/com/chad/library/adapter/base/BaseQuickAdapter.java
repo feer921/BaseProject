@@ -331,6 +331,11 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
         if (mRequestLoadMoreListener != null) {
             mNextLoadEnable = true;
             mFooterLayout = null;
+            //清空数据，Copy用的Footerlayout 也应该置空或者清除其内的子View,否则会造成调用addFooterView(View footView)时
+            //会多增加一个footView,导致界面出现BUG
+            if (mCopyFooterLayout != null) {
+                mCopyFooterLayout.removeAllViews();
+            }
         }
         mLastPosition = -1;
         notifyDataSetChanged();
@@ -1066,9 +1071,13 @@ public abstract class BaseQuickAdapter<T> extends RecyclerView.Adapter<RecyclerV
             if (mRequestLoadMoreListener != null) {
                 mNextLoadEnable = true;
                 mFooterLayout = null;
+                //清空数据，Copy用的Footerlayout 也应该置空或者清除其内的子View,否则会造成调用addFooterView(View footView)时
+                //会多增加一个footView,导致界面出现BUG
+                if (mCopyFooterLayout != null) {
+                    mCopyFooterLayout.removeAllViews();
+                }
             }
             mLastPosition = -1;
-            notifyDataSetChanged();
             notifyDataSetChanged();
         }
     }

@@ -167,11 +167,16 @@ public class CommonRecyclerViewEmptyView extends FrameLayout implements SwipeRef
             autoLoadingData();
         }
     }
+
     public void configContentViewInAnimation(Animation inAnimation) {
-//        vs.setInAnimation(inAnimation);
+        if (inAnimation != null) {
+            vs.setInAnimation(inAnimation);
+        }
     }
 
     public void configContentViewOutAnimation(Animation outAnimation) {
-//        vs.setOutAnimation(outAnimation);
+        if (outAnimation != null) {
+            vs.setOutAnimation(outAnimation);
+        }
     }
 }
