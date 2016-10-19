@@ -9,10 +9,10 @@ import java.util.WeakHashMap;
 
 import common.base.retrofitCase.JsonConverterFactory;
 import common.base.utils.Util;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
@@ -31,18 +31,28 @@ public class RetrofitClient {
     public static String HOST_BASE_URL;
     private WeakHashMap<Call,Integer> cachedCalls;
     private final Object syncLockObj = new Object();
+    //added
+    private Retrofit.Builder retrofitBuilder;
     private RetrofitClient() {
         if (mRetrofit == null) {
             ObjectMapper objectMapper = new ObjectMapper();
             //屏蔽因为Json字符串中或者Java对象中不认识的属性而导致解析失败
             objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-            mRetrofit = new Retrofit.Builder()
-                    .baseUrl(HOST_BASE_URL)
+            //modified here by fee 2016-10-19:修改成使用Builder构建者模式来构建或者重新构建Retrofit对象
+//            mRetrofit = new Retrofit.Builder()
+//                    .baseUrl(HOST_BASE_URL)
+//                    .addConverterFactory(new JsonConverterFactory())
+//
+////                    .addConverterFactory(GsonConverterFactory.create())
+//                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+//                    .build();
+            retrofitBuilder = new Retrofit.Builder();
+            retrofitBuilder.baseUrl(HOST_BASE_URL)
                     .addConverterFactory(new JsonConverterFactory())
 
 //                    .addConverterFactory(GsonConverterFactory.create())
-                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-                    .build();
+                    .addConverterFactory(JacksonConverterFactory.create(objectMapper));
+            mRetrofit = retrofitBuilder.build();
         }
     }
 
@@ -56,12 +66,42 @@ public class RetrofitClient {
         if (Util.isEmpty(baseUrl)) {
             return;
         }
-        mRetrofit = new Retrofit.Builder()
+//        mRetrofit = new Retrofit.Builder()
+//                .baseUrl(baseUrl)
+//                .addConverterFactory(converterFactory)
+//                .build();
+        if (retrofitBuilder != null) {
+            mRetrofit = retrofitBuilder.baseUrl(baseUrl).addConverterFactory(converterFactory).build();
+        }
+        else{
+            mRetrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(converterFactory)
                 .build();
+        }
     }
 
+    /**
+     * 重置自定义的OkHttpClient客户端对象
+     * @param customOkHttpClient
+     * @return
+     */
+    public RetrofitClient resetOkHttpClient(OkHttpClient customOkHttpClient) {
+        if (retrofitBuilder != null) {
+            mRetrofit = retrofitBuilder.callFactory(customOkHttpClient).build();
+        }
+        return this;
+    }
+
+    public Retrofit.Builder getRetrofitBuilder() {
+        return this.retrofitBuilder;
+    }
+
+    public void resetRetrofit() {
+        if (this.retrofitBuilder != null) {
+            mRetrofit = this.retrofitBuilder.build();
+        }
+    }
     public static RetrofitClient getMe() {
         if (Util.isEmpty(HOST_BASE_URL)) {
             throw new NullPointerException("please config the host base url first");
