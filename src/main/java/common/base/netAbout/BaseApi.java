@@ -53,6 +53,13 @@ public class BaseApi{
     public static void cacelCurCall(int toCancelCallRequestType) {
         RetrofitClient.getMe().cancelCall(toCancelCallRequestType);
     }
+
+    /**
+     * 执行网络请求(将本次网络请求插入请求队列中)
+     * @param curCall 当前请求
+     * @param curCallBack 请求结果回调
+     * @param needCache 是否需要缓存(方便取消该请求)
+     */
     protected static void doCall(Call curCall, NetDataAndErrorListener curCallBack,boolean needCache) {
         if (curCall != null) {
             curCall.enqueue(curCallBack);

@@ -12,7 +12,7 @@ import common.base.interfaces.ICommonActionsInListUi;
  * User: fee(1176610771@qq.com)
  * Date: 2016-05-17
  * Time: 10:59
- * DESC: 带有列表据的基类Fragment 不指定布局,并且默认本基类统一处理单个列表的情况（该列表请求类型为requestTypeAboutListData）
+ * DESC: 带有列表数据的基类Fragment 不指定布局,并且默认本基类统一处理单个列表的情况（该列表请求类型为requestTypeAboutListData）
  * 如果一个界面上有2个以上列表的网络请求，则子类可重载 dealWithBeyondListResponse以及dealWithBeyondListErrorResponse来做处理
  * 注：本类的<T,TListData> 其中的T指替父类的 T 表示网络请求需要返回的数据类型，TListData表示列表中需要的数据类型
  */

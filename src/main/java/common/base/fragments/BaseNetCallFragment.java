@@ -72,9 +72,10 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
     }
 
     /**
-     * 本基类提供一个只适合同步进行网络请求监听的对象
-     * 即requestType需要调用时赋值，并且一个请求完成后才能赋值下一个请求类型
-     * 所以是只适合同步请求，不然请求后的响应会乱
+     * 本基类提供一个只适合同步(一个接一个)进行网络请求监听的对象
+     * 即NetDataAndErrorListener#requestType需要调用时赋值，并且一个请求完成后才能赋值下一个请求类型
+     * 所以是只适合同步请求，不然请求后的响应会乱，如果一个Fragment界面中需要多个网络请求一起进行，则其他的网络请求的
+     * 响应监听对象可调用{@link #createANetListener()}生成新的监听对象
      */
     protected NetDataAndErrorListener<T> netDataAndErrorListener;
 

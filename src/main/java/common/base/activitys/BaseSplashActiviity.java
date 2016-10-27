@@ -204,7 +204,7 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
      */
     protected abstract void countDownTimes(int decreaseSencond);
     @Override
-    public void onBackPressed() {//即当闪屏页没有过滤完成前，用户想退出，则把一些会导致自动跳转的功能给取消，让用户退出程序
+    public void onBackPressed() {//即当闪屏页没有过渡完成前，用户想退出，则把一些会导致自动跳转的功能给取消，让用户退出程序
         if (splashAnimation != null && !splashAnimation.hasEnded()) {
             splashAnimation.setAnimationListener(null);
             splashAnimation.cancel();
