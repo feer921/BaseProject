@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
+
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import common.base.R;
 import common.base.dialogs.BaseDialog;
@@ -33,17 +34,34 @@ public class UIHintAgent {
     private BaseDialog hintDialog;
     private Context mContext;
     private HintPopuWindow hintPopuWindow;
+    /**
+     * 对话框Dialog中的("确定“、”取消“按钮)的点击事件的监听者,供回调给外部
+     */
     private DialogInterface.OnClickListener mClickListenerForDialog;
     private IProxyCallback  mProxyCallback;
+    /**
+     * 当前宿主(Activity)是否可见，一般不可见的情况(比如执行了onStop())不应该弹出提示性Dialog
+     */
     private boolean isOwnerVisible = true;
+    /**
+     * 提示性对象框Dialog显示show时是否按back键可取消
+     * 默认为可取消
+     */
     private boolean isHintDialogCancelable = true;
+    /**
+     * 提示性对象框Dialog显示show时是否可点击外部取消
+     * 默认为点击外部不可取消
+     */
     private boolean isHintDialogCancelableOutSide = false;
+    /**
+     * 是否需要监听提示性Dialog对话框的被取消显示(dismiss)事件
+     */
     private boolean isNeedListenHintDialogCancel = false;
     private Handler mHandler;
     /**
      * 提示加载对话框是否可按back键取消 默认为不可取消
      */
-    private boolean loadingDialogCancelable = false;
+    private boolean isLoadingDialogCancelable = false;
     //added by fee 2016-07-28
     private SweetAlertDialog sweetAlertDialog;
     private SweetAlertDialog sweetLoadingDialog;
@@ -57,12 +75,6 @@ public class UIHintAgent {
 
     private void initHintDialog() {
         if (hintDialog == null) {
-//            if (this.commonHintDialogWidth == 0) {
-//                DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-//                this.commonHintDialogWidth = dm.widthPixels - 80;
-//                this.commonHintDialogHeigth = dm.heightPixels / 3;
-//            }
-//            hintDialog = new CommonHintDialog(mContext, this.commonHintDialogWidth, this.commonHintDialogHeigth);
             hintDialog = new CommonMdDialog(mContext);
             hintDialog.edtViewCanEdit(false);
             hintDialog.setCancelable(isHintDialogCancelable);
@@ -78,12 +90,7 @@ public class UIHintAgent {
                     }
                 });
             }
-            if (isNeedListenHintDialogCancel) {
-                if (hintDialogCancelListener == null) {
-                    hintDialogCancelListener = new HintDialogCancelListener();
-                }
-                hintDialog.setOnCancelListener(hintDialogCancelListener);
-            }
+           setUpHintDialogCancelListenerInfo();
         }
     }
 
@@ -105,17 +112,7 @@ public class UIHintAgent {
      */
     public void needListenHintDialogCancelCase(boolean isNeed) {
         isNeedListenHintDialogCancel = isNeed;
-        if (hintDialog != null) {
-            if (isNeed) {
-                if (hintDialogCancelListener == null) {
-                    hintDialogCancelListener = new HintDialogCancelListener();
-                }
-                hintDialog.setOnCancelListener(hintDialogCancelListener);
-            }
-            else{
-                hintDialog.setOnCancelListener(null);
-            }
-        }
+        setUpHintDialogCancelListenerInfo();
     }
 
     /**
@@ -123,30 +120,45 @@ public class UIHintAgent {
      * @param cancelable
      */
     public void toggleHintDialogCancelable(boolean cancelable){
+        isHintDialogCancelable = cancelable;
         if(hintDialog != null){
             hintDialog.setCancelable(cancelable);
         }
         if (sweetAlertDialog != null) {
             sweetAlertDialog.setCancelable(cancelable);
         }
-        isHintDialogCancelable = cancelable;
+        setUpHintDialogCancelListenerInfo();
     }
 
+    /**
+     * 开关/触发：提示用Dialog是否可点击自身的外围空间而取消显示(dismiss)
+     * @param hintDialogCancelable
+     */
     public void toggleHintDialogCancelableOutSide(boolean hintDialogCancelable) {
+        isHintDialogCancelableOutSide = hintDialogCancelable;
         if (hintDialog != null) {
             hintDialog.setCanceledOnTouchOutside(hintDialogCancelable);
         }
-        isHintDialogCancelableOutSide = hintDialogCancelable;
+        //added 2016-10-31
+        if (sweetAlertDialog != null) {
+            sweetAlertDialog.setCanceledOnTouchOutside(hintDialogCancelable);
+        }
     }
     /**
      * 开关 : 加载对话框 是否可按back键取消
      * @param cancelable
      */
     public void toggleLoadingDialogCancelable(boolean cancelable){
-        if(loadDialog != null){
+        isLoadingDialogCancelable = cancelable;
+        if(loadDialog != null){//之所以需要主动再调用一次，是因为，如果使用者先调用#showLoading()时loadDialog已经设置了是否可取消显示为loadingDialogCancelable的默认值
+            //而中间想改变是否可取消的值时，如果不主动调用一次，则会无效,故凡是临时改变Dialog的是否可取消的状态值时都需要主动再调用一次
             loadDialog.setCancelable(cancelable);
         }
-        loadingDialogCancelable = cancelable;
+        //added 2016-10-31
+        if (null != sweetLoadingDialog) {
+            sweetLoadingDialog.setCancelable(cancelable);
+        }
+        setUpLoadingDialogCancelListenerInfo();
     }
     public void onClickInDialog(DialogInterface dialog, int which) {
         if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -192,6 +204,7 @@ public class UIHintAgent {
         hintDialog.setHintMsg(hintMsg);
         hintDialog.setHintMsgGravity(hintMsgGravity);
         hintDialog.curDialogInCase = dialogInCase;
+        hintDialogInWhichCase = dialogInCase;
         hintDialog.setCancleBtnName(cancleBtnName);
         hintDialog.setCommitBtnName(sureBtnName);
         hintDialog.show();
@@ -204,15 +217,47 @@ public class UIHintAgent {
         if (loadDialog == null) {
             loadDialog = new CommonMdLoadialog(mContext);
             loadDialog.setCanceledOnTouchOutside(false);
-            loadDialog.setCancelable(loadingDialogCancelable);
-            if (cancelDialogListener == null) {
-                cancelDialogListener = new LoadingDialogCancelListener();
-            }
-            loadDialog.setOnCancelListener(cancelDialogListener);
+            loadDialog.setCancelable(isLoadingDialogCancelable);
+            setUpLoadingDialogCancelListenerInfo();
         }
         loadDialog.setHintMsg(hintMsg);
         if (!loadDialog.isShowing()) {
             loadDialog.show();
+        }
+    }
+
+    /**
+     * 配置Loading类Dialog的被取消显示时的监听者信息
+     */
+    private void setUpLoadingDialogCancelListenerInfo() {
+        if (isLoadingDialogCancelable) {//只有Loading类的Dialog在可取消(按back键)时才有意义去设置取消的监听事件
+            if (loadingDialogCancelListener == null) {
+                loadingDialogCancelListener = new LoadingDialogCancelListener();
+            }
+        }
+        if (loadDialog != null) {
+            loadDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
+        }
+        if (sweetLoadingDialog != null) {
+            sweetLoadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
+        }
+    }
+
+    /**
+     * 配置提示类Dialog的被取消显示时的监听者信息
+     */
+    private void setUpHintDialogCancelListenerInfo() {
+        boolean isNeedToConfigCancelListener = isNeedListenHintDialogCancel && isHintDialogCancelable;
+        if (isNeedToConfigCancelListener) {
+            if (hintDialogCancelListener == null) {
+                hintDialogCancelListener = new HintDialogCancelListener();
+            }
+        }
+        if (hintDialog != null) {
+            hintDialog.setOnCancelListener(isNeedToConfigCancelListener ? hintDialogCancelListener : null);
+        }
+        if (sweetAlertDialog != null) {
+            sweetAlertDialog.setOnCancelListener(isNeedToConfigCancelListener ? hintDialogCancelListener : null);
         }
     }
     /**
@@ -315,11 +360,9 @@ public class UIHintAgent {
     }
 
     public int getHintDialogInCase() {
-        if (hintDialog != null) {
-            return hintDialog.curDialogInCase;
-        }
-//        return BaseServerResult.CODE_DEF_NO_MEANING;
-        return sweetDialogInCase;//changed to get the sweet dialog in case,def also is 0
+        //modified 2016-10-31 现在统一返回该变量，不管是在sweetAlertDialog中还是在hintDialog中
+        //hintDialogInWhichCase 该变量会在hintDialog以及sweetAlertDialog show时赋值当前的Case值
+        return hintDialogInWhichCase;
     }
 
     public Dialog getCommonHintDialog() {
@@ -355,22 +398,17 @@ public class UIHintAgent {
             mHandler.removeCallbacksAndMessages(null);
         }
     }
-
-    public int getSweetDialogInCase() {
-        return sweetDialogInCase;
-    }
-
     //added sweetAlertDialog codes by fee 2016-07-28
-    private int sweetDialogInCase = 0;
+    /**
+     * 提示性Dialog当前显示show时所处的哪种(提示性)情况
+     */
+    private int hintDialogInWhichCase = 0;
     public void sweetLoading(String loadhintMsg) {
         if (sweetLoadingDialog == null) {
             sweetLoadingDialog = new SweetAlertDialog(mContext);
-            sweetLoadingDialog.setCancelable(loadingDialogCancelable);
+            sweetLoadingDialog.setCancelable(isLoadingDialogCancelable);
             sweetLoadingDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-            if (cancelDialogListener == null) {
-                cancelDialogListener = new LoadingDialogCancelListener();
-            }
-            sweetLoadingDialog.setOnCancelListener(cancelDialogListener);
+            setUpLoadingDialogCancelListenerInfo();
         }
         sweetLoadingDialog.setTitleText(loadhintMsg);
         if (!sweetLoadingDialog.isShowing()) {
@@ -389,7 +427,7 @@ public class UIHintAgent {
         if (!isOwnerVisible) {
             return;
         }
-        sweetDialogInCase = curDialogInCase;
+        hintDialogInWhichCase = curDialogInCase;
         initSweetAlertDialog();
 //        sweetAlertDialog.setOnCancelListener(null);
         sweetAlertDialog.setTitleText(titleInfo)
@@ -406,22 +444,33 @@ public class UIHintAgent {
         if (sweetAlertDialog == null) {
             sweetAlertDialog = new SweetAlertDialog(mContext);
             sweetAlertDialog.setCancelable(isHintDialogCancelable);
+            sweetAlertDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
         }
     }
-    private LoadingDialogCancelListener cancelDialogListener;
+
+    /**
+     * Loading类的Dialog被取消显示(在设置了可被取消,一般按back键)时的回调监听
+     * 注：主动调用dialog.dismiss()是不会触发的(不信可验证)
+     */
+    private LoadingDialogCancelListener loadingDialogCancelListener;
     private class LoadingDialogCancelListener implements OnCancelListener{
         @Override
         public void onCancel(DialogInterface dialog) {
-            if (mProxyCallback != null) {
+            if (mProxyCallback != null) {//当Loading类Dialog被取消(在可取消状态下，按back键)显示时回调给外部
                 mProxyCallback.ownerToCancelLoadingRequest();
             }
         }
     }
+
+    /**
+     * 提示性Dialog被取消显示(在设置了可被取消,一般按back键)时的回调监听
+     * 注：主动调用dialog.dismiss()是不会触发的(不信可验证)
+     */
     private HintDialogCancelListener hintDialogCancelListener;
     private class HintDialogCancelListener implements OnCancelListener{
         @Override
         public void onCancel(DialogInterface dialog) {
-            if (mProxyCallback != null) {
+            if (mProxyCallback != null) {//当提示类Dialog被取消(在需要监听该类Dialog取消状态且可取消状态下，按back键)显示时回调给外部
                 mProxyCallback.ownerToCancelHintDialog();
             }
         }
