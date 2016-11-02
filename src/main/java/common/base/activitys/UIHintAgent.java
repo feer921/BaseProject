@@ -30,7 +30,7 @@ import common.base.views.HintPopuWindow;
  * @author lifei
  */
 public class UIHintAgent {
-    private CommonMdLoadialog loadDialog;
+    private CommonMdLoadialog loadingDialog;
     private BaseDialog hintDialog;
     private Context mContext;
     private HintPopuWindow hintPopuWindow;
@@ -150,9 +150,9 @@ public class UIHintAgent {
      */
     public void toggleLoadingDialogCancelable(boolean cancelable){
         isLoadingDialogCancelable = cancelable;
-        if(loadDialog != null){//之所以需要主动再调用一次，是因为，如果使用者先调用#showLoading()时loadDialog已经设置了是否可取消显示为loadingDialogCancelable的默认值
+        if(loadingDialog != null){//之所以需要主动再调用一次，是因为，如果使用者先调用#showLoading()时loadDialog已经设置了是否可取消显示为loadingDialogCancelable的默认值
             //而中间想改变是否可取消的值时，如果不主动调用一次，则会无效,故凡是临时改变Dialog的是否可取消的状态值时都需要主动再调用一次
-            loadDialog.setCancelable(cancelable);
+            loadingDialog.setCancelable(cancelable);
         }
         //added 2016-10-31
         if (null != sweetLoadingDialog) {
@@ -214,15 +214,15 @@ public class UIHintAgent {
      * @param hintMsg
      */
     public void showLoading(String hintMsg) {
-        if (loadDialog == null) {
-            loadDialog = new CommonMdLoadialog(mContext);
-            loadDialog.setCanceledOnTouchOutside(false);
-            loadDialog.setCancelable(isLoadingDialogCancelable);
+        if (loadingDialog == null) {
+            loadingDialog = new CommonMdLoadialog(mContext);
+            loadingDialog.setCanceledOnTouchOutside(false);
+            loadingDialog.setCancelable(isLoadingDialogCancelable);
             setUpLoadingDialogCancelListenerInfo();
         }
-        loadDialog.setHintMsg(hintMsg);
-        if (!loadDialog.isShowing()) {
-            loadDialog.show();
+        loadingDialog.setHintMsg(hintMsg);
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.show();
         }
     }
 
@@ -235,8 +235,8 @@ public class UIHintAgent {
                 loadingDialogCancelListener = new LoadingDialogCancelListener();
             }
         }
-        if (loadDialog != null) {
-            loadDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
+        if (loadingDialog != null) {
+            loadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
         }
         if (sweetLoadingDialog != null) {
             sweetLoadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
@@ -271,8 +271,8 @@ public class UIHintAgent {
         triggerLoadingCaseTimer(timeOutMills, INetEvent.MANULLY_TIME_OUT);
     }
     public void loadDialogDismiss() {
-        if (loadDialog != null) {
-            loadDialog.dismiss();
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
         }
         //added by fee 2016-07-28
         if (sweetLoadingDialog != null) {
@@ -280,20 +280,20 @@ public class UIHintAgent {
         }
     }
     public boolean isLoadingDialogShowing(){
-        return loadDialog!= null && loadDialog.isShowing();
+        return loadingDialog != null && loadingDialog.isShowing();
     }
     public void dealWithServerResult(int requestDataType,BaseServerResult result) {
         if (!result.isOk) {
             //本意为针对所有的网络请求，服务器返回请求不成功时的 各种原因的统一通用处理(弹出提示对话框)
             //但由于框架无法得知具体的APP的服务器返回请求不成功的原因，所以目前无法在此统一处理,可以交给各APP的统一基类来处理
-            if (loadDialog != null) {
-                loadDialog.dismiss();
+            if (loadingDialog != null) {
+                loadingDialog.dismiss();
             }
         }
     }
     public void dealWithServerError(int requestDataType,String errorInfo) {
-        if (loadDialog != null) {
-            loadDialog.dismiss();
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
         }
         if (!NetHelper.isNetworkConnected(mContext) && !INetEvent.MANULLY_DELAY_OVER.equals(errorInfo)) {
             dialogHint("提示", "当前网络无效,请设置", null, "去设置网络",
@@ -340,8 +340,8 @@ public class UIHintAgent {
         if (hintDialog != null) {
             hintDialog.dismiss();
         }
-        if (loadDialog != null) {
-            loadDialog.dismiss();
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
         }
         if (hintPopuWindow != null) {
             hintPopuWindow.dismiss();
@@ -416,14 +416,14 @@ public class UIHintAgent {
         }
     }
 
-    public void sweetHintSuc(String successInfo,String comfimInfo,int sweetDialogInCase) {
-        sweetDialogHint(successInfo, null, null, comfimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
+    public void sweetHintSuc(String successInfo,String confimInfo,int sweetDialogInCase) {
+        sweetDialogHint(successInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
     }
 
-    public void sweetHintFail(String failHintInfo, String comfimInfo, int sweetDialogInCase) {
-        sweetDialogHint(failHintInfo, null, null, comfimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
+    public void sweetHintFail(String failHintInfo, String confimInfo, int sweetDialogInCase) {
+        sweetDialogHint(failHintInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
     }
-    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String comfimInfo, int curDialogInCase,int sweetDialogContentCase) {
+    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String confimInfo, int curDialogInCase,int sweetDialogContentCase) {
         if (!isOwnerVisible) {
             return;
         }
@@ -433,7 +433,7 @@ public class UIHintAgent {
         sweetAlertDialog.setTitleText(titleInfo)
                 .setContentText(hintInfo)
                 .setCancelText(cancelInfo)
-                .setConfirmText(comfimInfo)
+                .setConfirmText(confimInfo)
                 .setConfirmClickListener(comfimBtnClickListener)
                 .changeAlertType(sweetDialogContentCase);
         sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));

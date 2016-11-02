@@ -1,12 +1,18 @@
 package common.base.utils;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.lang.reflect.Field;
 
 import common.base.R;
 
@@ -68,6 +74,58 @@ public class ViewUtil{
             } catch (Exception e) {
 
             }
+        }
+    }
+
+    /**
+     * 给图像着色
+     * @param originDrawable 源图像，可以是View的背景图
+     * @param colors
+     * @return 着色后的Drawable
+     * 参考：http://www.race604.com/tint-drawable/
+     */
+    public static Drawable tintDrawable(Drawable originDrawable, ColorStateList colors) {
+        final Drawable wrappedDrawable = DrawableCompat.wrap(originDrawable);
+        DrawableCompat.setTintList(wrappedDrawable, colors);
+        return wrappedDrawable;
+    }
+
+    /**
+     * 给输入框控件View的光标着色
+     * Android 3.1 (API 12) 开始就支持了 textCursorDrawable，
+     * 也就是可以自定义光标的 Drawable。遗憾的是，这个方法只能在 xml 中使用
+     * 所以通过反射来设置
+     * @param curEditText
+     * @param expectedCursorColor 所期望的光标颜色
+     * 参考：http://www.race604.com/tint-drawable/
+     */
+    public static void tintCursorDrawable(EditText curEditText, int expectedCursorColor) {
+        Field fCursorDrawableRes = ReflectUtil.getFidelOfClass(TextView.class, "mCursorDrawableRes");
+        if (fCursorDrawableRes == null) {
+            return;
+        }
+        try {
+            //拿到TextView类中所定义的mCursorDrawableRes 当前的值
+            int mCursorDrawableRes = fCursorDrawableRes.getInt(curEditText);
+            if (mCursorDrawableRes <= 0) {
+                return;
+            }
+            //拿到cursorDrawable 的资源图像对象
+            Drawable cursorDrawable = curEditText.getContext().getResources().getDrawable(mCursorDrawableRes);
+            if (cursorDrawable == null) {
+                return;
+            }
+            //拿到TextView中Editor属性对象,Editor类被Android系统隐藏了@hide
+            Field fieldMEditor = ReflectUtil.getFidelOfClass(TextView.class, "mEditor");
+            Object mEditor = fieldMEditor.get(curEditText);
+            //从Editro类中获取mCursorDrawable属性
+            Field mCursorDrawableField = ReflectUtil.getFieldOfObject(mEditor, "mCursorDrawable");
+            Drawable tintedCursorDrawable = tintDrawable(cursorDrawable, ColorStateList.valueOf(expectedCursorColor));
+            Drawable[] newCursorDrawables = new Drawable[]{tintedCursorDrawable, tintedCursorDrawable};
+            //更改mEditor中mCursorDrawable属性对象的值
+            mCursorDrawableField.set(curEditText, newCursorDrawables);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
