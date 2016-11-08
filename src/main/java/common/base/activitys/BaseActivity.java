@@ -233,6 +233,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return false;
     }
 
+    /**
+     * 某个请求类型的网络请求是否已经完成
+     * @param requestDataType
+     * @return
+     */
+    protected boolean curRequestFinished(int requestDataType) {
+        if (netRequestLifeMarker != null) {
+            return netRequestLifeMarker.curRequestLifeState(requestDataType) == NetRequestLifeMarker.REQUEST_STATE_FINISHED;
+        }
+        return false;
+    }
     /***
      * 取消网络请求
      * @param curRequestType
