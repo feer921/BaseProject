@@ -6,6 +6,8 @@ import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
+import common.base.utils.NetHelper;
+import common.base.utils.Util;
 import common.base.views.CommonRecyclerViewEmptyView;
 
 /**
@@ -110,4 +112,37 @@ public abstract class CommonRefreshRecyclerEmptyViewListFragment<T,TListData> ex
      * @param customHeaderView
      */
     protected abstract void initCustomHeaderView(View customHeaderView);
+    /**
+     * 各子类不实现本方法的话，即按本通用界面的通用处理
+     * @param hasListDataResult 一次请求完成后加上上一次的数据最终是否有列表数据,true表示有数据，false表示没有
+     * @param errorInfoIfRequestFail 如果是请求失败时的错误信息
+     */
+    @Override
+    public void listDataRequestFinish(boolean hasListDataResult, String errorInfoIfRequestFail) {
+        swipeRefreshLayout.setRefreshing(false);
+        if (hasListDataResult) {
+            commonRecyclerViewEmptyView.showListDataView();
+        }
+        else{
+            String hintNoDataDesc = providedNoDataDesc(true);
+            if (!Util.isEmpty(errorInfoIfRequestFail)) {//网络连接异常
+                if (!NetHelper.isNetReallyValidBasePing()) {
+                    hintNoDataDesc = providedNoDataDesc(false);
+                }
+            }
+            commonRecyclerViewEmptyView.hintNoData(hintNoDataDesc);
+        }
+    }
+    /**
+     * 从网络加载数据但结果没有任何数据时的提示性描述信息
+     * 各子类可重新实现此方法以提供不同的/针对性的描述信息
+     * @param isNetValid 当前系统网络是否有效. true:网络有效；false：网络无效
+     * @return
+     */
+    protected String providedNoDataDesc(boolean isNetValid) {
+        if (isNetValid) {
+            return "未获取到相关数据,请稍候下拉刷新以重新加载.";
+        }
+        return "当前网络连接不可用,请检查网络设置,并重新加载.";
+    }
 }
