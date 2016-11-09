@@ -18,8 +18,9 @@ public class BaseApplication extends Application{
         preferVisitor = PreferVisitor.getInstance(this);
     }
 
-    public void prefer(String preferKey, Object value) {
+    public BaseApplication prefer(String preferKey, Object value) {
         preferVisitor.saveValue(appPreferFileName, preferKey, value);
+        return this;
     }
 
     public <T> T getPrefer(String preferKey,T defValue) {

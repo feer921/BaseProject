@@ -469,7 +469,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             uiHintAgent.onClickInDialog(dialog,which);
         }
     }
-
     /**
      * 基类提供普通Log输出之error级信息输出
      * 注意一点：因为第二个参数是可变参数，该方法允许只传一个参数eg.: e("")
