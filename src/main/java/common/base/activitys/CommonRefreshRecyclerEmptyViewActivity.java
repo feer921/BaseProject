@@ -110,8 +110,10 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extend
     @Override
     protected void listDataRequestFinish(boolean hasListDataResult, String errorInfoIfRequestFail) {
         swipeRefreshLayout.setRefreshing(false);
-        if (hasListDataResult) {
+        if (hasListDataResult) {//当前列表中有数据
             commonRecyclerViewEmptyView.showListDataView();
+            //added 2016-11-10 提供一些子列表Activity 有翻页功能的差异化处理方法
+            dealWithNoMorePages(curPage >= totalPages);
         }
         else{
             String hintNoDataDesc = providedNoDataDesc(true);
@@ -122,6 +124,10 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extend
             }
             commonRecyclerViewEmptyView.hintNoData(hintNoDataDesc);
         }
+    }
+
+    protected void dealWithNoMorePages(boolean noMorePage) {
+
     }
 
     /**
