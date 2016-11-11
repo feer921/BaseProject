@@ -153,6 +153,19 @@ public abstract class BaseCommonAdapter<T> extends BaseAdapter implements OnScro
     public void addItems(T addedOne){
         addItems(addedOne, false);
     }
+
+    public void removeItem(int itemPosition) {
+        if (dataList != null) {
+            if (dataList instanceof List) {
+                List<T> datas = (List<T>) dataList;
+                datas.remove(itemPosition);
+            }
+            else{
+                dataList.remove(getItem(itemPosition));
+            }
+            notifyDataSetChanged();
+        }
+    }
     public void clearData(){
         dataList.clear();
         notifyDataSetChanged();
