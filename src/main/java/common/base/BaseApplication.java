@@ -1,5 +1,6 @@
 package common.base;
 
+import android.app.Activity;
 import android.app.Application;
 import common.base.utils.PreferVisitor;
 
@@ -34,5 +35,27 @@ public class BaseApplication extends Application{
      */
     public void batchPrefer(String[] keys, Object... valueDatas) {
         preferVisitor.batchSaveValues(appPreferFileName,keys,valueDatas);
+    }
+
+    /**
+     * 栈入一个当前启动的Activity
+     * @param curActivity
+     */
+    public void stackActivity(Activity curActivity) {
+        AppManager.getMe().addActivity(curActivity);
+    }
+
+    /**
+     * 当一个Activity结束时也从管理的栈内踢出当前的Activity
+     * @param curActivity
+     */
+    public void kickOutActivity(Activity curActivity) {
+        AppManager.getMe().finishActivity(curActivity);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        AppManager.getMe().exitWholeApp(this);
     }
 }

@@ -132,7 +132,7 @@ public class ViewUtil{
     /**
      * 校验文本输入框当前是否输入的是空格
      * @param curEditText
-     * @return true 当前输入的是空格; falase:不是
+     * @return true 当前输入的是空格; false:不是
      */
     public static boolean checkEditTextInputedNull(EditText curEditText) {
         boolean curInputedNull = false;
