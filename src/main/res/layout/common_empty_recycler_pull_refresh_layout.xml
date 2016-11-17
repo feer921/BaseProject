@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_contaner_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0f1f2"
     android:orientation="vertical">
     <!-- 可添加自定义头部视图 -->
     <android.support.v4.widget.SwipeRefreshLayout
