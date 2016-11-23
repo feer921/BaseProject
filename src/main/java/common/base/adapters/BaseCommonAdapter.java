@@ -127,6 +127,11 @@ public abstract class BaseCommonAdapter<T> extends BaseAdapter implements OnScro
             outScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
         }
     }
+
+    /**
+     * 此处为相当于重置数据集
+     * @param newData
+     */
     public void setData(Collection<T> newData){
         dataList = newData;
         notifyDataSetChanged();
@@ -149,13 +154,113 @@ public abstract class BaseCommonAdapter<T> extends BaseAdapter implements OnScro
     }
     protected void addItemToFirst(T addedOne) {
         //Let subClass which can append to add item to implements this method
+        addItems(addedOne, 0);
     }
     public void addItems(T addedOne){
         addItems(addedOne, false);
     }
 
-    public void removeItem(int itemPosition) {
+    public void addItems(T toAddedOne, int insertPos) {
+        if (toAddedOne == null || insertPos < 0) {
+            return;
+        }
+        if (dataList == null) {
+            ArrayList<T> newList = new ArrayList<>(1);
+            newList.add(insertPos, toAddedOne);
+            dataList = newList;
+        }
+        else{
+            if (dataList instanceof List) {
+                ((List) dataList).add(insertPos, toAddedOne);
+            }
+            else{
+                dataList.add(toAddedOne);
+            }
+        }
+    }
+
+    /**
+     * 替换数据集中某个位置的元素
+     * 也有可能是添加一个新的元素
+     * @param theRePlacePos
+     * @param newOne
+     */
+    public void replaceItem(int theRePlacePos,T newOne) {
+        if (theRePlacePos < 0) {
+            return;
+        }
         if (dataList != null) {
+//            if (theRePlacePos >= dataList.size()) {//超出可替换的范围，则直接添加进来
+//
+//            }
+            if (theRePlacePos >= dataList.size()) {
+                return;
+            }
+            if (dataList instanceof List) {
+                ((List) dataList).set(theRePlacePos, newOne);
+            }
+            else{
+                if (dataList.remove(getItem(theRePlacePos))) {
+                    addItems(newOne, theRePlacePos);
+                }
+            }
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * 直接使用新的一个数据实体来更新旧的
+     * 如果要更新的新数据体本身不存在数据集中则直接添加进数据集
+     * @param newItemData 要更新的新数据体
+     */
+    public void updateItem(T newItemData) {
+        if (newItemData == null) {
+            return;
+        }
+        int existedIndex = itemDataIndexInList(newItemData);
+        if (existedIndex >= 0) {
+            replaceItem(existedIndex, newItemData);//在数据集中原来位置上更新
+        }
+        else{
+            addItems(newItemData);
+        }
+    }
+
+    public int itemDataIndexInList(T newItemData) {
+        int existedIndex = -1;//不存在当前数据集里
+        if (newItemData != null) {
+            int size = dataList.size();
+            for (int i = 0; i < size; i++) {
+                if (isExistedBaseWhat(newItemData, getItem(i))) {
+                    existedIndex = i;
+                    break;
+                }
+            }
+        }
+        return existedIndex;
+    }
+
+    /**
+     * 比较两个数据体时依据何种情况来判断新数据体原来就存在于数据集中
+     * @param newItemData 新数据（需要直接更新或者插入）
+     * @param itemDataAdPos 当前数据集中某个位置index上的数据体
+     * @return
+     */
+    protected boolean isExistedBaseWhat(T newItemData, T itemDataAdPos) {
+        return false;
+    }
+    public void removeItem(int itemPosition) {
+        if (itemPosition < 0) {
+            return;
+        }
+        if (dataList != null) {
+            boolean isEmpty = dataList.isEmpty();
+            if (isEmpty) {
+                return;
+            }
+            if (itemPosition >= dataList.size()) {
+                return;
+            }
             if (dataList instanceof List) {
                 List<T> datas = (List<T>) dataList;
                 datas.remove(itemPosition);

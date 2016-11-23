@@ -10,6 +10,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
@@ -181,5 +183,40 @@ public class ViewUtil{
         }
         clickedView.setTag(tagKey, curClickMillTime + "");
         return need2PreVent;
+    }
+
+    /**
+     * 依据ListView的Chilc Views 计算所需要绘制的高度
+     * @param listView
+     */
+    public static void resolveListViewWholeH(ListView listView) {
+        if (listView == null || listView.getAdapter() == null) {
+            return;
+        }
+        ListAdapter listAdapter = listView.getAdapter();
+        int totalHeight = 0;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+
+            View listItem = listAdapter.getView(i, null, listView);
+
+            listItem.measure(0, 0);
+
+            totalHeight += listItem.getMeasuredHeight();
+
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+
+        // params.height += 5;// if without this statement,the listview will be
+
+        // a
+
+        // little short
+
+        // listView.getDividerHeight()获取子项间分隔符占用的高度
+
+        // params.height最后得到整个ListView完整显示需要的高度
+
+        listView.setLayoutParams(params);
     }
 }
