@@ -118,7 +118,7 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extend
         else{
             String hintNoDataDesc = providedNoDataDesc(true);
             if (!Util.isEmpty(errorInfoIfRequestFail)) {//网络连接异常
-                if (!NetHelper.isNetReallyValidBasePing()) {
+                if (!NetHelper.isNetworkConnected(mContext)) {
                     hintNoDataDesc = providedNoDataDesc(false);
                 }
             }

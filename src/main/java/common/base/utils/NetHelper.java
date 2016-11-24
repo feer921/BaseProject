@@ -348,6 +348,12 @@ public class NetHelper {
      * 经常用来 ping的测试服务器--百度
      */
     private static final String OFTEN_PING_HOST_BAIDU = "www.baidu.com";
+
+    /**
+     * 需要在子线程中执行，否则容易卡UI线程
+     * @param pingTargetServer
+     * @return
+     */
     public static boolean isNetReallyValidBasePing(String pingTargetServer) {
         String pingResult = null;
         String pingCmd = "ping -c 3 -w 100 " + pingTargetServer;//ping 目标服务器3次
