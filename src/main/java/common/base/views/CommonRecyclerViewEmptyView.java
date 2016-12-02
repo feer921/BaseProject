@@ -137,6 +137,12 @@ public class CommonRecyclerViewEmptyView extends FrameLayout implements SwipeRef
         });
     }
 
+    /**
+     * 触发自动刷新
+     */
+    public void triggerAutoRefresh() {
+        autoLoadingData();
+    }
     public void hintNoData(String noDataCase) {
         emptyLayout.setNoDataContent(noDataCase);
         emptyLayout.setErrorType(EmptyLayout.NODATA);

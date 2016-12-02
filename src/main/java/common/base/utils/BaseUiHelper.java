@@ -3,6 +3,7 @@ package common.base.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -69,8 +70,39 @@ public class BaseUiHelper{
         }
     }
 
+    /**
+     * 跳转到系统设置界面
+     * @param context
+     */
     public static void jumpToSystemSetting(Context context) {
         Intent toSettingActionIntent = new Intent(Settings.ACTION_SETTINGS);
         jumpToActivity(context,toSettingActionIntent,0,false);
+    }
+
+    /**
+     * 跳转到系统拨号界面
+     * @param context
+     * @param toDialTelNo
+     */
+    public static void jumpToSystemDialUi(Context context, String toDialTelNo) {
+        Intent startIntent = new Intent(Intent.ACTION_DIAL);
+        if (!Util.isEmpty(toDialTelNo)) {
+            startIntent.setData(Uri.parse("tel:" + toDialTelNo));
+        }
+        jumpToActivity(context, startIntent, 0, false);
+    }
+
+    /**
+     * 跳转到APN设置
+     * @param context
+     */
+    public static void jumpToApnSetting(Context context) {
+        Intent intent = new Intent(Settings.ACTION_APN_SETTINGS);
+        context.startActivity(intent);
+    }
+
+    public static void jumpToMobilDataSetting(Context context) {
+        Intent intent = new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS);
+        context.startActivity(intent);
     }
 }
