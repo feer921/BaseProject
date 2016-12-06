@@ -5,9 +5,12 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.FrameLayout;
 import android.widget.TextView;
-import common.base.utils.CommonLog;
+
+import common.base.utils.ViewUtil;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -56,13 +59,21 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
     @Override
     protected void initViews() {
         splashAnimation = getAnimation4BackgroudImsg();
-        if (splashAnimation != null) {
-            splashAnimation.setDuration(splashDuringTime);
-            splashAnimation.setAnimationListener(this);
+        //added by fee 2016-12-06增加一些提升健壮性代码逻辑，以防止使用者不配置(赋值)一些必要的变量值
+        if (splashAnimation == null) {
+            splashAnimation = new AlphaAnimation(0.1f, 1.0f);
         }
-        if (toAnimView != null) {
-            toAnimView.setAnimation(splashAnimation);
+        if (splashDuringTime == 0) {
+            splashDuringTime = 3000;
         }
+        splashAnimation.setDuration(splashDuringTime);
+        splashAnimation.setAnimationListener(this);
+
+        if (toAnimView == null) {//使用者这都不想赋值,本基类为了动画能执行，只好自己造一个视图出来
+            toAnimView = new FrameLayout(mContext);
+            ViewUtil.getContentContainerView(this).addView(toAnimView);
+        }
+        toAnimView.setAnimation(splashAnimation);
         if (tvBtnJumpOverSplash != null) {
             tvBtnJumpOverSplash.setOnClickListener(this);
         }
@@ -131,7 +142,7 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
      */
     @Override
     public void onAnimationStart(Animation animation) {
-        CommonLog.e(TAG, " --> onAnimationStart() ");
+        e(TAG, " --> onAnimationStart() ");
         if (countDownTimer != null) {//如果是广告展示，动画开始时则开始倒计时
             countDownTimer.start();
         }
@@ -145,7 +156,7 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
      */
     @Override
     public void onAnimationEnd(Animation animation) {
-        CommonLog.e(TAG," --> onAnimationEnd() ");
+        e(TAG," --> onAnimationEnd() ");
         if (animation == splashAnimation) {
             if (countDownTimer == null) {//如果没有倒计时，则依据闪屏动画完成了来自动跳转，否则依据用户直接点击跳过或者倒计时完成
                 //动画完成了，跳转到目标界面，子类区分实现

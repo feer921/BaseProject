@@ -10,6 +10,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -218,5 +219,18 @@ public class ViewUtil{
         // params.height最后得到整个ListView完整显示需要的高度
 
         listView.setLayoutParams(params);
+    }
+
+    /**
+     * 获取一个Activity中所在的window中的用来填充该activity布局的容器视图
+     * @param curActivity
+     * @return 可能通过
+     */
+    public static FrameLayout getContentContainerView(Activity curActivity) {
+        FrameLayout contentLayout = null;
+        if (curActivity != null) {
+            return (FrameLayout) curActivity.getWindow().getDecorView().findViewById(android.R.id.content);
+        }
+        return contentLayout;
     }
 }
