@@ -25,7 +25,8 @@ public class JsonConvert implements Converter<ResponseBody,JSONObject>{
         if (mType == JSONObject.class) {
             JSONObject result = null;
             try {
-                result = new JSONObject(value.string());
+                String respStr = value.string();
+                result = new JSONObject(respStr);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
