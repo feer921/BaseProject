@@ -22,6 +22,7 @@ import common.base.utils.Util;
  }
  */
 public class BaseServerResult {
+    public static final int ERROR_CODE_NO_NET = 0;
     private static final String TAG = "BaseServerResult";
     public String statusCode;
     public String msg;

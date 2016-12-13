@@ -138,7 +138,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
      * 的网络请求响应数据类型，那么可以直接new{@linkplain NetDataAndErrorListener}时传入本类New ETypeNetEvent(E)
      * @param <E>
      */
-    protected final class ETypeNetEvent<E> implements INetEvent<E>{
+    public final class ETypeNetEvent<E> implements INetEvent<E>{
         private final static String LOG_TAG = "ETypeNetEvent";
         /**
          * 网络请求失败

@@ -279,11 +279,15 @@ public class UIHintAgent {
             sweetLoadingDialog.dismissWithAnimation();
         }
     }
+
+    public void dismissLoadingDialog() {
+        loadDialogDismiss();
+    }
     public boolean isLoadingDialogShowing(){
         return loadingDialog != null && loadingDialog.isShowing();
     }
     public void dealWithServerResult(int requestDataType,BaseServerResult result) {
-        if (!result.isOk) {
+        if (!result.isResponseOk()) {
             //本意为针对所有的网络请求，服务器返回请求不成功时的 各种原因的统一通用处理(弹出提示对话框)
             //但由于框架无法得知具体的APP的服务器返回请求不成功的原因，所以目前无法在此统一处理,可以交给各APP的统一基类来处理
             if (loadingDialog != null) {
