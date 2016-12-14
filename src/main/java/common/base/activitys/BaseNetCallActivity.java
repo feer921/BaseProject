@@ -71,7 +71,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
 
     protected void initNetDataListener() {
         if (netDataAndErrorListener == null) {
-            netDataAndErrorListener = new NetDataAndErrorListener<T>(this);
+            netDataAndErrorListener = createANetListener();
         }
     }
 
@@ -79,8 +79,8 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
      * 创建一个网络请求监听者，适合需求多个网络请求的异步进行的情况下，对每一个单独的网络请求创建一个网络请求监听者
      * @return
      */
-    protected NetDataAndErrorListener createANetListener() {
-        return new NetDataAndErrorListener<T>(this);
+    protected NetDataAndErrorListener<T> createANetListener() {
+        return new NetDataAndErrorListener<>(this);
     }
     /**
      * 错误回调，在还没有开始请求之前，比如：一些参数错误
@@ -103,18 +103,6 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
     }
 
     //-------- added by fee 2016-12-13 ---------------------------
-    //由于本基类的网络请求响应类型T一旦指定后，就只能响应一种类型的，而一些使用场景可能存在不同网络请求接口
-    //响应的数据类型可能和本基类所指定的T类型不相同(比如：如果本基类T被指定成JSONObject类型的，则要求所请求的网络接口都是满足是JsonObject类型数据，
-    // 这时，如果有一个网络请求响应的不是JsonObject类型的，如github api接口就有响应的数据为JSONArray类型的，
-    // 则这时子类就不能使用基类的netDataAndErrorListener
-    // 以及createANetListener()了),所以为了通用各种响应类型，增加以下代码
-    //使用方法：如果本基类的网络请求响应类型被指定为用户自定义的对象如{@linkplain#BaseServerResult},而如果有一个网络请求
-    //假设为 BaseApi.getRespoOfAUser(String curGithubUser,NetDataAndErrorListener<List<Respo>>callback);此时直接调用该API并且传入本基类的
-    //netDataAndErrorListener或者createANetListener()都不匹配了，则需要这样使用
-    //NetDataAndErrorListener<List<Respo> listenner = createETypeListener();
-    // 再调用BaseApi.getRespoOfAUser("feer921",listenner);
-
-
     /**
      *由于本基类的网络请求响应类型T一旦指定后，就只能响应一种类型的，而一些使用场景可能存在不同网络请求接口
      响应的数据类型可能和本基类所指定的T类型不相同(比如：如果本基类T被指定成JSONObject类型的，则要求所请求的网络接口都是满足是JsonObject类型数据，
@@ -132,7 +120,6 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
     protected <E> NetDataAndErrorListener<E> createETypeListener() {
         return new NetDataAndErrorListener<>(new ETypeNetEvent<E>());
     }
-
     /**
      * 子类如果有不同于本基类BaseNetCallActivity所指定的网络响应类型T
      * 的网络请求响应数据类型，那么可以直接new{@linkplain NetDataAndErrorListener}时传入本类New ETypeNetEvent(E)
