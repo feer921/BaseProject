@@ -15,3 +15,7 @@ RecyclerView的适配器，SO，特别感谢：
     
 #目前阶段：
   “基工”到目前为止(当然会持续维护更新)已经可以用到实际项目中去快速构建项目了，本人的公司的三个APP都依赖于“基工”，自己也会持续努力让“基工”更加完善。
+
+# 参考Demo
+暂时没有过多的说明，可先参考[BaseProjectDemo](https://github.com/feer921/BaseProjectDemo)的简单使用,
+I'm sorry,please read the fucking code now;
