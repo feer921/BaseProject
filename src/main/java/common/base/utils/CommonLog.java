@@ -12,6 +12,10 @@ import common.base.BuildConfig;
 public final class CommonLog {
 //    public final static boolean ISDEBUG = BuildConfig.DEBUG;
     public static boolean ISDEBUG = BuildConfig.DEBUG;
+
+    public static void logEnable(boolean toEnable) {
+        ISDEBUG = toEnable;
+    }
     public static void w(String tag, String content) {
         if (ISDEBUG) {
             android.util.Log.w(tag, content);
