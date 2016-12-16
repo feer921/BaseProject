@@ -3,10 +3,16 @@ package common.base.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.listener.OnRecyclerItemClickEventListener;
+
 import java.util.List;
+
 import common.base.beans.BaseListEntity;
 import common.base.interfaces.ICommonActionsInListUi;
+import common.base.interfaces.IRecyclerViewItemClickEventsListener;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -14,10 +20,11 @@ import common.base.interfaces.ICommonActionsInListUi;
  * Time: 10:59
  * DESC: 带有列表数据的基类Fragment 不指定布局,并且默认本基类统一处理单个列表的情况（该列表请求类型为requestTypeAboutListData）
  * 如果一个界面上有2个以上列表的网络请求，则子类可重载 dealWithBeyondListResponse以及dealWithBeyondListErrorResponse来做处理
- * 注：本类的<T,TListData> 其中的T指替父类的 T 表示网络请求需要返回的数据类型，TListData表示列表中需要的数据类型
+ * 注：本类的<T,TListData,VH> 其中的T指替父类的 T 表示网络请求需要返回的数据类型，TListData表示列表中需要的数据类型，VH指替父类的VH为适配器的
+ * BaseQuickAdapter所指定的ViewHold类型
  */
-public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<T> implements ICommonActionsInListUi<TListData>,BaseQuickAdapter.OnRecyclerViewItemClickListener{
-    protected BaseQuickAdapter<TListData> adapter4RecyclerView;
+public abstract class BaseListFragment<T,TListData,VH extends BaseViewHolder> extends BaseNetCallFragment<T> implements ICommonActionsInListUi<TListData,VH>,IRecyclerViewItemClickEventsListener {
+    protected BaseQuickAdapter<TListData,VH> adapter4RecyclerView;
     /**
      * 当前列表请求的页数
      */
@@ -41,7 +48,8 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
         needSomeUiHintAgent();
         if (adapter4RecyclerView == null) {
             adapter4RecyclerView = getRecyclerViewAdapter();
-            adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
+            //remove it by fee 2016-12-16 RecyclerView的点击事件更改为交由RecyclerView来设置
+//            adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
         }
         super.onViewCreated(view, savedInstanceState);
     }
@@ -109,7 +117,7 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
      * @return
      */
     @Override
-    public abstract BaseQuickAdapter<TListData> getRecyclerViewAdapter();
+    public abstract BaseQuickAdapter<TListData,VH> getRecyclerViewAdapter();
     /***
      * 根据网络的响应类型解析成 BaseListEntity 实体对象
      * @param result
@@ -143,18 +151,7 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
     @Override
     public abstract void listDataRequestFinish(boolean hasListDataResult, String errorInfoIfRequestFail);
 
-    /**
-     * Callback method to be invoked when an item in this AdapterView has
-     * been clicked.
-     *
-     * @param view     The view within the AdapterView that was clicked (this
-     *                 will be a view provided by the adapter)
-     * @param position The position of the view in the adapter.
-     */
-    @Override
-    public void onItemClick(View view, int position) {
 
-    }
     /**
      * 处理不是 获取列表数据的网络请求的结果
      * @param requestDataType
@@ -171,5 +168,101 @@ public abstract class BaseListFragment<T,TListData> extends BaseNetCallFragment<
      */
     protected void dealWithBeyondListErrorResponse(int curRequestDataType, String errorInfo){
         super.dealWithErrorResponse(curRequestDataType, errorInfo);//如果子类也不处理交由基类统一处理
+    }
+
+    //----------- add by fee 2016-12-16 --------------
+
+    private OnRecyclerItemClickEventListener onRecyclerItemClickEventListener;
+
+    /**
+     * 子类Activity的列表控件RecyclerView调用mRecyclerView.addOnItemTouchListener(obtainTheRecyclerItemClickListen())
+     * 则可重写
+     * @return
+     */
+    protected OnRecyclerItemClickEventListener obtainTheRecyclerItemClickListen() {
+        if (onRecyclerItemClickEventListener == null) {
+            onRecyclerItemClickEventListener = new OnRecyclerItemClickEventListener() {
+                @Override
+                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListFragment.this.onItemClick(adapter, view, position);
+                }
+
+                /**
+                 * callback method to be invoked when an item in this view has been
+                 * click and held
+                 *
+                 * @param adapter
+                 * @param view     The view whihin the AbsListView that was clicked
+                 * @param position The position of the view int the adapter
+                 * @return true if the callback consumed the long click ,false otherwise
+                 */
+                @Override
+                public void onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListFragment.this.onItemLongClick(adapter,view,position);
+                }
+
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListFragment.this.onItemChildClick(adapter, view, position);
+                }
+
+                @Override
+                public void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListFragment.this.onItemChildLongClick(adapter, view, position);
+                }
+            };
+        }
+        return onRecyclerItemClickEventListener;
+    }
+    /**
+     * Callback method to be invoked when an item in this AdapterView has
+     * been clicked.
+     *
+     * @param adapter
+     * @param view     The view within the AdapterView that was clicked (this
+     *                 will be a view provided by the adapter)
+     * @param position The position of the view in the adapter.
+     */
+    @Override
+    public void onItemClick(BaseQuickAdapter adapter, View view, int position){
+
+    }
+
+    /**
+     * callback method to be invoked when an item in this view has been
+     * click and held
+     *
+     * @param adapter
+     * @param view     The view whihin the AbsListView that was clicked
+     * @param position The position of the view int the adapter
+     * @return true if the callback consumed the long click ,false otherwise
+     */
+    @Override
+    public void onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+
+    }
+
+    /**
+     * RecyclerView中的item布局内各子View的点击事件
+     *
+     * @param adapter  当前的适配器
+     * @param view     当前被点击的视图View，用id来switch区分
+     * @param position 被点击的子View在RecyclerView中的位置
+     */
+    @Override
+    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+
+    }
+
+    /**
+     * RecyclerView中的item布局内各子View的长按事件
+     *
+     * @param adapter  当前的适配器
+     * @param view     当前被点击的视图View，用id来switch区分
+     * @param position 被长按的子View在RecyclerView中的位置
+     */
+    @Override
+    public void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+
     }
 }

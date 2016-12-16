@@ -1,9 +1,16 @@
 package common.base.activitys;
 
 import android.os.Bundle;
+import android.view.View;
+
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.listener.OnRecyclerItemClickEventListener;
+
 import java.util.List;
+
 import common.base.beans.BaseListEntity;
+import common.base.interfaces.IRecyclerViewItemClickEventsListener;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -13,9 +20,9 @@ import common.base.beans.BaseListEntity;
  * 如果一个界面上有2个以上列表的网络请求，则子类可重载 dealWithBeyondListResponse以及dealWithBeyondListErrorResponse来做处理
  * 注：本类的<T,TListData> 其中的T指替父类的 T 表示网络请求需要返回的数据类型，TListData表示列表中需要的数据类型
  */
-public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<T> implements BaseQuickAdapter.OnRecyclerViewItemClickListener{
+public abstract class BaseListActivity<T,TListData,VH extends BaseViewHolder> extends BaseNetCallActivity<T> implements IRecyclerViewItemClickEventsListener {
     // TODO: 2016/6/25 此处的适配器还可以想办法通用ListView的适配器
-    protected BaseQuickAdapter<TListData> adapter4RecyclerView;
+    protected BaseQuickAdapter<TListData,VH> adapter4RecyclerView;
     /**
      * 当前列表显示的
      */
@@ -38,7 +45,8 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
         if (adapter4RecyclerView == null) {
             adapter4RecyclerView = getRecyclerViewAdapter();
             if (adapter4RecyclerView != null) {
-                adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
+                //deleted by fee 2016-12-16 该方法已被版本为2.6.6的BRVAH框架去除掉了，点击事件监听者转为RecyclerView设置
+//                adapter4RecyclerView.setOnRecyclerViewItemClickListener(this);
             }
         }
         initNetDataListener();
@@ -107,7 +115,7 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
      * 子类可在此方法中初始化对应的适配器
      * @return
      */
-    protected abstract BaseQuickAdapter<TListData> getRecyclerViewAdapter();
+    protected abstract BaseQuickAdapter<TListData,VH> getRecyclerViewAdapter();
 
     /***
      * 根据网络的响应类型解析成 BaseListEntity 实体对象
@@ -144,5 +152,97 @@ public abstract class BaseListActivity<T,TListData> extends BaseNetCallActivity<
      */
     protected void dealWithBeyondListErrorResponse(int curRequestDataType, String errorInfo){
         super.dealWithErrorResponse(curRequestDataType, errorInfo);//如果子类也不处理交由基类统一处理
+    }
+
+    private OnRecyclerItemClickEventListener onRecyclerItemClickEventListener;
+
+    /**
+     * 子类Activity的列表控件RecyclerView调用mRecyclerView.addOnItemTouchListener(obtainTheRecyclerItemClickListen())
+     * 则可重写
+     * @return
+     */
+    protected OnRecyclerItemClickEventListener obtainTheRecyclerItemClickListen() {
+        if (onRecyclerItemClickEventListener == null) {
+            onRecyclerItemClickEventListener = new OnRecyclerItemClickEventListener() {
+                @Override
+                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListActivity.this.onItemClick(adapter, view, position);
+                }
+
+                /**
+                 * callback method to be invoked when an item in this view has been
+                 * click and held
+                 *
+                 * @param adapter
+                 * @param view     The view whihin the AbsListView that was clicked
+                 * @param position The position of the view int the adapter
+                 * @return true if the callback consumed the long click ,false otherwise
+                 */
+                @Override
+                public void onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListActivity.this.onItemLongClick(adapter,view,position);
+                }
+
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListActivity.this.onItemChildClick(adapter, view, position);
+                }
+
+                @Override
+                public void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+                    BaseListActivity.this.onItemChildLongClick(adapter, view, position);
+                }
+            };
+        }
+        return onRecyclerItemClickEventListener;
+    }
+    /**
+     * Callback method to be invoked when an item in this AdapterView has
+     * been clicked.
+     *
+     * @param adapter
+     * @param view     The view within the AdapterView that was clicked (this
+     *                 will be a view provided by the adapter)
+     * @param position The position of the view in the adapter.
+     */
+    @Override
+    public abstract void onItemClick(BaseQuickAdapter adapter, View view, int position);
+
+    /**
+     * callback method to be invoked when an item in this view has been
+     * click and held
+     *
+     * @param adapter
+     * @param view     The view whihin the AbsListView that was clicked
+     * @param position The position of the view int the adapter
+     * @return true if the callback consumed the long click ,false otherwise
+     */
+    @Override
+    public void onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+
+    }
+
+    /**
+     * RecyclerView中的item布局内各子View的点击事件
+     *
+     * @param adapter  当前的适配器
+     * @param view     当前被点击的视图View，用id来switch区分
+     * @param position 被点击的子View在RecyclerView中的位置
+     */
+    @Override
+    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+
+    }
+
+    /**
+     * RecyclerView中的item布局内各子View的长按事件
+     *
+     * @param adapter  当前的适配器
+     * @param view     当前被点击的视图View，用id来switch区分
+     * @param position 被长按的子View在RecyclerView中的位置
+     */
+    @Override
+    public void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+
     }
 }

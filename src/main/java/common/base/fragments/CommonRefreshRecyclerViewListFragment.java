@@ -4,6 +4,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+
 import common.base.views.CommonRefreshRecyclerView;
 
 /**
@@ -12,7 +14,7 @@ import common.base.views.CommonRefreshRecyclerView;
  * Time: 14:26
  * DESC: 指定了通用界面视图布局(即CommonRefreshRecyclerView)的列表碎片界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
  */
-public abstract class CommonRefreshRecyclerViewListFragment<T,TListData> extends BaseListFragment<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
+public abstract class CommonRefreshRecyclerViewListFragment<T,TListData,VH extends BaseViewHolder> extends BaseListFragment<T,TListData,VH> implements SwipeRefreshLayout.OnRefreshListener{
     protected CommonRefreshRecyclerView commonRecyclerViewEmptyView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
@@ -41,6 +43,8 @@ public abstract class CommonRefreshRecyclerViewListFragment<T,TListData> extends
         customHeaderView = getCustomHeaderView();
         swipeRefreshLayout = commonRecyclerViewEmptyView.getSwipeRefreshLayout();
         recyclerView = commonRecyclerViewEmptyView.getRecyclerView();
+        //added by fee 2016-12-16 RecyclerView的item点击事件更改交由RecyclerView来设置
+        recyclerView.addOnItemTouchListener(obtainTheRecyclerItemClickListen());
         commonRecyclerViewEmptyView.addCustomHeaderView(customHeaderView);
         swipeRefreshLayout.setOnRefreshListener(this);
         return commonRecyclerViewEmptyView;
@@ -71,7 +75,7 @@ public abstract class CommonRefreshRecyclerViewListFragment<T,TListData> extends
      * 初始化BaseQuickAdapter 比如item动画,自定义的空布局等
      * @param adapter4RecyclerView
      */
-    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData> adapter4RecyclerView);
+    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData,VH> adapter4RecyclerView);
 
     /**
      * 初始化RecyclerView

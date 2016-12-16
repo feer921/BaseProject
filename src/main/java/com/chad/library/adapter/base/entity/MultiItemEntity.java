@@ -7,5 +7,4 @@ public interface MultiItemEntity {
 
     int getItemType();
 
-    void setItemType(int itemType);
 }

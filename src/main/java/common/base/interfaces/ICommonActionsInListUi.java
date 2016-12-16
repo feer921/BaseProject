@@ -1,5 +1,7 @@
 package common.base.interfaces;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+
 import java.util.List;
 
 /**
@@ -8,12 +10,12 @@ import java.util.List;
  * Time: 15:03
  * DESC: 对于有列表数据界面的共同方法的接口
  */
-public interface ICommonActionsInListUi<TListData> {
+public interface ICommonActionsInListUi<TListData,VH extends BaseViewHolder> {
     /**
      * 获取或者初始化RecyclerView的适配器
      * @return
      */
-    BaseQuickAdapter<TListData> getRecyclerViewAdapter();
+    BaseQuickAdapter<TListData,VH> getRecyclerViewAdapter();
 
     /**
      * 列表数据请求成功,在此方法中做填充新增数据的逻辑

@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 
 import common.base.utils.NetHelper;
 import common.base.utils.Util;
@@ -16,7 +17,7 @@ import common.base.views.CommonRecyclerViewEmptyView;
  * Time: 12:52
  * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView[内部包含空布局])的列表界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
  */
-public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extends BaseListActivity<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
+public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData,VH extends BaseViewHolder> extends BaseListActivity<T,TListData,VH> implements SwipeRefreshLayout.OnRefreshListener{
     protected CommonRecyclerViewEmptyView commonRecyclerViewEmptyView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
@@ -48,6 +49,8 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extend
         customHeaderView = getCustomHeaderView();
         swipeRefreshLayout = commonRecyclerViewEmptyView.getSwipeRefreshLayout();
         recyclerView = commonRecyclerViewEmptyView.getRecyclerView();
+        //added by fee 2016-12-16 RecyclerView的item布局的点击事件的监听更改成让RecyclerView对象设置
+        recyclerView.addOnItemTouchListener(obtainTheRecyclerItemClickListen());
         commonRecyclerViewEmptyView.addCustomHeaderView(customHeaderView);
         if (needUseInnerEmptyView) {
             commonRecyclerViewEmptyView.needInnerEmptyView();
@@ -81,7 +84,7 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData> extend
      * 初始化BaseQuickAdapter 比如item动画,自定义的空布局等
      * @param adapter4RecyclerView
      */
-    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData> adapter4RecyclerView);
+    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData,VH> adapter4RecyclerView);
 
     /**
      * 初始化RecyclerView

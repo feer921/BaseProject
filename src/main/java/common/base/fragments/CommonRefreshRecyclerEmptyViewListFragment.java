@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 
 import common.base.utils.NetHelper;
 import common.base.utils.Util;
@@ -16,7 +17,7 @@ import common.base.views.CommonRecyclerViewEmptyView;
  * Time: 14:26
  * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView[带有空布局])的列表碎片界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
  */
-public abstract class CommonRefreshRecyclerEmptyViewListFragment<T,TListData> extends BaseListFragment<T,TListData> implements SwipeRefreshLayout.OnRefreshListener{
+public abstract class CommonRefreshRecyclerEmptyViewListFragment<T,TListData,VH extends BaseViewHolder> extends BaseListFragment<T,TListData,VH> implements SwipeRefreshLayout.OnRefreshListener{
     protected CommonRecyclerViewEmptyView commonRecyclerViewEmptyView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected RecyclerView recyclerView;
@@ -51,6 +52,8 @@ public abstract class CommonRefreshRecyclerEmptyViewListFragment<T,TListData> ex
         customHeaderView = getCustomHeaderView();
         swipeRefreshLayout = commonRecyclerViewEmptyView.getSwipeRefreshLayout();
         recyclerView = commonRecyclerViewEmptyView.getRecyclerView();
+        //added by fee 2016-12-16,RecyclerView的item点击事件更改为交由RecyclerView来设置
+        recyclerView.addOnItemTouchListener(obtainTheRecyclerItemClickListen());
         commonRecyclerViewEmptyView.addCustomHeaderView(customHeaderView);
         if (needUseInnerEmptyView) {
             commonRecyclerViewEmptyView.needInnerEmptyView();
@@ -92,7 +95,7 @@ public abstract class CommonRefreshRecyclerEmptyViewListFragment<T,TListData> ex
      * 初始化BaseQuickAdapter 比如item动画,自定义的空布局等
      * @param adapter4RecyclerView
      */
-    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData> adapter4RecyclerView);
+    protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData,VH> adapter4RecyclerView);
 
     /**
      * 初始化RecyclerView
