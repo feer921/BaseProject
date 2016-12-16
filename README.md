@@ -19,3 +19,9 @@ RecyclerView的适配器，SO，特别感谢：
 # 参考Demo
 暂时没有过多的说明，可先参考[BaseProjectDemo](https://github.com/feer921/BaseProjectDemo)的简单使用,
 I'm sorry,please read the fucking code now;
+
+# 重大更新
+由于在本框架中更新[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)
+的最新代码(见本框架的com.chad.library.adapter.base包中代码),导致本框架(列表的基类)有较大的改动，因而原来稳定的
+版本切换为base分支,请原来使用了原版本的也切换到base分支，以避免更新代码导致项目代码异常，或者直接更新master分支最新代码并更改
+自己的项目代码,带来的不便，望谅解，谢谢!
