@@ -3,6 +3,8 @@ package common.base.utils;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -89,10 +92,23 @@ public class ViewUtil{
      */
     public static Drawable tintDrawable(Drawable originDrawable, ColorStateList colors) {
         final Drawable wrappedDrawable = DrawableCompat.wrap(originDrawable);
-        DrawableCompat.setTintList(wrappedDrawable, colors);
+        if (wrappedDrawable != null) {//avoid nullpointer exception
+            DrawableCompat.setTintList(wrappedDrawable, colors);
+        }
         return wrappedDrawable;
     }
 
+    /**
+     * 用来改变ImageView的饱和度的
+     * @param target
+     * @param saturationValue
+     */
+    public static void changeImageViewSaturation(ImageView target, int saturationValue) {
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(saturationValue);
+        ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatrix);
+        target.setColorFilter(colorMatrixColorFilter);
+    }
     /**
      * 给输入框控件View的光标着色
      * Android 3.1 (API 12) 开始就支持了 textCursorDrawable，
