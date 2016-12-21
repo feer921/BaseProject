@@ -3,8 +3,11 @@ package common.base.utils;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -108,6 +111,26 @@ public class ViewUtil{
         colorMatrix.setSaturation(saturationValue);
         ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatrix);
         target.setColorFilter(colorMatrixColorFilter);
+    }
+
+    /**
+     * 修改一张源位图的饱和度来生成一个新位图
+     * @param sourceBitmap 源位图
+     * @param expectantSaturation 期望的饱和度值
+     * @return 更改饱和度后的新位图
+     */
+    public static Bitmap changeSrcBitmapSaturation(Bitmap sourceBitmap,int expectantSaturation) {
+        int width = sourceBitmap.getWidth();
+        int height = sourceBitmap.getHeight();
+        Bitmap compoundResultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(compoundResultBitmap);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(expectantSaturation);
+        ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(colorMatrix);
+        paint.setColorFilter(colorMatrixFilter);
+        canvas.drawBitmap(sourceBitmap, 0, 0, paint);
+        return compoundResultBitmap;
     }
     /**
      * 给输入框控件View的光标着色
