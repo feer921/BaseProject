@@ -110,7 +110,7 @@ public class NetHelper {
      * 是否已经联网
      */
     public static boolean isNetConnected(Context context) {
-        return getNetType(context) > 0;
+        return getNetType(context) >= 0;
     }
 
     /**
