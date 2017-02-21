@@ -52,7 +52,7 @@ public class RetrofitClient {
 
 //                    .addConverterFactory(GsonConverterFactory.create())
                     .addConverterFactory(JacksonConverterFactory.create(objectMapper));
-            mRetrofit = retrofitBuilder.build();
+            mRetrofit = retrofitBuilder.build();//调用这里时，Retrofit类中会新建一个默认的OkhttClient对象
         }
     }
 
@@ -89,6 +89,7 @@ public class RetrofitClient {
     public RetrofitClient resetOkHttpClient(OkHttpClient customOkHttpClient) {
         if (retrofitBuilder != null) {
             mRetrofit = retrofitBuilder.callFactory(customOkHttpClient).build();
+
         }
         return this;
     }
@@ -187,5 +188,21 @@ public class RetrofitClient {
             }
             cachedCalls.clear();
         }
+    }
+
+    /**
+     * 获取当前的Retrofit中所配置的OkhttClient对象
+     * @return
+     */
+    public OkHttpClient getCurHttpClient() {
+        if (mRetrofit != null) {
+            return (OkHttpClient) mRetrofit.callFactory();
+        }
+        return null;
+    }
+
+    public void addLog() {
+
+//        getCurHttpClient().interceptors().add()
     }
 }
