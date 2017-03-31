@@ -21,7 +21,9 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutParams;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -45,6 +47,11 @@ import com.chad.library.adapter.base.loadmore.SimpleLoadMoreView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,16 +67,47 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     //load more
     private boolean mNextLoadEnable = false;
     private boolean mLoadMoreEnable = false;
-    private RequestLoadMoreListener mRequestLoadMoreListener;
     private boolean mLoading = false;
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
+    private RequestLoadMoreListener mRequestLoadMoreListener;
+
+    //Animation
+    /**
+     * Use with {@link #openLoadAnimation}
+     */
+    public static final int ALPHAIN = 0x00000001;
+    /**
+     * Use with {@link #openLoadAnimation}
+     */
+    public static final int SCALEIN = 0x00000002;
+    /**
+     * Use with {@link #openLoadAnimation}
+     */
+    public static final int SLIDEIN_BOTTOM = 0x00000003;
+    /**
+     * Use with {@link #openLoadAnimation}
+     */
+    public static final int SLIDEIN_LEFT = 0x00000004;
+    /**
+     * Use with {@link #openLoadAnimation}
+     */
+    public static final int SLIDEIN_RIGHT = 0x00000005;
+    private OnItemClickListener mOnItemClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
+    private OnItemChildClickListener mOnItemChildClickListener;
+    private OnItemChildLongClickListener mOnItemChildLongClickListener;
+
+    @IntDef({ALPHAIN, SCALEIN, SLIDEIN_BOTTOM, SLIDEIN_LEFT, SLIDEIN_RIGHT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AnimationType {
+    }
 
     private boolean mFirstOnlyEnable = true;
     private boolean mOpenAnimationEnable = false;
     private Interpolator mInterpolator = new LinearInterpolator();
     private int mDuration = 300;
     private int mLastPosition = -1;
-    //@AnimationType
+
     private BaseAnimation mCustomAnimation;
     private BaseAnimation mSelectAnimation = new AlphaInAnimation();
     //header footer
@@ -91,37 +129,118 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     public static final int FOOTER_VIEW = 0x00000333;
     public static final int EMPTY_VIEW = 0x00000555;
 
-    @IntDef({ALPHAIN, SCALEIN, SLIDEIN_BOTTOM, SLIDEIN_LEFT, SLIDEIN_RIGHT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AnimationType {
+    private RecyclerView mRecyclerView;
+
+    protected RecyclerView getRecyclerView() {
+        return mRecyclerView;
+    }
+
+    private void setRecyclerView(RecyclerView recyclerView) {
+        mRecyclerView = recyclerView;
+    }
+
+    private void checkNotNull() {
+        if (getRecyclerView() == null) {
+            throw new RuntimeException("please bind recyclerView first!");
+        }
     }
 
     /**
-     * Use with {@link #openLoadAnimation}
+     * same as recyclerView.setAdapter(), and save the instance of recyclerView
      */
-    public static final int ALPHAIN = 0x00000001;
-    /**
-     * Use with {@link #openLoadAnimation}
-     */
-    public static final int SCALEIN = 0x00000002;
-    /**
-     * Use with {@link #openLoadAnimation}
-     */
-    public static final int SLIDEIN_BOTTOM = 0x00000003;
-    /**
-     * Use with {@link #openLoadAnimation}
-     */
-    public static final int SLIDEIN_LEFT = 0x00000004;
-    /**
-     * Use with {@link #openLoadAnimation}
-     */
-    public static final int SLIDEIN_RIGHT = 0x00000005;
+    public void bindToRecyclerView(RecyclerView recyclerView) {
+        if (getRecyclerView() != null) {
+            throw new RuntimeException("Don't bind twice");
+        }
+        setRecyclerView(recyclerView);
+        getRecyclerView().setAdapter(this);
+    }
 
+    /**
+     * @see #setOnLoadMoreListener(RequestLoadMoreListener, RecyclerView)
+     * @deprecated This method is because it can lead to crash: always call this method while RecyclerView is computing a layout or scrolling.
+     * Please use {@link #setOnLoadMoreListener(RequestLoadMoreListener, RecyclerView)}
+     */
+    @Deprecated
     public void setOnLoadMoreListener(RequestLoadMoreListener requestLoadMoreListener) {
+        openLoadMore(requestLoadMoreListener);
+    }
+
+    private void openLoadMore(RequestLoadMoreListener requestLoadMoreListener) {
         this.mRequestLoadMoreListener = requestLoadMoreListener;
         mNextLoadEnable = true;
         mLoadMoreEnable = true;
         mLoading = false;
+    }
+
+    public void setOnLoadMoreListener(RequestLoadMoreListener requestLoadMoreListener, RecyclerView recyclerView) {
+        openLoadMore(requestLoadMoreListener);
+        if (getRecyclerView() == null) {
+            setRecyclerView(recyclerView);
+        }
+    }
+
+    /**
+     * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
+     *
+     * @see #disableLoadMoreIfNotFullPage(RecyclerView)
+     */
+    public void disableLoadMoreIfNotFullPage() {
+        checkNotNull();
+        disableLoadMoreIfNotFullPage(getRecyclerView());
+    }
+
+    /**
+     * check if full page after {@link #setNewData(List)}, if full, it will enable load more again.
+     *
+     * @param recyclerView your recyclerView
+     * @see #setNewData(List)
+     */
+    public void disableLoadMoreIfNotFullPage(RecyclerView recyclerView) {
+        if (recyclerView == null) return;
+        RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
+        if (manager == null) return;
+        if (manager instanceof LinearLayoutManager) {
+            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) manager;
+            recyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if ((linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1) != getItemCount()) {
+                        setEnableLoadMore(true);
+                    }
+                }
+            }, 50);
+        } else if (manager instanceof StaggeredGridLayoutManager) {
+            final StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) manager;
+            recyclerView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    final int[] positions = new int[staggeredGridLayoutManager.getSpanCount()];
+                    staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(positions);
+                    int pos = getTheBiggestNumber(positions) + 1;
+                    if (pos != getItemCount()) {
+                        setEnableLoadMore(true);
+                    }
+                }
+            }, 50);
+        }
+    }
+
+    private int getTheBiggestNumber(int[] numbers) {
+        int tmp = -1;
+        if (numbers == null || numbers.length == 0) {
+            return tmp;
+        }
+        for (int num : numbers) {
+            if (num > tmp) {
+                tmp = num;
+            }
+        }
+        return tmp;
+    }
+
+    public void setNotDoAnimationCount(int count) {
+        mLastPosition = count;
     }
 
     /**
@@ -138,7 +257,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @return 0 or 1
      */
-    private int getLoadMoreViewCount() {
+    public int getLoadMoreViewCount() {
         if (mRequestLoadMoreListener == null || !mLoadMoreEnable) {
             return 0;
         }
@@ -264,37 +383,15 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         if (layoutResId != 0) {
             this.mLayoutResId = layoutResId;
         }
-//        else{
-//            this.mLayoutResId = providedContentViewResId();
-//        }
     }
 
     public BaseQuickAdapter(List<T> data) {
         this(0, data);
     }
 
-    /**
-     * remove the item associated with the specified position of adapter
-     *
-     * @param position
-     */
-    public void remove(int position) {
-        mData.remove(position);
-        notifyItemRemoved(position + getHeaderLayoutCount());
-
+    public BaseQuickAdapter(int layoutResId) {
+        this(layoutResId, null);
     }
-
-    /**
-     * insert  a item associated with the specified position of adapter
-     *
-     * @param position
-     * @param item
-     */
-    public void add(int position, T item) {
-        mData.add(position, item);
-        notifyItemInserted(position + getHeaderLayoutCount());
-    }
-
 
     /**
      * setting up a new instance to data;
@@ -313,6 +410,19 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         notifyDataSetChanged();
     }
 
+
+    /**
+     * insert  a item associated with the specified position of adapter
+     *
+     * @param position
+     * @param item
+     * @deprecated use {@link #addData(int, Object)} instead
+     */
+    @Deprecated
+    public void add(int position, T item) {
+        addData(position, item);
+    }
+
     /**
      * add one new data in to certain location
      *
@@ -321,6 +431,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     public void addData(int position, T data) {
         mData.add(position, data);
         notifyItemInserted(position + getHeaderLayoutCount());
+        compatibilityDataSizeChanged(1);
     }
 
     /**
@@ -329,6 +440,28 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     public void addData(T data) {
         mData.add(data);
         notifyItemInserted(mData.size() + getHeaderLayoutCount());
+        compatibilityDataSizeChanged(1);
+    }
+
+    /**
+     * remove the item associated with the specified position of adapter
+     *
+     * @param position
+     */
+    public void remove(int position) {
+        mData.remove(position);
+        int internalPosition = position + getHeaderLayoutCount();
+        notifyItemRemoved(internalPosition);
+        compatibilityDataSizeChanged(0);
+        notifyItemRangeChanged(internalPosition, mData.size() - internalPosition);
+    }
+
+    /**
+     * change data
+     */
+    public void setData(int index, T data) {
+        mData.set(index, data);
+        notifyItemChanged(index + getHeaderLayoutCount());
     }
 
     /**
@@ -339,6 +472,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     public void addData(int position, List<T> data) {
         mData.addAll(position, data);
         notifyItemRangeInserted(position + getHeaderLayoutCount(), data.size());
+        compatibilityDataSizeChanged(data.size());
     }
 
     /**
@@ -347,11 +481,21 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param newData
      */
     public void addData(List<T> newData) {
-        if (newData == null) {
-            return;
-        }
         this.mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
+        compatibilityDataSizeChanged(newData.size());
+    }
+
+    /**
+     * compatible getLoadMoreViewCount and getEmptyViewCount may change
+     *
+     * @param size Need compatible data size
+     */
+    private void compatibilityDataSizeChanged(int size) {
+        final int dataSize = mData == null ? 0 : mData.size();
+        if (dataSize == size) {
+            notifyDataSetChanged();
+        }
     }
 
     /**
@@ -371,7 +515,10 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @return The data at the specified position.
      */
     public T getItem(int position) {
-        return mData.get(position);
+        if (position != -1)
+            return mData.get(position);
+        else
+            return null;
     }
 
     /**
@@ -519,7 +666,9 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
                 break;
             default:
                 baseViewHolder = onCreateDefViewHolder(parent, viewType);
+                bindViewClickListener(baseViewHolder);
         }
+        baseViewHolder.setAdapter(this);
         return baseViewHolder;
 
     }
@@ -568,7 +717,8 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      */
     protected void setFullSpan(RecyclerView.ViewHolder holder) {
         if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
-            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) holder
+                    .itemView.getLayoutParams();
             params.setFullSpan(true);
         }
     }
@@ -584,15 +734,17 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
                 public int getSpanSize(int position) {
                     int type = getItemViewType(position);
                     if (mSpanSizeLookup == null)
-                        return (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type == LOADING_VIEW) ? gridManager.getSpanCount() : 1;
+                        return (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type ==
+                                LOADING_VIEW) ? gridManager.getSpanCount() : 1;
                     else
-                        return (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type == LOADING_VIEW) ? gridManager.getSpanCount() : mSpanSizeLookup.getSpanSize(gridManager, position - getHeaderLayoutCount());
+                        return (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type ==
+                                LOADING_VIEW) ? gridManager.getSpanCount() : mSpanSizeLookup.getSpanSize(gridManager,
+                                position - getHeaderLayoutCount());
                 }
             });
         }
     }
 
-    private boolean flag = true;
     private SpanSizeLookup mSpanSizeLookup;
 
     public interface SpanSizeLookup {
@@ -619,6 +771,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
 
         switch (viewType) {
             case 0:
+
                 convert(holder, mData.get(holder.getLayoutPosition() - getHeaderLayoutCount()));
                 break;
             case LOADING_VIEW:
@@ -636,11 +789,37 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         }
     }
 
-    protected VH onCreateDefViewHolder(ViewGroup parent, int viewType) {
-        //modified by fee 2016-06-27
-        if (mLayoutResId <= 0) {
-            mLayoutResId = providedContentViewResId();
+    private void bindViewClickListener(final BaseViewHolder baseViewHolder) {
+        if (baseViewHolder == null) {
+            return;
         }
+        final View view = baseViewHolder.getConvertView();
+        if (view == null) {
+            return;
+        }
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getOnItemClickListener() != null && baseViewHolder != null) {
+
+                    getOnItemClickListener().onItemClick(BaseQuickAdapter.this, v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
+                }
+
+            }
+        });
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (getOnItemLongClickListener() != null && baseViewHolder != null) {
+                    return getOnItemLongClickListener().onItemLongClick(BaseQuickAdapter.this, v, baseViewHolder.getLayoutPosition() - getHeaderLayoutCount());
+                }
+                return false;
+
+            }
+        });
+    }
+
+    protected VH onCreateDefViewHolder(ViewGroup parent, int viewType) {
         return createBaseViewHolder(parent, mLayoutResId);
     }
 
@@ -656,12 +835,74 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @return new ViewHolder
      */
     protected VH createBaseViewHolder(View view) {
-        return (VH) new BaseViewHolder(view);
+        Class temp = getClass();
+        Class z = null;
+        while (z == null && null != temp) {
+            z = getInstancedGenericKClass(temp);
+            temp = temp.getSuperclass();
+        }
+        VH k = createGenericKInstance(z, view);
+        return null != k ? k : (VH) new BaseViewHolder(view);
+    }
+
+    /**
+     * try to create Generic K instance
+     *
+     * @param z
+     * @param view
+     * @return
+     */
+    private VH createGenericKInstance(Class z, View view) {
+        try {
+            Constructor constructor;
+            String buffer = Modifier.toString(z.getModifiers());
+            String className = z.getName();
+            // inner and unstatic class
+            if (className.contains("$") && !buffer.contains("static")) {
+                constructor = z.getDeclaredConstructor(getClass(), View.class);
+                return (VH) constructor.newInstance(this, view);
+            } else {
+                constructor = z.getDeclaredConstructor(View.class);
+                return (VH) constructor.newInstance(view);
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * get generic parameter K
+     *
+     * @param z
+     * @return
+     */
+    private Class getInstancedGenericKClass(Class z) {
+        Type type = z.getGenericSuperclass();
+        if (type instanceof ParameterizedType) {
+            Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+            for (Type temp : types) {
+                if (temp instanceof Class) {
+                    Class tempClass = (Class) temp;
+                    if (BaseViewHolder.class.isAssignableFrom(tempClass)) {
+                        return tempClass;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
      * Return root layout of header
      */
+
     public LinearLayout getHeaderLayout() {
         return mHeaderLayout;
     }
@@ -678,8 +919,8 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param header
      */
-    public void addHeaderView(View header) {
-        addHeaderView(header, -1);
+    public int addHeaderView(View header) {
+        return addHeaderView(header, -1);
     }
 
     /**
@@ -692,8 +933,8 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *               When index = -1 or index >= child count in mHeaderLayout,
      *               the effect of this method is the same as that of {@link #addHeaderView(View)}.
      */
-    public void addHeaderView(View header, int index) {
-        addHeaderView(header, index, LinearLayout.VERTICAL);
+    public int addHeaderView(View header, int index) {
+        return addHeaderView(header, index, LinearLayout.VERTICAL);
     }
 
     /**
@@ -701,7 +942,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param index
      * @param orientation
      */
-    public void addHeaderView(View header, int index, int orientation) {
+    public int addHeaderView(View header, int index, int orientation) {
         if (mHeaderLayout == null) {
             mHeaderLayout = new LinearLayout(header.getContext());
             if (orientation == LinearLayout.VERTICAL) {
@@ -712,13 +953,35 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
                 mHeaderLayout.setLayoutParams(new LayoutParams(WRAP_CONTENT, MATCH_PARENT));
             }
         }
-        index = index >= mHeaderLayout.getChildCount() ? -1 : index;
+        final int childCount = mHeaderLayout.getChildCount();
+        if (index < 0 || index > childCount) {
+            index = childCount;
+        }
         mHeaderLayout.addView(header, index);
         if (mHeaderLayout.getChildCount() == 1) {
             int position = getHeaderViewPosition();
             if (position != -1) {
                 notifyItemInserted(position);
             }
+        }
+        return index;
+    }
+
+    public int setHeaderView(View header) {
+        return setHeaderView(header, 0, LinearLayout.VERTICAL);
+    }
+
+    public int setHeaderView(View header, int index) {
+        return setHeaderView(header, index, LinearLayout.VERTICAL);
+    }
+
+    public int setHeaderView(View header, int index, int orientation) {
+        if (mHeaderLayout == null || mHeaderLayout.getChildCount() <= index) {
+            return addHeaderView(header, index, orientation);
+        } else {
+            mHeaderLayout.removeViewAt(index);
+            mHeaderLayout.addView(header, index);
+            return index;
         }
     }
 
@@ -727,12 +990,12 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param footer
      */
-    public void addFooterView(View footer) {
-        addFooterView(footer, -1, LinearLayout.VERTICAL);
+    public int addFooterView(View footer) {
+        return addFooterView(footer, -1, LinearLayout.VERTICAL);
     }
 
-    public void addFooterView(View footer, int index) {
-        addFooterView(footer, index, LinearLayout.VERTICAL);
+    public int addFooterView(View footer, int index) {
+        return addFooterView(footer, index, LinearLayout.VERTICAL);
     }
 
     /**
@@ -745,7 +1008,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *               When index = -1 or index >= child count in mFooterLayout,
      *               the effect of this method is the same as that of {@link #addFooterView(View)}.
      */
-    public void addFooterView(View footer, int index, int orientation) {
+    public int addFooterView(View footer, int index, int orientation) {
         if (mFooterLayout == null) {
             mFooterLayout = new LinearLayout(footer.getContext());
             if (orientation == LinearLayout.VERTICAL) {
@@ -756,13 +1019,35 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
                 mFooterLayout.setLayoutParams(new LayoutParams(WRAP_CONTENT, MATCH_PARENT));
             }
         }
-        index = index >= mFooterLayout.getChildCount() ? -1 : index;
+        final int childCount = mFooterLayout.getChildCount();
+        if (index < 0 || index > childCount) {
+            index = childCount;
+        }
         mFooterLayout.addView(footer, index);
         if (mFooterLayout.getChildCount() == 1) {
             int position = getFooterViewPosition();
             if (position != -1) {
                 notifyItemInserted(position);
             }
+        }
+        return index;
+    }
+
+    public int setFooterView(View header) {
+        return setFooterView(header, 0, LinearLayout.VERTICAL);
+    }
+
+    public int setFooterView(View header, int index) {
+        return setFooterView(header, index, LinearLayout.VERTICAL);
+    }
+
+    public int setFooterView(View header, int index, int orientation) {
+        if (mFooterLayout == null || mFooterLayout.getChildCount() <= index) {
+            return addFooterView(header, index, orientation);
+        } else {
+            mFooterLayout.removeViewAt(index);
+            mFooterLayout.addView(header, index);
+            return index;
         }
     }
 
@@ -856,6 +1141,21 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         return -1;
     }
 
+    public void setEmptyView(int layoutResId, ViewGroup viewGroup) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutResId, viewGroup, false);
+        setEmptyView(view);
+    }
+
+    /**
+     * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
+     *
+     * @see #bindToRecyclerView(RecyclerView)
+     */
+    public void setEmptyView(int layoutResId) {
+        checkNotNull();
+        setEmptyView(layoutResId, getRecyclerView());
+    }
+
     public void setEmptyView(View emptyView) {
         boolean insert = false;
         if (mEmptyLayout == null) {
@@ -945,7 +1245,16 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mLoading) {
             mLoading = true;
-            mRequestLoadMoreListener.onLoadMoreRequested();
+            if (getRecyclerView() != null) {
+                getRecyclerView().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRequestLoadMoreListener.onLoadMoreRequested();
+                    }
+                });
+            } else {
+                mRequestLoadMoreListener.onLoadMoreRequested();
+            }
         }
     }
 
@@ -974,7 +1283,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
 
     /**
      * set anim to start when loading
-     * here need Android API 11
+     * here need android api >=11
      * @param anim
      * @param index
      */
@@ -1006,7 +1315,8 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     /**
      * Set the view animation type.
      *
-     * @param animationType One of {@link #ALPHAIN}, {@link #SCALEIN}, {@link #SLIDEIN_BOTTOM}, {@link #SLIDEIN_LEFT}, {@link #SLIDEIN_RIGHT}.
+     * @param animationType One of {@link #ALPHAIN}, {@link #SCALEIN}, {@link #SLIDEIN_BOTTOM},
+     *                      {@link #SLIDEIN_LEFT}, {@link #SLIDEIN_RIGHT}.
      */
     public void openLoadAnimation(@AnimationType int animationType) {
         this.mOpenAnimationEnable = true;
@@ -1061,10 +1371,30 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     /**
      * Implement this method and use the helper to adapt the view to the given item.
      *
-     * @param viewHoldHelper A fully initialized helper.
+     * @param helper A fully initialized helper.
      * @param item   The item that needs to be displayed.
      */
-    protected abstract void convert(VH viewHoldHelper, T item);
+    protected abstract void convert(VH helper, T item);
+
+    /**
+     * get the specific view by position,e.g. getViewByPosition(2, R.id.textView)
+     * <p>
+     * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
+     *
+     * @see #bindToRecyclerView(RecyclerView)
+     */
+    public View getViewByPosition(int position, int viewId) {
+        checkNotNull();
+        return getViewByPosition(getRecyclerView(), position, viewId);
+    }
+
+    public View getViewByPosition(RecyclerView recyclerView, int position, int viewId) {
+        if (recyclerView == null) {
+            return null;
+        }
+        BaseViewHolder viewHolder = (BaseViewHolder) recyclerView.findViewHolderForLayoutPosition(position);
+        return viewHolder.getView(viewId);
+    }
 
     /**
      * Get the row id associated with the specified position in the list.
@@ -1100,7 +1430,8 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param position     position of the item
      * @param animate      expand items with animation
-     * @param shouldNotify notify the RecyclerView to rebind items, <strong>false</strong> if you want to do it yourself.
+     * @param shouldNotify notify the RecyclerView to rebind items, <strong>false</strong> if you want to do it
+     *                     yourself.
      * @return the number of items that have been added.
      */
     public int expand(@IntRange(from = 0) int position, boolean animate, boolean shouldNotify) {
@@ -1286,7 +1617,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         return list != null && list.size() > 0;
     }
 
-    private boolean isExpandable(T item) {
+    public boolean isExpandable(T item) {
         return item != null && item instanceof IExpandable;
     }
 
@@ -1338,7 +1669,152 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         }
         return -1;
     }
-    //below added by fee
+
+    /**
+     * Interface definition for a callback to be invoked when an itemchild in this
+     * view has been clicked
+     */
+    public interface OnItemChildClickListener {
+        /**
+         * callback method to be invoked when an item in this view has been
+         * click and held
+         *
+         * @param view     The view whihin the ItemView that was clicked
+         * @param position The position of the view int the adapter
+         * @return true if the callback consumed the long click ,false otherwise
+         */
+        boolean onItemChildClick(BaseQuickAdapter adapter, View view, int position);
+    }
+
+
+    /**
+     * Interface definition for a callback to be invoked when an childView in this
+     * view has been clicked and held.
+     */
+    public interface OnItemChildLongClickListener {
+        /**
+         * callback method to be invoked when an item in this view has been
+         * click and held
+         *
+         * @param view     The childView whihin the itemView that was clicked and held.
+         * @param position The position of the view int the adapter
+         * @return true if the callback consumed the long click ,false otherwise
+         */
+        void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position);
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when an item in this
+     * view has been clicked and held.
+     */
+    public interface OnItemLongClickListener {
+        /**
+         * callback method to be invoked when an item in this view has been
+         * click and held
+         *
+         * @param adapter  the adpater
+         * @param view     The view whihin the RecyclerView that was clicked and held.
+         * @param position The position of the view int the adapter
+         * @return true if the callback consumed the long click ,false otherwise
+         */
+        boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position);
+    }
+
+
+    /**
+     * Interface definition for a callback to be invoked when an item in this
+     * RecyclerView itemView has been clicked.
+     */
+    public interface OnItemClickListener {
+
+        /**
+         * Callback method to be invoked when an item in this RecyclerView has
+         * been clicked.
+         *
+         * @param adapter  the adpater
+         * @param view     The itemView within the RecyclerView that was clicked (this
+         *                 will be a view provided by the adapter)
+         * @param position The position of the view in the adapter.
+         */
+        void onItemClick(BaseQuickAdapter adapter, View view, int position);
+    }
+
+    /**
+     * Register a callback to be invoked when an item in this RecyclerView has
+     * been clicked.
+     *
+     * @param listener The callback that will be invoked.
+     */
+    public void setOnItemClickListener(@Nullable OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
+
+    /**
+     * Register a callback to be invoked when an itemchild in View has
+     * been  clicked
+     *
+     * @param listener The callback that will run
+     */
+    public void setOnItemChildClickListener(OnItemChildClickListener listener) {
+        mOnItemChildClickListener = listener;
+    }
+
+    /**
+     * Register a callback to be invoked when an item in this RecyclerView has
+     * been long clicked and held
+     *
+     * @param listener The callback that will run
+     */
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        mOnItemLongClickListener = listener;
+    }
+
+    /**
+     * Register a callback to be invoked when an itemchild  in this View has
+     * been long clicked and held
+     *
+     * @param listener The callback that will run
+     */
+    public void setOnItemChildLongClickListener(OnItemChildLongClickListener listener) {
+        mOnItemChildLongClickListener = listener;
+    }
+
+
+    /**
+     * @return The callback to be invoked with an item in this RecyclerView has
+     * been long clicked and held, or null id no callback as been set.
+     */
+    public final OnItemLongClickListener getOnItemLongClickListener() {
+        return mOnItemLongClickListener;
+    }
+
+    /**
+     * @return The callback to be invoked with an item in this RecyclerView has
+     * been clicked and held, or null id no callback as been set.
+     */
+    public final OnItemClickListener getOnItemClickListener() {
+        return mOnItemClickListener;
+    }
+
+    /**
+     * @return The callback to be invoked with an itemchild in this RecyclerView has
+     * been clicked, or null id no callback has been set.
+     */
+    @Nullable
+    public final OnItemChildClickListener getOnItemChildClickListener() {
+        return mOnItemChildClickListener;
+    }
+
+    /**
+     * @return The callback to be invoked with an itemChild in this RecyclerView has
+     * been long clicked, or null id no callback has been set.
+     */
+    @Nullable
+    public final OnItemChildLongClickListener getmOnItemChildLongClickListener() {
+        return mOnItemChildLongClickListener;
+    }
+
+    //add some methods by fee
     protected String getStrFromRes(int strResId) {
         if (strResId <= 0) {
             return "";
@@ -1379,9 +1855,5 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      */
     protected int providedContentViewResId() {
         return 0;
-    }
-
-    protected void converHeaderView(BaseViewHolder viewHolder) {
-
     }
 }
