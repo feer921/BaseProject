@@ -1,9 +1,12 @@
 package com.lzy.okgo.callback;
 
 import com.lzy.okgo.utils.OkLogger;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
 import common.base.utils.JsonUtil;
+import okhttp3.Call;
 import okhttp3.Response;
 
 /**
@@ -172,5 +175,14 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
 //            OkLogger.e("info", "getGenType()--> thisGenType：" + thisGenType);
         }
         return thisGenType;
+    }
+
+    @Override
+    public void onSuccess(T t, Call call, Response response) {
+        onSuccess(t);
+    }
+    //-------add methods---------------------
+    //为了兼容
+    public void onSuccess(T repData) {
     }
 }

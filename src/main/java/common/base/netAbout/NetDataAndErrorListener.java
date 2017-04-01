@@ -53,7 +53,9 @@ public class NetDataAndErrorListener<T> implements Callback<T>{
         String errorMsg = INetEvent.UNKNOW_ERROR;
         if (t != null) {
             if (!Util.isEmpty(t.getMessage())) {
-                errorMsg = t.getMessage();
+                //                errorMsg = t.getMessage();
+                //modified here by fee 2017-4-1:这样可以拿到更详细的异常信息
+                errorMsg = t.toString();
             }
         }
         if (netEvent != null) {
