@@ -1,9 +1,11 @@
 package common.base.fragments;
 
-import common.base.activitys.BaseNetCallActivity;
+import com.lzy.okgo.callback.OkgoNetCallback;
+
 import common.base.netAbout.INetEvent;
 import common.base.netAbout.NetDataAndErrorListener;
 import common.base.netAbout.NetRequestLifeMarker;
+import common.base.utils.GenericsParamUtil;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -183,5 +185,37 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      * @param responseResut 网络请求响应结果 这里为Object对象类型来通用，子类如果处理此回调时，自己强转成预期对象类型
      */
     protected void dealWithETypeResponse(int requestDataType, Object responseResut) {
+    }
+
+    /**
+     * 2017-4-1
+     * 增加对Okgo网络请求框架关于网络响应回调的监听
+     */
+    protected OkgoNetCallback<T> okgoRequestCallback;
+
+    protected void initOkgoNetDataListener() {
+        if (okgoRequestCallback == null) {
+            okgoRequestCallback = createOkgoNetListener();
+        }
+    }
+
+    protected OkgoNetCallback<T> createOkgoNetListener() {
+        return new OkgoNetCallback<>(getSubClasGenericsParamClass(),this);
+    }
+
+    /**
+     * 获取本基类的子类所指定的泛型T的具体的对象类型的Class对象
+     * @return
+     */
+    private Class<T> getSubClasGenericsParamClass(){
+        return GenericsParamUtil.getGenericsParamCalss(getClass().getGenericSuperclass(),0);
+    }
+    /**
+     * 意义参见：{@linkplain #createETypeListener()}
+     * @param <E>
+     * @return
+     */
+    protected <E> OkgoNetCallback<E> createETypeOkgoListener(Class<E> eTypeClass) {
+        return OkgoNetCallback.create(eTypeClass,new ETypeNetEvent<E>());
     }
 }

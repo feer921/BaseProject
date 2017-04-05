@@ -1,8 +1,11 @@
 package common.base.activitys;
 
+import com.lzy.okgo.callback.OkgoNetCallback;
+
 import common.base.netAbout.INetEvent;
 import common.base.netAbout.NetDataAndErrorListener;
 import common.base.netAbout.NetRequestLifeMarker;
+import common.base.utils.GenericsParamUtil;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -12,6 +15,7 @@ import common.base.netAbout.NetRequestLifeMarker;
  * 注：范型<T>表示网络请求响应的数据类型,eg. T = JsonObject ,则要求网络请求后返回JsonObject类型数据
  */
 public abstract class BaseNetCallActivity<T> extends BaseActivity implements INetEvent<T>{
+
     /**
      * 是否在界面退出的时候需要取消当前所有的网络请求
      * 目前为测试阶段，各子类可根据实际情况决定是否需要，比如：某个子类只有一个网络请求，并且该请求已经返回了，则不需要本基类进行取消全部网络请求的操作
@@ -75,6 +79,36 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
         }
     }
 
+    /**
+     * 增加对Okgo网络请求框架关于网络响应回调的监听
+     */
+    protected OkgoNetCallback<T> okgoRequestCallback;
+
+    protected void initOkgoNetDataListener() {
+        if (okgoRequestCallback == null) {
+            okgoRequestCallback = createOkgoNetListener();
+        }
+    }
+
+    protected OkgoNetCallback<T> createOkgoNetListener() {
+        return new OkgoNetCallback<>(getSubClasGenericsParamClass(),this);
+    }
+
+    /**
+     * 获取本基类的子类所指定的泛型T的具体的对象类型的Class对象
+     * @return
+     */
+    private Class<T> getSubClasGenericsParamClass(){
+        return GenericsParamUtil.getGenericsParamCalss(getClass().getGenericSuperclass(),0);
+    }
+    /**
+     * 意义参见：{@linkplain #createETypeListener()}
+     * @param <E>
+     * @return
+     */
+    protected <E> OkgoNetCallback<E> createETypeOkgoListener(Class<E> eTypeClass) {
+        return OkgoNetCallback.create(eTypeClass,new ETypeNetEvent<E>());
+    }
     /**
      * 创建一个网络请求监听者，适合需求多个网络请求的异步进行的情况下，对每一个单独的网络请求创建一个网络请求监听者
      * @return

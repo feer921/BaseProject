@@ -14,10 +14,14 @@ import okhttp3.Response;
  */
 
 public class OkgoNetCallback<T> extends XtypeCallback<T>{
-    protected INetEvent<T> netEvent;
-    public OkgoNetCallback(INetEvent<T> netEvent) {
+    public static <E> OkgoNetCallback<E> create(Class<E> genericsParamClass, INetEvent<E> netEvent) {
+        return new OkgoNetCallback<>(genericsParamClass, netEvent);
+    }
+    public OkgoNetCallback(Class<T> tTypeClass,INetEvent<T> netEvent){
+        genericsTypeClass = tTypeClass;
         this.netEvent = netEvent;
     }
+    protected INetEvent<T> netEvent;
 
     public void onSuccess(T repData) {
         if (null != netEvent) {

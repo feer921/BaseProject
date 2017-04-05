@@ -1,10 +1,8 @@
 package com.lzy.okgo.callback;
 
 import com.lzy.okgo.utils.OkLogger;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-
 import common.base.utils.JsonUtil;
 import okhttp3.Call;
 import okhttp3.Response;
@@ -87,10 +85,10 @@ import okhttp3.Response;
  * T 是任何对象类型都能返回，只要与服务器响应格式对得上，就能正确返回.
  */
 public abstract class XtypeCallback<T> extends AbsCallback<T> {
+    protected Class<T> genericsTypeClass;
 
     @Override
     public T convertSuccess(Response response) throws Exception {
-        //获取本类的实现类
         /**
          * genType = com.lzy.okgo.callback.XtypeCallback<com.fee.theoneproject.ServerModel>
          *     对应外部使用为XtypeCallback<ServerModel>的情况打印信息
@@ -121,7 +119,7 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
          * paramsType = com.fee.theoneproject.LzyResponse<java.util.List<com.fee.theoneproject.ServerModel>>
          */
         Type paramsType = tParams[0];
-
+        OkLogger.i("info", "---> paramsType = " + paramsType);
         if (paramsType instanceof Class) {
             paramTypeClass = (Class<T>) paramsType;
         }
@@ -141,7 +139,8 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
             paramTypeClass = (Class<T>) rawType;
         }
         else {
-            throw new IllegalArgumentException("泛型参数异常...");
+            paramTypeClass = genericsTypeClass;
+            OkLogger.i("info", "---> 泛型擦试下： paramTypeClass = " + paramTypeClass);
         }
         OkLogger.e("info", "--> 泛型参数T的类名为：" + paramTypeClass.getSimpleName());
         //这里直接拿到服务器的完整字符串响应,以便使用各种框架直接转化成T对象就行
