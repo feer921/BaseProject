@@ -1,16 +1,12 @@
 package common.base.activitys;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 
-import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-
-import common.base.utils.CommonLog;
+import com.flyco.banner.widget.Banner.BaseGuideBanner;
 
 /**
  * User: fee(1176610771@qq.com)
@@ -18,12 +14,12 @@ import common.base.utils.CommonLog;
  * Time: 17:29
  * DESC: 导航界面基类
  */
-public abstract class BaseGuideActivity extends BaseActivity{
+public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
+    protected BaseGuideBanner<GuidDataType> guideBanner;
     /**
      * 该导航页是否需要全屏显示
      */
     protected boolean needFullScreen;
-    protected SliderLayout toGuideSlideLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (needFullScreen) {//全屏
@@ -31,11 +27,74 @@ public abstract class BaseGuideActivity extends BaseActivity{
             requestWindowFeature(Window.FEATURE_NO_TITLE);
         }
         super.onCreate(savedInstanceState);
-        toGuideSlideLayout = new SliderLayout(mContext);
-        setContentView(toGuideSlideLayout);
+        guideBanner = getGuideBanner();
+        initGuideBanner();
+        ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        setContentView(guideBanner,vlp);
+        setContentView(guideBanner);
         initData();
     }
 
+    /**
+     * 可以重写该方法来再初始化 BaseGuideBanner
+     */
+    protected void initGuideBanner() {
+    }
+
+    /**
+     * 子类可以重写这个，以提供自己实现的的BaseGuideBanner，如果提供了，则:<br>
+     * {@linkplain #getGuideViewBaseData(Object, int)}<br>
+     * {@linkplain #initGuideView(View, int)}<br>
+     * 不用写逻辑了
+     * @return
+     */
+    protected BaseGuideBanner<GuidDataType> getGuideBanner(){
+        return new BaseGuideBanner<GuidDataType>(this) {
+//            /**
+//             * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
+//             *
+//             * @param position
+//             * @return
+//             */
+//            @Override
+//            protected View provideYourViewWithOutDatas(int position) {
+//                return provideMyGuideViewWithOutDatas(position);
+//            }
+
+            /**
+             * 根据提供的数据集来获取每一页的视图
+             *
+             * @param itemData
+             * @param itemPosition
+             * @return
+             */
+            @Override
+            protected View getItemViewBaseData(GuidDataType itemData, int itemPosition) {
+                return getGuideViewBaseData(itemData,itemPosition);
+            }
+
+            /**
+             * 初始化当前的导航页的视图，这个要交给具体子类去实现，因为本基类不知道，滑动导航到各页时，需要初始化哪些子View，并且不知道要做什么
+             *
+             * @param curView         当前的导航页(视图)
+             * @param curViewPosition 当前导航页(视图)的位置
+             */
+            @Override
+            public void initGuideView(View curView, int curViewPosition) {
+                BaseGuideActivity.this.initGuideView(curView,curViewPosition);
+            }
+        };
+    }
+
+    protected abstract void initGuideView(View curGuideView, int curViewPosition);
+
+    protected abstract View getGuideViewBaseData(GuidDataType itemData,int guideViewPos);
+
+//    protected abstract View provideMyGuideViewWithOutDatas(int targetGuidViePos);
+
+    protected void addGuideData(GuidDataType guideItemData) {
+        guideBanner.addItemData(guideItemData);
+    }
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
      *
@@ -54,28 +113,5 @@ public abstract class BaseGuideActivity extends BaseActivity{
 
     }
 
-    protected void addSlideView(BaseSliderView oneSlideView) {
-        toGuideSlideLayout.addSlider(oneSlideView);
-    }
-    protected class CommonSlideView extends BaseSliderView{
-        private View slideContentView;
-        private ImageView toShowGuideImageView;
-        public CommonSlideView(Context context,View slideContentView,ImageView toShowGuideImageView) {
-            super(context);
-            this.slideContentView = slideContentView;
-            this.toShowGuideImageView = toShowGuideImageView;
-        }
 
-        /**
-         * the extended class have to implement getView(), which is called by the adapter,
-         * every extended class response to render their own view.
-         *
-         * @return
-         */
-        @Override
-        public View getView() {
-            bindEventAndShow(this.slideContentView,toShowGuideImageView);
-            return this.slideContentView;
-        }
-    }
 }

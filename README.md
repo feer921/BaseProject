@@ -11,7 +11,7 @@
   本来想自己实现一个通用的RecyclerView的适配器，但由于自己的额外时间不太多，并且这个轮子在GitHub上已经有一些写的比较好，“基工”就直接借来，并修正一些BUG，来作为本框架的
 RecyclerView的适配器，SO，特别感谢：
   https://github.com/CymChad/BaseRecyclerViewAdapterHelper。
-  以及：https://github.com/daimajia/AndroidImageSlider
+  以及：https://github.com/H07000223/FlycoBanner_Master
     
 #目前阶段：
   “基工”到目前为止(当然会持续维护更新)已经可以用到实际项目中去快速构建项目了，本人的公司的三个APP都依赖于“基工”，自己也会持续努力让“基工”更加完善。
