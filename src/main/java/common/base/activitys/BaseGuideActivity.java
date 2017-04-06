@@ -2,10 +2,8 @@ package common.base.activitys;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
 import com.flyco.banner.widget.Banner.BaseGuideBanner;
 
 /**
@@ -25,11 +23,12 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
         if (needFullScreen) {//全屏
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
             requestWindowFeature(Window.FEATURE_NO_TITLE);
+            e("info",TAG + "---> need full screen..................");
         }
         super.onCreate(savedInstanceState);
         guideBanner = getGuideBanner();
         initGuideBanner();
-        ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        guideBanner.showBanner();
 //        setContentView(guideBanner,vlp);
         setContentView(guideBanner);
         initData();

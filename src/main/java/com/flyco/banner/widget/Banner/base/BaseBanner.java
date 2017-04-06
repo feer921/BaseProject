@@ -20,17 +20,12 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.flyco.banner.widget.LoopViewPager.FixedSpeedScroller;
 import com.flyco.banner.widget.LoopViewPager.LoopViewPager;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import common.base.R;
 
 /**
@@ -42,7 +37,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     /** 日志 */
     private static final String TAG = BaseBanner.class.getSimpleName();
     /** 单线程池定时任务 */
-    private ScheduledExecutorService mStse;
+    private ScheduledExecutorService scheduledTaskService;
     /** 上下文 */
     protected Context mContext;
     /** 设备密度 */
@@ -59,7 +54,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     private long mDelay;
     /** 滚动间隔 */
     private long mPeriod;
-    /** 是否自动滚动 */
+    /** 是否开启了自动滚动 */
     private boolean mIsAutoScrollEnable;
     /** 是否正在自动滚动中 */
     private boolean mIsAutoScrolling;
@@ -84,12 +79,27 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     /** 标题 */
     private TextView mTvTitle;
 
+//    private Handler mHandler = new Handler() {
+//        public void handleMessage(Message msg) {
+//            scrollToNextItem(mCurrentPositon);
+//        }
+//    };
+    private static final int MSG_WHAT_PAUSE_SCROLL = 10;
+    private static final int MSG_WHAT_LOOP_SCROLL = 11;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
-            scrollToNextItem(mCurrentPositon);
+            int msgWhat = msg.what;
+            switch (msgWhat) {
+                case MSG_WHAT_PAUSE_SCROLL:
+                    mHandler.removeCallbacksAndMessages(null);
+                    break;
+                case MSG_WHAT_LOOP_SCROLL:
+                    scrollToNextItem(mCurrentPositon);
+                    sendEmptyMessageDelayed(msgWhat,mPeriod  * 1000);
+                    break;
+            }
         }
     };
-
     public BaseBanner(Context context) {
         this(context, null, 0);//这样一调用会报空指针
     }
@@ -103,14 +113,15 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         this.mContext = context;
         mDisplayMetrics = context.getResources().getDisplayMetrics();
 
-        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.BaseBanner);
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.BaseBanner,0,defStyle);
+//        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.BaseBanner);
         float scale = ta.getFloat(R.styleable.BaseBanner_bb_scale, -1);
 
         boolean isLoopEnable = ta.getBoolean(R.styleable.BaseBanner_bb_isLoopEnable, true);
         mDelay = ta.getInt(R.styleable.BaseBanner_bb_delay, 5);
         mPeriod = ta.getInt(R.styleable.BaseBanner_bb_period, 5);
         mIsAutoScrollEnable = ta.getBoolean(R.styleable.BaseBanner_bb_isAutoScrollEnable, true);
-
+        Log.e("info", TAG + "--> isLoopEnable = " + isLoopEnable);
         int barColor = ta.getColor(R.styleable.BaseBanner_bb_barColor, Color.TRANSPARENT);
         mIsBarShowWhenLast = ta.getBoolean(R.styleable.BaseBanner_bb_isBarShowWhenLast, true);
         int indicatorGravity = ta.getInt(R.styleable.BaseBanner_bb_indicatorGravity, Gravity.CENTER);
@@ -375,8 +386,11 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         }
     };
 
-    /** 开始滚动 */
-    public void startScroll() {
+    public void showBanner() {
+        setUpVIews();
+        goOnScroll();
+    }
+    public void setUpVIews() {
         if (mDatas == null) {
             throw new IllegalStateException("Data source is empty,you must setSource() before startScroll()");
         }
@@ -393,42 +407,42 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
             mLlIndicatorContainer.removeAllViews();
             mLlIndicatorContainer.addView(indicatorViews);
         }
-        goOnScroll();
     }
-
     /** 继续滚动(for LoopViewPager) */
     public void goOnScroll() {
         if (!isValid()) {
             return;
         }
-
         if (mIsAutoScrolling) {//正在自动滚动
             return;
         }
-        if (isLoopViewPager() && mIsAutoScrollEnable) {
+        if (isLoopViewPager() && mIsAutoScrollEnable) {//
             pauseScroll();
-            mStse = Executors.newSingleThreadScheduledExecutor();
-            mStse.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    mHandler.obtainMessage().sendToTarget();
-                }
-            }, mDelay, mPeriod, TimeUnit.SECONDS);
+//            scheduledTaskService = Executors.newSingleThreadScheduledExecutor();
+//            scheduledTaskService.scheduleAtFixedRate(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mHandler.obtainMessage().sendToTarget();
+//                }
+//            }, mDelay, mPeriod, TimeUnit.SECONDS);
+
+            mHandler.sendEmptyMessageDelayed(MSG_WHAT_LOOP_SCROLL,mDelay * 1000);
             mIsAutoScrolling = true;
-            Log.d(TAG, this.getClass().getSimpleName() + "--->goOnScroll()");
-        } else {
+            Log.i(TAG, this.getClass().getSimpleName() + "--->goOnScroll()");
+        }
+        else {
             mIsAutoScrolling = false;
         }
     }
 
     /** 停止滚动(for LoopViewPager) */
     public void pauseScroll() {
-        if (mStse != null) {
-            mStse.shutdown();
-            mStse = null;
-        }
+//        if (scheduledTaskService != null) {
+//            scheduledTaskService.shutdown();
+//            scheduledTaskService = null;
+//        }
         Log.d(TAG, this.getClass().getSimpleName() + "--->pauseScroll()");
-
+        mHandler.removeCallbacksAndMessages(null);
         mIsAutoScrolling = false;
     }
 
@@ -526,8 +540,20 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         return sp * scale;
     }
 
+    /**
+     * mViewPager instanceof LoopViewPager
+     * return true
+     * @return
+     */
     protected boolean isLoopViewPager() {
         return mViewPager instanceof LoopViewPager;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
     }
 
     /**
@@ -544,7 +570,6 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
             Log.e(TAG, "DataList must be not empty!");
             return false;
         }
-
         return true;
     }
 

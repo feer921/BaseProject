@@ -17,16 +17,16 @@ public class SimpleGuideBanner extends BaseGuideBanner<Integer>{
         super(context);
     }
 
-    /**
-     * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
-     *
-     * @param position
-     * @return
-     */
-    @Override
-    protected View provideYourViewWithOutDatas(int position) {
-        return null;
-    }
+//    /**
+//     * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
+//     *
+//     * @param position
+//     * @return
+//     */
+//    @Override
+//    protected View provideYourViewWithOutDatas(int position) {
+//        return null;
+//    }
 
     /**
      * 根据提供的数据集来获取每一页的视图
