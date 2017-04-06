@@ -103,9 +103,9 @@ public class RetrofitClient {
         }
     }
     public static RetrofitClient getMe() {
-        if (Util.isEmpty(HOST_BASE_URL)) {
-            throw new NullPointerException("please config the host base url first");
-        }
+//        if (Util.isEmpty(HOST_BASE_URL)) {
+//            throw new NullPointerException("please config the host base url first");
+//        }
         if (retrofitClient == null) {
             synchronized (RetrofitClient.class) {
                 if (retrofitClient == null) {
