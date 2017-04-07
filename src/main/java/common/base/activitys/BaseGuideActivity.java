@@ -12,24 +12,27 @@ import com.flyco.banner.widget.Banner.BaseGuideBanner;
  * Time: 17:29
  * DESC: 导航界面基类
  */
-public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
+public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
     protected BaseGuideBanner<GuidDataType> guideBanner;
     /**
      * 该导航页是否需要全屏显示
      */
     protected boolean needFullScreen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (needFullScreen) {//全屏
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            e("info",TAG + "---> need full screen..................");
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            requestWindowFeature(Window.FEATURE_NO_TITLE);//这行代码对ActionBar无效
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().hide();
+            }
         }
         super.onCreate(savedInstanceState);
         guideBanner = getGuideBanner();
         initGuideBanner();
         guideBanner.showBanner();
-//        setContentView(guideBanner,vlp);
+        //        setContentView(guideBanner,vlp);
         setContentView(guideBanner);
         initData();
     }
@@ -45,20 +48,21 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
      * {@linkplain #getGuideViewBaseData(Object, int)}<br>
      * {@linkplain #initGuideView(View, int)}<br>
      * 不用写逻辑了
+     *
      * @return
      */
-    protected BaseGuideBanner<GuidDataType> getGuideBanner(){
+    protected BaseGuideBanner<GuidDataType> getGuideBanner() {
         return new BaseGuideBanner<GuidDataType>(this) {
-//            /**
-//             * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
-//             *
-//             * @param position
-//             * @return
-//             */
-//            @Override
-//            protected View provideYourViewWithOutDatas(int position) {
-//                return provideMyGuideViewWithOutDatas(position);
-//            }
+            //            /**
+            //             * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
+            //             *
+            //             * @param position
+            //             * @return
+            //             */
+            //            @Override
+            //            protected View provideYourViewWithOutDatas(int position) {
+            //                return provideMyGuideViewWithOutDatas(position);
+            //            }
 
             /**
              * 根据提供的数据集来获取每一页的视图
@@ -69,7 +73,7 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
              */
             @Override
             protected View getItemViewBaseData(GuidDataType itemData, int itemPosition) {
-                return getGuideViewBaseData(itemData,itemPosition);
+                return getGuideViewBaseData(itemData, itemPosition);
             }
 
             /**
@@ -80,20 +84,21 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity{
              */
             @Override
             public void initGuideView(View curView, int curViewPosition) {
-                BaseGuideActivity.this.initGuideView(curView,curViewPosition);
+                BaseGuideActivity.this.initGuideView(curView, curViewPosition);
             }
         };
     }
 
     protected abstract void initGuideView(View curGuideView, int curViewPosition);
 
-    protected abstract View getGuideViewBaseData(GuidDataType itemData,int guideViewPos);
+    protected abstract View getGuideViewBaseData(GuidDataType itemData, int guideViewPos);
 
-//    protected abstract View provideMyGuideViewWithOutDatas(int targetGuidViePos);
+    //    protected abstract View provideMyGuideViewWithOutDatas(int targetGuidViePos);
 
     protected void addGuideData(GuidDataType guideItemData) {
         guideBanner.addItemData(guideItemData);
     }
+
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
      *

@@ -20,12 +20,14 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.flyco.banner.widget.LoopViewPager.FixedSpeedScroller;
 import com.flyco.banner.widget.LoopViewPager.LoopViewPager;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
+
 import common.base.R;
 
 /**
@@ -35,9 +37,9 @@ import common.base.R;
  */
 public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends RelativeLayout {
     /** 日志 */
-    private static final String TAG = BaseBanner.class.getSimpleName();
-    /** 单线程池定时任务 */
-    private ScheduledExecutorService scheduledTaskService;
+    protected final String TAG = getClass().getSimpleName();
+//    /** 单线程池定时任务 */
+//    private ScheduledExecutorService scheduledTaskService;
     /** 上下文 */
     protected Context mContext;
     /** 设备密度 */
@@ -79,11 +81,6 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     /** 标题 */
     private TextView mTvTitle;
 
-//    private Handler mHandler = new Handler() {
-//        public void handleMessage(Message msg) {
-//            scrollToNextItem(mCurrentPositon);
-//        }
-//    };
     private static final int MSG_WHAT_PAUSE_SCROLL = 10;
     private static final int MSG_WHAT_LOOP_SCROLL = 11;
     private Handler mHandler = new Handler() {
@@ -101,7 +98,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         }
     };
     public BaseBanner(Context context) {
-        this(context, null, 0);//这样一调用会报空指针
+        this(context, null, 0);//这样一调用会报空指针,需作屏蔽处理
     }
 
     public BaseBanner(Context context, AttributeSet attrs) {
@@ -121,7 +118,6 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         mDelay = ta.getInt(R.styleable.BaseBanner_bb_delay, 5);
         mPeriod = ta.getInt(R.styleable.BaseBanner_bb_period, 5);
         mIsAutoScrollEnable = ta.getBoolean(R.styleable.BaseBanner_bb_isAutoScrollEnable, true);
-        Log.e("info", TAG + "--> isLoopEnable = " + isLoopEnable);
         int barColor = ta.getColor(R.styleable.BaseBanner_bb_barColor, Color.TRANSPARENT);
         mIsBarShowWhenLast = ta.getBoolean(R.styleable.BaseBanner_bb_isBarShowWhenLast, true);
         int indicatorGravity = ta.getInt(R.styleable.BaseBanner_bb_indicatorGravity, Gravity.CENTER);
@@ -203,7 +199,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
             mLlBottomBar.addView(mLlIndicatorContainer);
         }
         else {
-            if (indicatorGravity == Gravity.END) {//指示器在布局未(从左往右方向则为右，从右往左方向(比如印度)则为左)
+            if (indicatorGravity == Gravity.RIGHT) {//指示器布局要放在右边
                 mLlBottomBar.setGravity(Gravity.CENTER_VERTICAL);
                 mLlBottomBar.addView(mTvTitle);
                 mLlBottomBar.addView(mLlIndicatorContainer);
@@ -212,7 +208,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
                 mTvTitle.setEllipsize(TextUtils.TruncateAt.END);
                 mTvTitle.setGravity(Gravity.START);
             }
-            else if (indicatorGravity == Gravity.START) {
+            else if (indicatorGravity == Gravity.LEFT) {//指示器布局要放在左边
                 mLlBottomBar.setGravity(Gravity.CENTER_VERTICAL);
                 mLlBottomBar.addView(mLlIndicatorContainer);
                 mLlBottomBar.addView(mTvTitle);
@@ -428,7 +424,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
             mHandler.sendEmptyMessageDelayed(MSG_WHAT_LOOP_SCROLL,mDelay * 1000);
             mIsAutoScrolling = true;
-            Log.i(TAG, this.getClass().getSimpleName() + "--->goOnScroll()");
+            Log.i(TAG, "--->goOnScroll()");
         }
         else {
             mIsAutoScrolling = false;
@@ -441,7 +437,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 //            scheduledTaskService.shutdown();
 //            scheduledTaskService = null;
 //        }
-        Log.d(TAG, this.getClass().getSimpleName() + "--->pauseScroll()");
+        Log.d(TAG,"--->pauseScroll()");
         mHandler.removeCallbacksAndMessages(null);
         mIsAutoScrolling = false;
     }
