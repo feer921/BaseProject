@@ -1,14 +1,21 @@
 package com.flyco.banner.widget.Banner;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import common.base.R;
 
 /**
  * ******************(^_^)***********************
  * User: 11776610771@qq.com
  * Date: 2017/4/6
  * Time: 14:41
- * DESC:
+ * DESC: 这里提供一个默认布局的导航Banner
  * ******************(^_^)***********************
  */
 
