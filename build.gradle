@@ -25,14 +25,15 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:support-v4:25.3.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
 //    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.2.0'
-//    compile 'com.squareup.retrofit2:converter-jackson:2.1.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.android.support:recyclerview-v7:25.3.0'
+//    compile 'com.nineoldandroids:library:2.4.0' 九老动画目前应该不需要了(android3.0)
     compile 'cn.pedant.sweetalert:library:1.3'
 }
