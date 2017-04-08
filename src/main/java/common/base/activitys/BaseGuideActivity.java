@@ -15,9 +15,9 @@ import com.flyco.banner.widget.Banner.BaseGuideBanner;
 public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
     protected BaseGuideBanner<GuidDataType> guideBanner;
     /**
-     * 该导航页是否需要全屏显示
+     * 该导航页是否需要全屏显示(一般也需要全屏显示)
      */
-    protected boolean needFullScreen;
+    protected boolean needFullScreen = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +38,9 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
     }
 
     /**
-     * 可以重写该方法来再初始化 BaseGuideBanner
+     * 初始化 BaseGuideBanner,eg.:给banner添加数据、设置切换动画、以及指示器等
      */
-    protected void initGuideBanner() {
-    }
+    protected abstract void initGuideBanner();
 
     /**
      * 子类可以重写这个，以提供自己实现的的BaseGuideBanner，如果提供了，则:<br>
@@ -53,17 +52,6 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
      */
     protected BaseGuideBanner<GuidDataType> getGuideBanner() {
         return new BaseGuideBanner<GuidDataType>(this) {
-            //            /**
-            //             * 如果使用者连往Banner里装入Data数据都不愿意装入，则自己使用这个方法来提供每一导航页的View吧
-            //             *
-            //             * @param position
-            //             * @return
-            //             */
-            //            @Override
-            //            protected View provideYourViewWithOutDatas(int position) {
-            //                return provideMyGuideViewWithOutDatas(position);
-            //            }
-
             /**
              * 根据提供的数据集来获取每一页的视图
              *
@@ -92,8 +80,6 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
     protected abstract void initGuideView(View curGuideView, int curViewPosition);
 
     protected abstract View getGuideViewBaseData(GuidDataType itemData, int guideViewPos);
-
-    //    protected abstract View provideMyGuideViewWithOutDatas(int targetGuidViePos);
 
     protected void addGuideData(GuidDataType guideItemData) {
         guideBanner.addItemData(guideItemData);

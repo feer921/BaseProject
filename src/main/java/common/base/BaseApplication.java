@@ -8,9 +8,9 @@ import common.base.utils.PreferVisitor;
  * User: fee(1176610771@qq.com)
  * Date: 2016-07-02
  * Time: 12:00
- * DESC: APP程序上下文基类,一些通用的操作类
+ * DESC: APP程序上下文基类,一些通用的操作类 <E>指代BaseApplication子类自身，方便链式调用
  */
-public class BaseApplication extends Application{
+public class BaseApplication<E extends BaseApplication> extends Application{
     protected PreferVisitor preferVisitor;
     protected String appPreferFileName = "def_app_config";
     @Override
@@ -19,9 +19,9 @@ public class BaseApplication extends Application{
         preferVisitor = PreferVisitor.getInstance(this);
     }
 
-    public BaseApplication prefer(String preferKey, Object value) {
+    public E prefer(String preferKey, Object value) {
         preferVisitor.saveValue(appPreferFileName, preferKey, value);
-        return this;
+        return (E) this;
     }
 
     public <T> T getPrefer(String preferKey,T defValue) {
@@ -33,24 +33,27 @@ public class BaseApplication extends Application{
      * @param keys
      * @param valueDatas
      */
-    public void batchPrefer(String[] keys, Object... valueDatas) {
+    public E batchPrefer(String[] keys, Object... valueDatas) {
         preferVisitor.batchSaveValues(appPreferFileName,keys,valueDatas);
+        return (E) this;
     }
 
     /**
      * 栈入一个当前启动的Activity
      * @param curActivity
      */
-    public void stackActivity(Activity curActivity) {
+    public E stackActivity(Activity curActivity) {
         AppManager.getMe().addActivity(curActivity);
+        return (E) this;
     }
 
     /**
      * 当一个Activity结束时也从管理的栈内踢出当前的Activity
      * @param curActivity
      */
-    public void kickOutActivity(Activity curActivity) {
+    public E kickOutActivity(Activity curActivity) {
         AppManager.getMe().finishActivity(curActivity);
+        return (E) this;
     }
 
     @Override
