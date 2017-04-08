@@ -1,12 +1,7 @@
 package com.flyco.banner.widget.Banner;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import com.squareup.picasso.Picasso;
-import common.base.R;
 
 /**
  * ******************(^_^)***********************
