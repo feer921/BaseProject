@@ -34,6 +34,6 @@ dependencies {
 //    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.2.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
-//    compile 'com.nineoldandroids:library:2.4.0' 九老动画目前应该不需要了(android3.0)
+    compile 'com.nineoldandroids:library:2.4.0' //九老动画目前应该不需要了(android3.0)
     compile 'cn.pedant.sweetalert:library:1.3'
 }
