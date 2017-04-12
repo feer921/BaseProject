@@ -103,5 +103,8 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        //一般在引导界面不能让用户点击返回键可以退出
+    }
 }

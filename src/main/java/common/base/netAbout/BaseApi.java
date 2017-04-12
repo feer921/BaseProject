@@ -50,7 +50,7 @@ public class BaseApi{
      * 取消对应的请求
      * @param toCancelCallRequestType 对应的网络请求类型
      */
-    public static void cacelCurCall(int toCancelCallRequestType) {
+    public static void cancelCurCall(int toCancelCallRequestType) {
         RetrofitClient.getMe().cancelCall(toCancelCallRequestType);
     }
 
