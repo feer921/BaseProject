@@ -1,10 +1,13 @@
 package common.base.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -271,5 +274,62 @@ public class ViewUtil{
             return (FrameLayout) curActivity.getWindow().getDecorView().findViewById(android.R.id.content);
         }
         return contentLayout;
+    }
+    private static final int INVALID_COLOR_VALUE = -1;
+    private static final int COLOR_DEFAULT = Color.parseColor("#20000000");
+
+    /**
+     * 引用来自：https://github.com/hongyangAndroid/ColorfulStatusBar
+     * @param activity
+     * @param statusBarColor
+     */
+    @SuppressLint("NewApi")
+    public static void changeStatusBarColor(Activity activity, int statusBarColor) {
+        if(Util.isCompateApi(21)){
+            //android 5.0+系统
+            if(statusBarColor != INVALID_COLOR_VALUE){
+                activity.getWindow().setStatusBarColor(statusBarColor);//need api 21
+            }
+        }
+        else if(Util.isCompateApi(19)){
+            //android 4.4 ~ android 5.0（不含）
+            int color = COLOR_DEFAULT;
+            ViewGroup contentView = (ViewGroup) activity.findViewById(android.R.id.content);
+            if (statusBarColor != INVALID_COLOR_VALUE)
+            {
+                color = statusBarColor;
+            }
+            View statusBarView = contentView.getChildAt(0);
+            //改变颜色时避免重复添加statusBarView
+            if (statusBarView != null && statusBarView.getMeasuredHeight() == getStatusBarHeight(activity))
+            {
+                statusBarView.setBackgroundColor(color);
+                return;
+            }
+            statusBarView = new View(activity);
+            ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    getStatusBarHeight(activity));
+            statusBarView.setBackgroundColor(color);
+            contentView.addView(statusBarView, lp);
+        }
+    }
+
+    /**
+     * android 5.0+ 时，什么都没做；
+     * android 4.4+时，给statusbar设置了默认的背景颜色
+     * @param activity
+     */
+    public static void compatStatusColor(Activity activity) {
+        changeStatusBarColor(activity, INVALID_COLOR_VALUE);
+    }
+    public static int getStatusBarHeight(Context context)
+    {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0)
+        {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

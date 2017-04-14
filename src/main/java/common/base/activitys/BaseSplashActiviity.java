@@ -47,8 +47,11 @@ public abstract class BaseSplashActiviity extends BaseActivity implements Animat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //一般闪屏页是全屏展示
-        requestWindowFeature(Window.FEATURE_NO_TITLE); //设置无标题
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //设置无标题
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
         super.onCreate(savedInstanceState);
     }
 
