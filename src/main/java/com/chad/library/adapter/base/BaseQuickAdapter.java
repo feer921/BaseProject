@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 Joan Zapata
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,7 @@ import com.chad.library.adapter.base.animation.SlideInRightAnimation;
 import com.chad.library.adapter.base.entity.IExpandable;
 import com.chad.library.adapter.base.loadmore.LoadMoreView;
 import com.chad.library.adapter.base.loadmore.SimpleLoadMoreView;
+import com.chad.library.adapter.base.util.MultiTypeDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,10 +63,11 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 /**
  * https://github.com/CymChad/BaseRecyclerViewAdapterHelper
  */
-public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends RecyclerView.Adapter<K> {
 
     //load more
     private boolean mNextLoadEnable = false;
+    /** 是否开启加载更多 **/
     private boolean mLoadMoreEnable = false;
     private boolean mLoading = false;
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
@@ -92,10 +94,10 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * Use with {@link #openLoadAnimation}
      */
     public static final int SLIDEIN_RIGHT = 0x00000005;
-    private OnItemClickListener mOnItemClickListener;
-    private OnItemLongClickListener mOnItemLongClickListener;
-    private OnItemChildClickListener mOnItemChildClickListener;
-    private OnItemChildLongClickListener mOnItemChildLongClickListener;
+    private OnItemClickListener<T> mOnItemClickListener;
+    private OnItemLongClickListener<T> mOnItemLongClickListener;
+    private OnItemChildClickListener<T> mOnItemChildClickListener;
+    private OnItemChildLongClickListener<T> mOnItemChildLongClickListener;
 
     @IntDef({ALPHAIN, SCALEIN, SLIDEIN_BOTTOM, SLIDEIN_LEFT, SLIDEIN_RIGHT})
     @Retention(RetentionPolicy.SOURCE)
@@ -162,7 +164,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * Please use {@link #setOnLoadMoreListener(RequestLoadMoreListener, RecyclerView)}
      */
     @Deprecated
-    public void setOnLoadMoreListener(RequestLoadMoreListener requestLoadMoreListener) {
+    protected void setOnLoadMoreListener(RequestLoadMoreListener requestLoadMoreListener) {
         openLoadMore(requestLoadMoreListener);
     }
 
@@ -197,6 +199,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @see #setNewData(List)
      */
     public void disableLoadMoreIfNotFullPage(RecyclerView recyclerView) {
+        setEnableLoadMore(false);
         if (recyclerView == null) return;
         RecyclerView.LayoutManager manager = recyclerView.getLayoutManager();
         if (manager == null) return;
@@ -383,6 +386,10 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         if (layoutResId != 0) {
             this.mLayoutResId = layoutResId;
         }
+        //add
+        else{
+            this.mLayoutResId = providedContentViewResId();
+        }
     }
 
     public BaseQuickAdapter(List<T> data) {
@@ -481,6 +488,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param newData
      */
     public void addData(List<T> newData) {
+        if(newData == null)return;//避免NPE
         this.mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
@@ -600,7 +608,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
 
     @Override
     public int getItemViewType(int position) {
-        if (getEmptyViewCount() == 1) {
+        if (getEmptyViewCount() == 1) {//如果有空(没有数据)布局
             boolean header = mHeadAndEmptyEnable && getHeaderLayoutCount() != 0;
             switch (position) {
                 case 0:
@@ -621,7 +629,6 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
                     return EMPTY_VIEW;
             }
         }
-        autoLoadMore(position);
         int numHeaders = getHeaderLayoutCount();
         if (position < numHeaders) {
             return HEADER_VIEW;
@@ -643,12 +650,15 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     }
 
     protected int getDefItemViewType(int position) {
+        if (mMultiTypeDelegate != null) {
+            return mMultiTypeDelegate.getDefItemViewType(mData, position);
+        }
         return super.getItemViewType(position);
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        VH baseViewHolder = null;
+    public K onCreateViewHolder(ViewGroup parent, int viewType) {
+        K baseViewHolder = null;
         this.mContext = parent.getContext();
         this.mLayoutInflater = LayoutInflater.from(mContext);
         switch (viewType) {
@@ -674,13 +684,13 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
     }
 
 
-    private VH getLoadingView(ViewGroup parent) {
+    private K getLoadingView(ViewGroup parent) {
         View view = getItemView(mLoadMoreView.getLayoutId(), parent);
-        VH holder = createBaseViewHolder(view);
+        K holder = createBaseViewHolder(view);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {
+                if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//只有在加载更多失败时，点击加载更多布局(item),才重新去加载
                     mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
                     notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
                 }
@@ -697,7 +707,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param holder
      */
     @Override
-    public void onViewAttachedToWindow(VH holder) {
+    public void onViewAttachedToWindow(K holder) {
         super.onViewAttachedToWindow(holder);
         int type = holder.getItemViewType();
         if (type == EMPTY_VIEW || type == HEADER_VIEW || type == FOOTER_VIEW || type == LOADING_VIEW) {
@@ -766,7 +776,9 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @see #getDefItemViewType(int)
      */
     @Override
-    public void onBindViewHolder(VH holder, int positions) {
+    public void onBindViewHolder(K holder, int positions) {
+        //Do not move position, need to change before LoadMoreView binding
+        autoLoadMore(positions);
         int viewType = holder.getItemViewType();
 
         switch (viewType) {
@@ -819,11 +831,25 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         });
     }
 
-    protected VH onCreateDefViewHolder(ViewGroup parent, int viewType) {
-        return createBaseViewHolder(parent, mLayoutResId);
+    private MultiTypeDelegate<T> mMultiTypeDelegate;
+
+    public void setMultiTypeDelegate(MultiTypeDelegate<T> multiTypeDelegate) {
+        mMultiTypeDelegate = multiTypeDelegate;
     }
 
-    protected VH createBaseViewHolder(ViewGroup parent, int layoutResId) {
+    public MultiTypeDelegate<T> getMultiTypeDelegate() {
+        return mMultiTypeDelegate;
+    }
+
+    protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
+        int layoutId = mLayoutResId;
+        if (mMultiTypeDelegate != null) {
+            layoutId = mMultiTypeDelegate.getLayoutId(viewType);
+        }
+        return createBaseViewHolder(parent, layoutId);
+    }
+
+    protected K createBaseViewHolder(ViewGroup parent, int layoutResId) {
         return createBaseViewHolder(getItemView(layoutResId, parent));
     }
 
@@ -834,15 +860,15 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param view view
      * @return new ViewHolder
      */
-    protected VH createBaseViewHolder(View view) {
+    protected K createBaseViewHolder(View view) {
         Class temp = getClass();
         Class z = null;
         while (z == null && null != temp) {
             z = getInstancedGenericKClass(temp);
             temp = temp.getSuperclass();
         }
-        VH k = createGenericKInstance(z, view);
-        return null != k ? k : (VH) new BaseViewHolder(view);
+        K k = createGenericKInstance(z, view);
+        return null != k ? k : (K) new BaseViewHolder(view);
     }
 
     /**
@@ -852,7 +878,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param view
      * @return
      */
-    private VH createGenericKInstance(Class z, View view) {
+    private K createGenericKInstance(Class z, View view) {
         try {
             Constructor constructor;
             String buffer = Modifier.toString(z.getModifiers());
@@ -860,10 +886,10 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
             // inner and unstatic class
             if (className.contains("$") && !buffer.contains("static")) {
                 constructor = z.getDeclaredConstructor(getClass(), View.class);
-                return (VH) constructor.newInstance(this, view);
+                return (K) constructor.newInstance(this, view);
             } else {
                 constructor = z.getDeclaredConstructor(View.class);
-                return (VH) constructor.newInstance(view);
+                return (K) constructor.newInstance(view);
             }
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -1304,7 +1330,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         return mLayoutInflater.inflate(layoutResId, parent, false);
     }
 
-
+    /** 加载更多时的监听回调 **/
     public interface RequestLoadMoreListener {
 
         void onLoadMoreRequested();
@@ -1374,7 +1400,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @param helper A fully initialized helper.
      * @param item   The item that needs to be displayed.
      */
-    protected abstract void convert(VH helper, T item);
+    protected abstract void convert(K helper, T item);
 
     /**
      * get the specific view by position,e.g. getViewByPosition(2, R.id.textView)
@@ -1534,6 +1560,12 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
         return expandAll(position, true, !init);
     }
 
+    public void expandAll() {
+        for (int i = mData.size() - 1; i >=0; i--) {
+            expandAll(i, false, false);
+        }
+    }
+
     private int recursiveCollapse(@IntRange(from = 0) int position) {
         T item = getItem(position);
         if (!isExpandable(item)) {
@@ -1674,16 +1706,15 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * Interface definition for a callback to be invoked when an itemchild in this
      * view has been clicked
      */
-    public interface OnItemChildClickListener {
+    public interface OnItemChildClickListener<T> {
         /**
          * callback method to be invoked when an item in this view has been
          * click and held
          *
          * @param view     The view whihin the ItemView that was clicked
          * @param position The position of the view int the adapter
-         * @return true if the callback consumed the long click ,false otherwise
          */
-        boolean onItemChildClick(BaseQuickAdapter adapter, View view, int position);
+        void onItemChildClick(BaseQuickAdapter<T, ? extends BaseViewHolder> adapter, View view, int position);
     }
 
 
@@ -1691,7 +1722,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * Interface definition for a callback to be invoked when an childView in this
      * view has been clicked and held.
      */
-    public interface OnItemChildLongClickListener {
+    public interface OnItemChildLongClickListener<T> {
         /**
          * callback method to be invoked when an item in this view has been
          * click and held
@@ -1700,14 +1731,14 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
          * @param position The position of the view int the adapter
          * @return true if the callback consumed the long click ,false otherwise
          */
-        void onItemChildLongClick(BaseQuickAdapter adapter, View view, int position);
+        boolean onItemChildLongClick(BaseQuickAdapter<T, ? extends BaseViewHolder> adapter, View view, int position);
     }
 
     /**
      * Interface definition for a callback to be invoked when an item in this
      * view has been clicked and held.
      */
-    public interface OnItemLongClickListener {
+    public interface OnItemLongClickListener<T> {
         /**
          * callback method to be invoked when an item in this view has been
          * click and held
@@ -1717,7 +1748,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
          * @param position The position of the view int the adapter
          * @return true if the callback consumed the long click ,false otherwise
          */
-        boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position);
+        boolean onItemLongClick(BaseQuickAdapter<T, ? extends BaseViewHolder> adapter, View view, int position);
     }
 
 
@@ -1725,7 +1756,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * Interface definition for a callback to be invoked when an item in this
      * RecyclerView itemView has been clicked.
      */
-    public interface OnItemClickListener {
+    public interface OnItemClickListener<T> {
 
         /**
          * Callback method to be invoked when an item in this RecyclerView has
@@ -1736,7 +1767,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
          *                 will be a view provided by the adapter)
          * @param position The position of the view in the adapter.
          */
-        void onItemClick(BaseQuickAdapter adapter, View view, int position);
+        void onItemClick(BaseQuickAdapter<T, ? extends BaseViewHolder> adapter, View view, int position);
     }
 
     /**
@@ -1745,7 +1776,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param listener The callback that will be invoked.
      */
-    public void setOnItemClickListener(@Nullable OnItemClickListener listener) {
+    public void setOnItemClickListener(@Nullable OnItemClickListener<T> listener) {
         mOnItemClickListener = listener;
     }
 
@@ -1755,7 +1786,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param listener The callback that will run
      */
-    public void setOnItemChildClickListener(OnItemChildClickListener listener) {
+    public void setOnItemChildClickListener(OnItemChildClickListener<T> listener) {
         mOnItemChildClickListener = listener;
     }
 
@@ -1765,7 +1796,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param listener The callback that will run
      */
-    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+    public void setOnItemLongClickListener(OnItemLongClickListener<T> listener) {
         mOnItemLongClickListener = listener;
     }
 
@@ -1775,7 +1806,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      *
      * @param listener The callback that will run
      */
-    public void setOnItemChildLongClickListener(OnItemChildLongClickListener listener) {
+    public void setOnItemChildLongClickListener(OnItemChildLongClickListener<T> listener) {
         mOnItemChildLongClickListener = listener;
     }
 
@@ -1784,7 +1815,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @return The callback to be invoked with an item in this RecyclerView has
      * been long clicked and held, or null id no callback as been set.
      */
-    public final OnItemLongClickListener getOnItemLongClickListener() {
+    public final OnItemLongClickListener<T> getOnItemLongClickListener() {
         return mOnItemLongClickListener;
     }
 
@@ -1792,7 +1823,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * @return The callback to be invoked with an item in this RecyclerView has
      * been clicked and held, or null id no callback as been set.
      */
-    public final OnItemClickListener getOnItemClickListener() {
+    public final OnItemClickListener<T> getOnItemClickListener() {
         return mOnItemClickListener;
     }
 
@@ -1801,7 +1832,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * been clicked, or null id no callback has been set.
      */
     @Nullable
-    public final OnItemChildClickListener getOnItemChildClickListener() {
+    public final OnItemChildClickListener<T> getOnItemChildClickListener() {
         return mOnItemChildClickListener;
     }
 
@@ -1810,7 +1841,7 @@ public abstract class BaseQuickAdapter<T, VH extends BaseViewHolder> extends Rec
      * been long clicked, or null id no callback has been set.
      */
     @Nullable
-    public final OnItemChildLongClickListener getmOnItemChildLongClickListener() {
+    public final OnItemChildLongClickListener<T> getOnItemChildLongClickListener() {
         return mOnItemChildLongClickListener;
     }
 

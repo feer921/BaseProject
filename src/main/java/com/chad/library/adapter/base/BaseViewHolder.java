@@ -66,13 +66,14 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Package private field to retain the associated user object and detect a change
+     * 关联对象
      */
     Object associatedObject;
 
 
     public BaseViewHolder(final View view) {
         super(view);
-        this.views = new SparseArray<View>();
+        this.views = new SparseArray<>();
         this.childClickViewIds = new LinkedHashSet<>();
         this.itemChildLongClickViewIds = new LinkedHashSet<>();
         this.nestViews = new HashSet<>();
@@ -348,7 +349,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * <p>
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
      */
-
+    @SuppressWarnings("unchecked")
     public BaseViewHolder addOnClickListener(final int viewId) {
         childClickViewIds.add(viewId);
         final View view = getView(viewId);
@@ -392,6 +393,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * <p>
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
      */
+    @SuppressWarnings("unchecked")
     public BaseViewHolder addOnLongClickListener(final int viewId) {
         itemChildLongClickViewIds.add(viewId);
         final View view = getView(viewId);
@@ -402,8 +404,8 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (adapter.getmOnItemChildLongClickListener() != null) {
-                        adapter.getmOnItemChildLongClickListener().onItemChildLongClick(adapter, v, getClickPosition());
+                    if (adapter.getOnItemChildLongClickListener() != null) {
+                        return adapter.getOnItemChildLongClickListener().onItemChildLongClick(adapter, v, getClickPosition());
                     }
                     return false;
                 }
