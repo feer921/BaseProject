@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 import common.base.R;
 
@@ -331,5 +332,42 @@ public class ViewUtil{
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    /**
+     * 用来判断当前Touch事件是否在某个view上
+     * @param toJudgedView
+     * @param touchX
+     * @param touchY
+     * @return
+     */
+    public static boolean isTouchIngTheView(View toJudgedView, int touchX, int touchY) {
+        if (toJudgedView == null) {
+            return false;
+        }
+        int[] location = new int[2];
+        toJudgedView.getLocationOnScreen(location);
+        int left = location[0];
+        int top = location[1];
+        int right = left + toJudgedView.getMeasuredWidth();
+        int bottom = top + toJudgedView.getMeasuredHeight();
+        //view.isClickable() &&
+        if (touchY >= top && touchY <= bottom && touchX >= left
+                && touchX <= right) {
+            return true;
+        }
+        return false;
+    }
+
+    public static View trackOutCurTouchingView(View viewGroup, int curTouchX, int curTouchY) {
+        View targetTouchingView = null;
+        ArrayList<View> allCanTouchedViews = viewGroup.getTouchables();
+        for (View oneView : allCanTouchedViews) {
+            if (isTouchIngTheView(oneView, curTouchX, curTouchY)) {
+                targetTouchingView = oneView;
+                break;
+            }
+        }
+        return targetTouchingView;
     }
 }

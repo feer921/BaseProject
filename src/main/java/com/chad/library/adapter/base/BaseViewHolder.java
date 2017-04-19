@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
@@ -348,6 +347,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @link {(adapter.setOnItemChildClickListener(listener))}
      * <p>
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
+     * @deprecated
      */
     @SuppressWarnings("unchecked")
     public BaseViewHolder addOnClickListener(final int viewId) {
@@ -392,6 +392,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * @link {(adapter.setOnItemChildLongClickListener(listener))}
      * <p>
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
+     * @deprecated
      */
     @SuppressWarnings("unchecked")
     public BaseViewHolder addOnLongClickListener(final int viewId) {
@@ -590,4 +591,58 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
     public void setAssociatedObject(Object associatedObject) {
         this.associatedObject = associatedObject;
     }
+
+    /**
+     * add by fee 2017-04-18
+     */
+
+    public BaseViewHolder setChildViewOnClickListener(int... childViewIds) {
+        if (childViewIds != null && childViewIds.length > 0) {
+            for (int oneViewId : childViewIds) {
+                if (oneViewId <= 0) {
+                    continue;
+                }
+                childClickViewIds.add(oneViewId);
+                View view = getView(oneViewId);
+                if (view != null) {
+                    view.setOnClickListener(forItemChildViewClickListener);
+                }
+            }
+        }
+        return this;
+    }
+    private View.OnClickListener forItemChildViewClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (adapter != null) {
+                if (adapter.getOnItemChildClickListener() != null) {
+                    adapter.getOnItemChildClickListener().onItemChildClick(adapter, v, getClickPosition());
+                }
+            }
+        }
+    };
+    public BaseViewHolder setChildViewOnLongClickListener(int... childViewIds) {
+        if (childViewIds != null && childViewIds.length > 0) {
+            for (int oneViewId : childViewIds) {
+                if (oneViewId <= 0) {
+                    continue;
+                }
+                itemChildLongClickViewIds.add(oneViewId);
+                View view = getView(oneViewId);
+                if (view != null) {
+                    view.setOnLongClickListener(forItemChildViewLongClickListener);
+                }
+            }
+        }
+        return this;
+    }
+    private View.OnLongClickListener forItemChildViewLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            if (adapter != null && adapter.getOnItemChildLongClickListener() != null) {
+                return adapter.getOnItemChildLongClickListener().onItemChildLongClick(adapter,v,getClickPosition());
+            }
+            return false;
+        }
+    };
 }

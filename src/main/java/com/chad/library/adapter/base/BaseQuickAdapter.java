@@ -1887,4 +1887,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     protected int providedContentViewResId() {
         return 0;
     }
+
+    public void addData(T... datas) {
+        if (datas == null || datas.length <= 0) {
+            return;
+        }
+        for (T one : datas) {
+            addData(one);
+        }
+    }
 }
