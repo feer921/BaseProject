@@ -403,7 +403,7 @@ public class Util {
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         String oneDayAsFileName = dateFormat.format(new Date());
-        File logFile = StorageUtil.getFieInCache(mContext, CommonConfigs.DEBUG_TRACE_DIR_NAME + mContext.getPackageName()
+        File logFile = StorageUtil.getFileInCache(mContext, CommonConfigs.DEBUG_TRACE_DIR_NAME + mContext.getPackageName()
                 +
 //                CommonConfigs.DEBUG_TRACE_FILE_NAME
                 "/"+

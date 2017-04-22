@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @author lifei
  */
 public final class StorageUtil {
-    public static final String TAG = StorageUtil.class.getSimpleName();
+    private static final String TAG = StorageUtil.class.getSimpleName();
 
     /**
      * 获取默认的外部存储目录
@@ -112,7 +112,7 @@ public final class StorageUtil {
      *         如果有SD卡 eg.: File("/mnt/storage0/[参数：fileName]"),but the file
      *         maybe created fail possibly;
      */
-    public static File getFieInCache(Context context, final String fileName) {
+    public static File getFileInCache(Context context, final String fileName) {
         File file = new File(getCacheParent(context), fileName);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
