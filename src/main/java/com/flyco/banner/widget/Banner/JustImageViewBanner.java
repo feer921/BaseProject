@@ -45,11 +45,11 @@ public class JustImageViewBanner<DataType> extends BaseIndicatorBanner<DataType,
         ImageView ivBanner = new ImageView(mContext);
         ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         ivBanner.setLayoutParams(vlp);
-        bindImage2BannerView(ivBanner);
+        bindImage2BannerView(ivBanner,position);
         return ivBanner;
     }
 
-    protected void bindImage2BannerView(ImageView theJustImageView) {
+    protected void bindImage2BannerView(ImageView theJustImageView,int curInitPosition) {
 
     }
 }
