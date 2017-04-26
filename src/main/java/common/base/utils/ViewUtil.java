@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
@@ -14,6 +15,8 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -369,5 +372,12 @@ public class ViewUtil{
             }
         }
         return targetTouchingView;
+    }
+
+    public static void imageViewRounded(ImageView iv, int imageResId, int roundedRadius) {
+        Resources res = iv.getResources();
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(res, BitmapFactory.decodeResource(res, imageResId));
+        roundedBitmapDrawable.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, roundedRadius, res.getDisplayMetrics()));
+        iv.setImageDrawable(roundedBitmapDrawable);
     }
 }

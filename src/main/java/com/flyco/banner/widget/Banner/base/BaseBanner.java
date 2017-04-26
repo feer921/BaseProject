@@ -35,7 +35,7 @@ import common.base.R;
  * @param <E> 数据源的数据类型
  * @param <T> 返回BaseBanner的子类自身，方便链式调用
  */
-public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends RelativeLayout {
+public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends RelativeLayout{
     /** 日志 */
     protected final String TAG = getClass().getSimpleName();
 //    /** 单线程池定时任务 */
@@ -67,8 +67,8 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
     /** 显示器(小点)的最顶层父容器 */
     private RelativeLayout mRlBottomBarParent;
-    private int mItemWidth;
-    private int mItemHeight;
+    protected int mItemWidth;
+    protected int mItemHeight;
 
     /** 显示器和标题的直接父容器 */
     private LinearLayout mLlBottomBar;
@@ -130,36 +130,47 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         boolean isTitleShow = ta.getBoolean(R.styleable.BaseBanner_bb_isTitleShow, true);
         boolean isIndicatorShow = ta.getBoolean(R.styleable.BaseBanner_bb_isIndicatorShow, true);
         ta.recycle();
-
+        String androidNameSpace = "http://schemas.android.com/apk/res/android";
         //get layout_height
-        String height = ViewGroup.LayoutParams.MATCH_PARENT + "";
+        String width = "", height = "", toMatch_P = LayoutParams.MATCH_PARENT + "", toWrap_content = LayoutParams.WRAP_CONTENT + "", toFill_P = LayoutParams.FILL_PARENT + "";
         if(attrs != null){
-            height = attrs.getAttributeValue("http://schemas.android.com/apk/res/android", "layout_height");
+            height = attrs.getAttributeValue(androidNameSpace, "layout_height");
+            width = attrs.getAttributeValue(androidNameSpace, "layout_width");
+        }
+        if (toMatch_P.equals(width)|| toFill_P.equals(width)) {
+            mItemWidth = LayoutParams.MATCH_PARENT;
+        } else if (toWrap_content.equals(width)) {
+            mItemWidth = LayoutParams.WRAP_CONTENT;
+        }
+        else{//表示本控件被设置了layout_width="xdp[xp]"，即设置了精确的宽
+            TypedArray widthArray = context.obtainStyledAttributes(attrs,new int[]{android.R.attr.layout_width});
+            mItemWidth = widthArray.getDimensionPixelSize(0, -1);
+            if (mItemWidth == 0) {//这里是防止本控件在xml布局文件中的android:layout_width="0dp" android:weight="x";,这样以比重的形式定义时，得到的就是0了
+                mItemWidth = LayoutParams.MATCH_PARENT;
+            }
         }
 
-        //create ViewPager
-        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
-        mItemWidth = mDisplayMetrics.widthPixels;
-        if (scale < 0) {//scale not set in xml，没有在xml中设置宽高比
-            if (height.equals(ViewGroup.LayoutParams.MATCH_PARENT + "")) {
-                mItemHeight = LayoutParams.MATCH_PARENT;
-            } else if (height.equals(ViewGroup.LayoutParams.WRAP_CONTENT + "")) {
-                mItemHeight = LayoutParams.WRAP_CONTENT;
-            }
-            else {//表示本控件被设置为精确的高度值了，即eg.：android:layout_height = 180dp;
-                int[] systemAttrs = {android.R.attr.layout_height};
-                TypedArray a = context.obtainStyledAttributes(attrs, systemAttrs);
-                int h = a.getDimensionPixelSize(0, 2);
-                a.recycle();
-                mItemHeight = h;
-            }
+        if (toMatch_P.equals(height) || toFill_P.equals(height)) {
+            mItemHeight = LayoutParams.MATCH_PARENT;
+        } else if (toWrap_content.equals(height)) {
+            mItemHeight = LayoutParams.WRAP_CONTENT;
         }
         else {
+            TypedArray heightArray = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.layout_height});
+            mItemHeight = heightArray.getDimensionPixelSize(0, -1);
+            if (mItemHeight == 0) {//这里是防止本控件在xml布局文件中的android:layout_height="0dp" android:weight="x";,这样以比重的形式定义时，得到的就是0了
+                mItemHeight = LayoutParams.MATCH_PARENT;
+            }
+        }
+        if (mItemWidth > 0 && scale > 0) {
             if (scale > 1) {
-                scale = 1;//本控件的高最多与宽相等
+                scale = 1;
             }
             mItemHeight = (int) (mItemWidth * scale);
         }
+        Log.e("info", "  ----------------mItemHeight = ----- " + mItemHeight + " mItemWidth = " + mItemWidth);
+        //create ViewPager
+        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
 
         LayoutParams lp = new LayoutParams(mItemWidth, mItemHeight);
         addView(mViewPager, lp);
@@ -170,7 +181,8 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
         //container of indicators and title
         mLlBottomBar = new LinearLayout(context);
-        LayoutParams lp2 = new LayoutParams(mItemWidth, LayoutParams.WRAP_CONTENT);
+        //mLlBottomBar 的布局参数，宽匹配父控件宽，高自适应
+        LayoutParams lp2 = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         lp2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
         mRlBottomBarParent.addView(mLlBottomBar, lp2);
 
