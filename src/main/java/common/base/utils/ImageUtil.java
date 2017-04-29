@@ -2,6 +2,8 @@ package common.base.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 import com.squareup.picasso.Callback;
@@ -26,6 +28,10 @@ public class ImageUtil {
 
         if (newWidth > 0 && newHeight > 0) {
             loadRequest.resize(newWidth, newHeight);
+            loadRequest.centerCrop();
+        }
+        else{
+//            loadRequest.fit();
         }
         if (holderDrawable != null) {
             loadRequest.placeholder(holderDrawable);
@@ -36,7 +42,7 @@ public class ImageUtil {
         if (errorDrawable != null) {
             loadRequest.error(errorDrawable);
         }
-        loadRequest.centerCrop().into(targetIv, callback);
+        loadRequest.into(targetIv, callback);
     }
 
     private static void throwCannotException(String reason) {
@@ -107,6 +113,16 @@ public class ImageUtil {
 
     public static void loadImage(Context context, String picUrl, ImageView targetIv) {
         loadImage(context, picUrl, targetIv,null);
+    }
+
+    public static void loadResizeImage(Context context, String picUrl, int resizeW, int resizeH, ImageView targetIv) {
+        loadImage(context, picUrl, resizeW, resizeH, null, null, targetIv, null);
+    }
+    public static ColorDrawable createDefHolderColorDrawable(int theColor) {
+        if (theColor <= 0) {
+            theColor = Color.parseColor("#555555");
+        }
+        return new ColorDrawable(theColor);
     }
     //and so on 还可以重载出很多加载的方法
 }

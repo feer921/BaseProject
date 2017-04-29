@@ -104,7 +104,8 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     public BaseBanner(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
-
+    private LoopViewPager loopViewPager;
+    private ViewPager commonViewPager;
     public BaseBanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.mContext = context;
@@ -170,8 +171,11 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         }
         Log.e("info", "  ----------------mItemHeight = ----- " + mItemHeight + " mItemWidth = " + mItemWidth);
         //create ViewPager
-        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
-
+//        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
+        //added by fee 2017-04-29: 由于需要随时切换两种ViewPager，而分别构造出来
+        loopViewPager = new LoopViewPager(context);
+        commonViewPager = new ViewPager(context);
+        mViewPager = isLoopEnable ? loopViewPager : commonViewPager;
         LayoutParams lp = new LayoutParams(mItemWidth, mItemHeight);
         addView(mViewPager, lp);
 
@@ -278,6 +282,10 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     /** 设置是否支持自动滚动,默认true.仅对LoopViewPager有效 */
     public T setAutoScrollEnable(boolean isAutoScrollEnable) {
         this.mIsAutoScrollEnable = isAutoScrollEnable;
+        //add by fee 2017-04-29:主动调用这个停止自动滚动时，如果之前已经在自动滚动了，则先停止
+        if (!mIsAutoScrollEnable && mIsAutoScrolling) {
+            pauseScroll();
+        }
         return (T) this;
     }
 
@@ -334,13 +342,50 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         position++;
         mViewPager.setCurrentItem(position);
     }
+    private InnerBannerAdapter dataAdapter;
 
+    private void resetViewPager(boolean canLoopScroll) {
+        if (mViewPager == null) {
+            return;
+        }
+        LayoutParams lp = (LayoutParams) mViewPager.getLayoutParams();
+        if (canLoopScroll) {
+            if(mViewPager != loopViewPager){
+                Log.e("info", TAG + "--> CommonViewPager ==> loopViewPager");
+                removeView(mViewPager);
+                mViewPager = loopViewPager;
+                addView(mViewPager,0,lp);
+            }
+        }
+        else{//不能循环翻页
+            if (mViewPager != commonViewPager) {
+                Log.e("info", TAG + "--> loopViewPager ==> CommonViewPager");
+                removeView(mViewPager);
+                mViewPager = commonViewPager;
+                addView(mViewPager,0,lp);
+            }
+        }
+    }
     /** 设置viewpager */
     private void setViewPager() {
-        InnerBannerAdapter mInnerAdapter = new InnerBannerAdapter();
-        mViewPager.setAdapter(mInnerAdapter);
-        mViewPager.setOffscreenPageLimit(mDatas.size());
+        // added by fee 2017-04-29:在这里来根据当前的mDatas的数量进行重置mViewPager为可循环的还是不能循环的
+        if (mDatas.size() < 2) {//只有一个Banner数据的情况下，不需要可以自动滚动以及手动可循环切换页面了
+            resetViewPager(false);
+        }
+        else{//mDatas 数量 >= 2 需要自动滚动时才去切换成LoopViewPager
+            if (mIsAutoScrollEnable) {
+                resetViewPager(true);
+            }
+        }
 
+        if (dataAdapter == null) {
+            dataAdapter = new InnerBannerAdapter();
+        }
+        else{
+            dataAdapter.notifyDataSetChanged();
+        }
+        mViewPager.setAdapter(dataAdapter);
+        mViewPager.setOffscreenPageLimit(mDatas.size());
         try {
             if (mTransformerClass != null) {
                 mViewPager.setPageTransformer(true, mTransformerClass.newInstance());
@@ -402,11 +447,10 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         if (mDatas == null) {
             throw new IllegalStateException("Data source is empty,you must setSource() before startScroll()");
         }
-
-        if (mDatas.size() > 0 && mCurrentPositon > mDatas.size() - 1) {
+        int dataSize = mDatas.size();
+        if (dataSize > 0 && mCurrentPositon > dataSize - 1) {
             mCurrentPositon = 0;
         }
-
         onTitleSlect(mTvTitle, mCurrentPositon);
         setViewPager();
         //create indicator
@@ -426,14 +470,6 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         }
         if (isLoopViewPager() && mIsAutoScrollEnable) {//
             pauseScroll();
-//            scheduledTaskService = Executors.newSingleThreadScheduledExecutor();
-//            scheduledTaskService.scheduleAtFixedRate(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mHandler.obtainMessage().sendToTarget();
-//                }
-//            }, mDelay, mPeriod, TimeUnit.SECONDS);
-
             mHandler.sendEmptyMessageDelayed(MSG_WHAT_LOOP_SCROLL,mDelay * 1000);
             mIsAutoScrolling = true;
             Log.i(TAG, "--->goOnScroll()");
@@ -497,17 +533,18 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
-            View inflate = onCreateItemView(position);
-            inflate.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mOnItemClickL != null) {
-                        mOnItemClickL.onItemClick(position);
-                    }
-                }
-            });
-            container.addView(inflate);
-            return inflate;
+            View itemView = onCreateItemView(position);
+//            itemView.setOnClickListener(new OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (mOnItemClickL != null) {
+//                        mOnItemClickL.onItemClick(position);
+//                    }
+//                }
+//            });
+            itemView.setOnClickListener(new PositonClickListener(position));
+            container.addView(itemView);
+            return itemView;
         }
 
         @Override
@@ -565,7 +602,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     }
 
     /**
-     * 这里只判断了mViewPager是否为null心仪mDatas是否为Null
+     * 这里只判断了mViewPager是否为null以及mDatas是否为Null
      * @return
      */
     protected boolean isValid() {
@@ -574,8 +611,8 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
             return false;
         }
 
-        if (mDatas == null || mDatas.size() == 0) {
-            Log.e(TAG, "DataList must be not empty!");
+        if (mDatas == null || mDatas.size() < 2) {//modified by fee 2017-04-29 change "mDatas.size()==0" to mDatas.size() < 2
+            Log.e(TAG, "due to mDatas == null or data size less than 2,so can't to auto scroll...");
             return false;
         }
         return true;
@@ -587,14 +624,29 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         mOnPageChangeListener = listener;
     }
-
-    private OnItemClickL mOnItemClickL;
-
-    public void setOnItemClickL(OnItemClickL onItemClickL) {
-        this.mOnItemClickL = onItemClickL;
+    OnItemClickListener<E> onItemClickListener;
+    public interface OnItemClickListener<E>{
+        void onBannerItemClick(E itemData,int clickPosition);
     }
 
-    public interface OnItemClickL {
-        void onItemClick(int position);
+    public void setOnBannerItemClickListener(OnItemClickListener<E> l) {
+        this.onItemClickListener = l;
+    }
+    private class PositonClickListener implements OnClickListener{
+       int curClickPosition;
+       PositonClickListener(int curPos) {
+            this.curClickPosition = curPos;
+       }
+       /**
+        * Called when a view has been clicked.
+        *
+        * @param v The view that was clicked.
+        */
+       @Override
+       public void onClick(View v) {
+           if (onItemClickListener != null) {
+               onItemClickListener.onBannerItemClick(mDatas.get(curClickPosition),curClickPosition);
+           }
+       }
     }
 }

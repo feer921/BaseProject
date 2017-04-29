@@ -209,9 +209,13 @@ public class BaseNetCallService<T> extends BaseService implements INetEvent<T> {
 
     /**
      * 获取本基类的子类所指定的泛型T的具体的对象类型的Class对象
+     * 即：最多有效到第一个非泛型参数的本基类的子类
+     * changed by fee 2017-04-29:如果本基类的子类已经是一个实体类[非泛型参数类]的子类时，需要自己指定泛型的class类型了
+     * eg.: FirstSubClasss extends BaseNetCallService<ServerResut>{} 在FirstSubClass是可以自动获取到泛型参数为ServerResult的
+     * 但是如果 FirstSubClass 再有子类，则自动获取不到了，需要重写本方法，直接指定ServerResut.class
      * @return
      */
-    private Class<T> getSubClasGenericsParamClass(){
+    protected Class<T> getSubClasGenericsParamClass(){
         return GenericsParamUtil.getGenericsParamCalss(getClass().getGenericSuperclass(),0);
     }
     /**

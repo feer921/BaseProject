@@ -39,7 +39,7 @@ public class BaseServerResult {
 
     public boolean isResponseOk() {
         getDataStr();
-        return "1".equals(statusCode);
+        return "0".equals(statusCode);
     }
 
     public String getDataStr() {
