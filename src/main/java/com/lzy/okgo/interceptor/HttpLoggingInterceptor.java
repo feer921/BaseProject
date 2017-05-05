@@ -1,5 +1,7 @@
 package com.lzy.okgo.interceptor;
 
+import android.util.Log;
+
 import com.lzy.okgo.utils.OkLogger;
 
 import java.io.IOException;
@@ -43,8 +45,8 @@ public class HttpLoggingInterceptor implements Interceptor {
         BODY        //所有数据全部打印
     }
 
-    public HttpLoggingInterceptor(String tag) {
-        logger = Logger.getLogger(tag);
+    public HttpLoggingInterceptor(String loggerTag) {
+        logger = Logger.getLogger(loggerTag);
     }
 
     public void setPrintLevel(Level level) {
@@ -57,6 +59,7 @@ public class HttpLoggingInterceptor implements Interceptor {
 
     public void log(String message) {
         logger.log(colorLevel, message);
+        Log.i(logger.getName(), message);
     }
 
     @Override
@@ -96,12 +99,13 @@ public class HttpLoggingInterceptor implements Interceptor {
             log(requestStartMessage);
 
             if (logHeaders) {
+                log("\n**headers**");
                 Headers headers = request.headers();
                 for (int i = 0, count = headers.size(); i < count; i++) {
                     log("\t" + headers.name(i) + ": " + headers.value(i));
                 }
 
-                log(" ");
+                log("**end headers**");
                 if (logBody && hasRequestBody) {
                     if (isPlaintext(requestBody.contentType())) {
                         bodyToString(request);

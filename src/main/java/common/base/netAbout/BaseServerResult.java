@@ -75,4 +75,14 @@ public class BaseServerResult {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "BaseServerResult{" +
+                "statusCode='" + statusCode + '\'' +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                ", dataStr='" + dataStr + '\'' +
+                '}';
+    }
 }
