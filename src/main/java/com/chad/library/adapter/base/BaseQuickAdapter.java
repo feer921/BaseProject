@@ -479,6 +479,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param position
      */
     public void addData(@IntRange(from = 0) int position, @NonNull List<T> data) {
+        if (data == null) {
+            return;
+        }
         mData.addAll(position, data);
         notifyItemRangeInserted(position + getHeaderLayoutCount(), data.size());
         compatibilityDataSizeChanged(data.size());
@@ -487,9 +490,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * additional data;
      *
-     * @param newData
+     * @param newData 虽然这里限制了NonNull,但传入的参数如果为计算获取的，则可能仍然为null
      */
     public void addData(@NonNull List<T> newData) {
+        if (newData == null) {
+            return;
+        }
         this.mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
@@ -1764,7 +1770,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
 
-    /**
+    /**a
      * Interface definition for a callback to be invoked when an childView in this
      * view has been clicked and held.
      */
