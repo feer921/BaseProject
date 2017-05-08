@@ -99,7 +99,7 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
          */
         Type genType = getGenType(getClass());
         boolean isGenTypeParameterized = genType instanceof ParameterizedType;
-        OkLogger.i("info", "--> isGenTypeParameterized = " + isGenTypeParameterized);
+//        OkLogger.i("info", "--> isGenTypeParameterized = " + isGenTypeParameterized);
 
         Type[] tParams = null;//泛型T的参数对象们，其实本类就一个<T>,这个是考虑如果本类有多个泛型eg.:XtypeCallback<T,E>
         Class<T> paramTypeClass = null;//泛型参数的Class对象，方便转化成T对象
@@ -119,7 +119,7 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
          * paramsType = com.fee.theoneproject.LzyResponse<java.util.List<com.fee.theoneproject.ServerModel>>
          */
         Type paramsType = tParams[0];
-        OkLogger.i("info", "---> paramsType = " + paramsType);
+//        OkLogger.i("info", "---> paramsType = " + paramsType);
         if (paramsType instanceof Class) {
             paramTypeClass = (Class<T>) paramsType;
         }
@@ -135,7 +135,7 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
          */
         else if (paramsType instanceof ParameterizedType) {
             Type rawType = ((ParameterizedType) paramsType).getRawType();
-            OkLogger.i("info",TAG + "--> rawType = " + rawType);
+//            OkLogger.i("info",TAG + "--> rawType = " + rawType);
             paramTypeClass = (Class<T>) rawType;
         }
         else {
@@ -162,13 +162,13 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
      * @return 最终能代表本类XtypeCallback的Type
      */
     private Type getGenType(Class curClass) {
-        OkLogger.e("info", "getGenType()--> curClass：" + curClass);
+//        OkLogger.e("info", "getGenType()--> curClass：" + curClass);
         Type thisGenType = curClass.getGenericSuperclass();//返回直接超类
-        OkLogger.e("info", "getGenType()--> thisGenType：" + thisGenType);
+//        OkLogger.e("info", "getGenType()--> thisGenType：" + thisGenType);
         if (thisGenType instanceof Class) {
             //这种情况，表明当前类是XtypeCallback的子类
             Class superClass = curClass.getSuperclass();
-            OkLogger.e("info", "getGenType()--> superClass：" + superClass);
+//            OkLogger.e("info", "getGenType()--> superClass：" + superClass);
             //递归调用
             return getGenType(superClass);
 //            OkLogger.e("info", "getGenType()--> thisGenType：" + thisGenType);
