@@ -490,9 +490,6 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param newData
      */
     public void addData(@NonNull List<T> newData) {
-        if (newData == null) {
-            return;
-        }
         this.mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
