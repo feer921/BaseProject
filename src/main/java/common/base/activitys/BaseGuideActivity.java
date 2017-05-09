@@ -30,6 +30,7 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
         }
         super.onCreate(savedInstanceState);
         guideBanner = getGuideBanner();
+        guideBanner.setAutoScrollEnable(false);//不让可自动滚动
         initGuideBanner();
         guideBanner.showBanner();
         //        setContentView(guideBanner,vlp);
