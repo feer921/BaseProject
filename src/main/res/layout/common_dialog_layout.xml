@@ -43,8 +43,8 @@
             android:lineSpacingExtra="3dp"
             android:text="21223"
             android:textColor="@color/text_color_4_main_body"
-            android:visibility="invisible" 
             android:textSize="14sp"
+            android:visibility="invisible"
             />
     </FrameLayout>
 

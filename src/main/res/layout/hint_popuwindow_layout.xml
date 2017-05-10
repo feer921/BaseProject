@@ -4,7 +4,7 @@
     android:id="@+id/tv_hint_in_popwindow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/layout_padding_in_project_details"
+    android:padding="18dp"
     android:text="主人，您输入有误!"
     android:textColor="@color/white" 
     android:gravity="center_vertical"

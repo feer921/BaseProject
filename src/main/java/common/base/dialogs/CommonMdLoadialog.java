@@ -1,13 +1,14 @@
 package common.base.dialogs;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import common.base.R;
 
 /**
@@ -16,7 +17,7 @@ import common.base.R;
  * Time: 18:09
  * DESC:
  */
-public class CommonMdLoadialog extends BaseDialog{
+public class CommonMdLoadialog extends BaseDialog<CommonMdLoadialog>{
     private ImageView ivLoadIcon;
     private TextView tvLoadHint;
     private Animation loadingAnimation;
@@ -39,16 +40,33 @@ public class CommonMdLoadialog extends BaseDialog{
     }
 
     @Override
-    public void setHintMsg(String hintMsg) {
+    public CommonMdLoadialog setHintMsg(String hintMsg) {
         if (tvLoadHint != null) {
             tvLoadHint.setText(hintMsg);
         }
+        return self();
     }
 
-    public void setHintMsg(int hintMsgResID) {
-        setHintMsg(getStrFromResId(hintMsgResID));
+    public CommonMdLoadialog setHintMsg(int hintMsgResID) {
+        return setHintMsg(getStrFromResId(hintMsgResID));
     }
 
+    public CommonMdLoadialog changeLoadingHintIcon(@DrawableRes int iconResId) {
+        if (ivLoadIcon != null) {
+            ivLoadIcon.setImageResource(iconResId);
+        }
+        return self();
+    }
+
+    public CommonMdLoadialog changeLoadingHintIcon(Drawable drawable) {
+        if (ivLoadIcon != null) {
+            ivLoadIcon.setImageDrawable(drawable);
+        }
+        return self();
+    }
+    public ImageView getIvLoadIcon() {
+        return ivLoadIcon;
+    }
     @Override
     public void show() {
         ivLoadIcon.setAnimation(loadingAnimation);

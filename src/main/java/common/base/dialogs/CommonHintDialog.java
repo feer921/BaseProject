@@ -12,7 +12,7 @@ import common.base.utils.Util;
 /**
  * 一个通用的提示性对象框，适用有头部Title、取消、确定按钮，以及中部的EditText、TextView切换的Dialog效果
  */
-public class CommonHintDialog extends BaseDialog{
+public class CommonHintDialog extends BaseDialog<CommonHintDialog>{
     private TextView tvTitle;
     private EditText edtContentView;
     private TextView tvBtnCancle;
@@ -76,7 +76,7 @@ public class CommonHintDialog extends BaseDialog{
     public void setTitle(int titleId) {
         setTitle(getContext().getString(titleId));
     }
-    public void setCancleBtnName(String cancelBtnName){
+    public CommonHintDialog setCancleBtnName(String cancelBtnName){
         if(tvBtnCancle != null){
             tvBtnCancle.setVisibility(View.VISIBLE);
             if(Util.isEmpty(cancelBtnName)){
@@ -89,8 +89,9 @@ public class CommonHintDialog extends BaseDialog{
                 }
             }
         }
+        return self();
     }
-    public void setCommitBtnName(String CommitBtnName){
+    public CommonHintDialog setCommitBtnName(String CommitBtnName){
         if(tvBtnSure != null){
             if(Util.isEmpty(CommitBtnName)){
                 tvBtnSure.setText(R.string.confirm);
@@ -99,12 +100,13 @@ public class CommonHintDialog extends BaseDialog{
                 tvBtnSure.setText(CommitBtnName);
             }
         }
+        return self();
     }
     /**
      * 让EditTex 是否可编辑，如果不可编辑，则显示tvHintMsg控件以承载dialog消息
      * @param needEdit
      */
-    public void edtViewCanEdit(boolean needEdit){
+    public CommonHintDialog edtViewCanEdit(boolean needEdit){
         if(edtContentView != null){
             edtContentView.setEnabled(needEdit);
             edtContentView.setVisibility(needEdit ? View.VISIBLE : View.INVISIBLE);
@@ -112,12 +114,14 @@ public class CommonHintDialog extends BaseDialog{
         if(tvHintMsg != null){
             tvHintMsg.setVisibility(needEdit ? View.INVISIBLE : View.VISIBLE);
         }
+        return self();
     }
 
-    public void setHintMsg(String hintMsg) {
-        if (tvHintMsg == null)
-            return;
-        tvHintMsg.setText(hintMsg);
+    public CommonHintDialog setHintMsg(String hintMsg) {
+        if (tvHintMsg != null) {
+            tvHintMsg.setText(hintMsg);
+        }
+        return self();
     }
     public EditText getTheEditText(){
         if(edtContentView == null){
@@ -129,9 +133,10 @@ public class CommonHintDialog extends BaseDialog{
      * 让取消按钮显示或者隐藏
      * @param ignoreAndHideIt
      */
-    public void toggleCancelBtnVisibility(boolean ignoreAndHideIt){
+    public CommonHintDialog toggleCancelBtnVisibility(boolean ignoreAndHideIt){
         if(tvBtnCancle != null){
             tvBtnCancle.setVisibility(ignoreAndHideIt ? View.GONE : View.VISIBLE);
         }
+        return self();
     }
 }

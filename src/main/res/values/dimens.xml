@@ -4,8 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="space_20">20.0dip</dimen>
-	<dimen name="layout_padding_in_project_details">18.0dip</dimen>
-	<dimen name="item_padding_in_publish_fundraises">12dip</dimen>
 	<dimen name="radius_4_half_rectangle">16dip</dimen>
 
     <dimen name="dp_4">4dp</dimen>
@@ -20,4 +18,14 @@
     <dimen name="sp_12">12sp</dimen>
     <dimen name="sp_14">14sp</dimen>
     <dimen name="sp_16">16sp</dimen>
+    <!-- CommonMdDialog中的内容布局内的控件适配尺寸,如果各项目需要适配不同设备尺寸，可在相应的values文件夹下重写这些尺寸 -->
+    <dimen name="common_md_dialog_layout_padding">36dp</dimen> <!-- Dialog整个视图布局的内缩进,以让真实content view在左右方向有间距 -->
+    <dimen name="common_md_dialog_title_padding">20dp</dimen> <!-- Dialog中title的内缩进,以确定title的高度 -->
+    <dimen name="common_md_dialog_title_textsize">18sp</dimen> <!-- Dialog中title的文本大小 -->
+    <dimen name="common_md_dialog_center_layout_min_h">40dp</dimen> <!-- Dialog中中间hint布局的最小高度 -->
+    <dimen name="common_md_dialog_center_layout_padding_lr">23dp</dimen> <!-- Dialog中中间hint布局的左/右的内缩进 -->
+    <dimen name="common_md_dialog_hintmsg_textsize">14sp</dimen> <!-- Dialog中中间hint msg控件的文本大小 -->
+    <dimen name="common_md_dialog_hintmsg_padding_bottom">15dp</dimen> <!-- Dialog中中间hint msg控件底部缩进 -->
+    <dimen name="common_md_dialog_btn_layout_height">50dp</dimen> <!-- Dialog中底部按钮布局(取消、确定按钮)的高度 -->
+    <dimen name="common_md_dialog_btn_textsize">16sp</dimen> <!-- Dialog中底部取消、确定按钮的文本大小 -->
 </resources>

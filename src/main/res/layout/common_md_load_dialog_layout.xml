@@ -16,7 +16,7 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/rotate_icon"
+            android:src="@drawable/rotate_icon"
             android:scaleType="centerCrop"
             android:layout_centerHorizontal="true"
             android:id="@+id/iv_dialog_loading"

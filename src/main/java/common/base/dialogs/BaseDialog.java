@@ -10,10 +10,15 @@ import android.widget.TextView;
 
 import common.base.R;
 
-public abstract class BaseDialog extends Dialog implements View.OnClickListener{
+public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected OnClickListener dialogClickListener;
     protected View containerView;
     protected int contentLayoutResId;
+
+    protected Context mContext;
+    /**
+     * 这两个变量，是调整加载Dialog内容视图的Window的整体宽、高
+     */
     protected int dialogWidth,dialogHeigth;
     protected int dialogShowGrivity;
     protected int dialogAnimStyle;
@@ -31,6 +36,7 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
         super(context, theme);
         containerView = getLayoutInflater().inflate(getContentViewResID(), null);
         initViews(containerView);
+        mContext = context;
     }
 
     @Override
@@ -60,6 +66,11 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
         }
         w.setAttributes(lp);
     }
+
+    /**
+     * 构造方法中完成调用
+     * @param containerView 子类所提供的内容视图
+     */
     protected abstract void initViews(View containerView);
 
     protected int getContentViewResID(){
@@ -70,8 +81,9 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
         
     }
 
-    public void setDialogClickListener(OnClickListener dialogClickListener) {
+    public I setDialogClickListener(OnClickListener dialogClickListener) {
         this.dialogClickListener = dialogClickListener;
+        return self();
     }
 
 
@@ -80,28 +92,32 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
     }
 
 
-    public void setContainerView(View containerView) {
+    public I setContainerView(View containerView) {
         this.containerView = containerView;
+        return self();
     }
 
 
-    public void setContentLayoutResId(int contentLayoutResId) {
+    public I setContentLayoutResId(int contentLayoutResId) {
         this.contentLayoutResId = contentLayoutResId;
+        return self();
     }
 
-    public void setDialogShowGrivity(int dialogShowGrivity) {
+    public I setDialogShowGrivity(int dialogShowGrivity) {
         this.dialogShowGrivity = dialogShowGrivity;
+        return self();
     }
 
-    public void setDialogAnimStyle(int dialogAnimStyle) {
+    public I setDialogAnimStyle(int dialogAnimStyle) {
         this.dialogAnimStyle = dialogAnimStyle;
+        return self();
     }
     protected String getStrFromResId(int resID){
         return getContext().getResources().getString(resID);
     }
 
-    public void setHintMsg(String hintMsg) {
-
+    public I setHintMsg(String hintMsg) {
+        return self();
     }
 
     public TextView getTvHintMsg() {
@@ -112,18 +128,18 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
      * 由于可能一些界面上需要提示信息以不同的对齐方式显示，故添加此方法
      * @param gravity
      */
-    public void setHintMsgGravity(int gravity) {
-
+    public I setHintMsgGravity(int gravity) {
+        return self();
     }
-    public void setCancleBtnName(String cancleBtnName) {
-
+    public I setCancleBtnName(String cancleBtnName) {
+        return self();
     }
 
-    public void setCommitBtnName(String commitBtnName) {
-
+    public I setCommitBtnName(String commitBtnName) {
+        return self();
     }
-    public void edtViewCanEdit(boolean needEdit){
-
+    public I edtViewCanEdit(boolean needEdit){
+        return self();
     }
 
     /**
@@ -144,7 +160,29 @@ public abstract class BaseDialog extends Dialog implements View.OnClickListener{
      * 是否隐藏“取消”按钮
      * @param hideCancelBtn
      */
-    public void toggleCancelBtnVisibility(boolean hideCancelBtn){
+    public I toggleCancelBtnVisibility(boolean hideCancelBtn){
+        return self();
+    }
 
+    /**
+     * 调整Dialog内的内容的宽，高
+     * @param dpUnitW dp值的宽
+     * @param dpUnitH dp值的高
+     * @return
+     */
+    public I adjustDialogContentWH(int dpUnitW, int dpUnitH) {
+        return self();
+    }
+    public I setDialogWidth(int dialogWidth) {
+        this.dialogWidth = dialogWidth;
+        return self();
+    }
+
+    public I setDialogHeigth(int dialogHeigth) {
+        this.dialogHeigth = dialogHeigth;
+        return self();
+    }
+    protected I self() {
+        return (I) this;
     }
 }

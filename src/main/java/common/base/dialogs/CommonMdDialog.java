@@ -21,7 +21,7 @@ import common.base.utils.ViewUtil;
  * Time: 13:49
  * DESC: 通用MD风格的Dialog
  */
-public class CommonMdDialog extends BaseDialog{
+public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     private TextView tvDialogTitle;
     private TextView tvDialogHint;
     private TextView tvDialogCancle;
@@ -100,7 +100,8 @@ public class CommonMdDialog extends BaseDialog{
                 break;
             case HINT_MSG:
                 if (tvDialogHint != null) {
-                    tvDialogHint.setVisibility(View.GONE);
+                    //modified by fee 2017-05-10,Dialog布局内容切换为HINT_MSG模式时应该是让tvDialogHint显示
+                    tvDialogHint.setVisibility(View.VISIBLE);
                 }
                 break;
             case EDIT_INPUT:
@@ -144,17 +145,17 @@ public class CommonMdDialog extends BaseDialog{
     }
 
     @Override
-    public void setHintMsg(String hintMsg) {
-        if (Util.isEmpty(hintMsg)) {
-            return;
-        }
+    public CommonMdDialog setHintMsg(String hintMsg) {
+//        if (Util.isEmpty(hintMsg)) {
+//            return;
+//        }
         if (tvDialogHint != null) {
             tvDialogHint.setText(hintMsg);
         }
+        return self();
     }
-
     @Override
-    public void setCancleBtnName(String cancleBtnName) {
+    public CommonMdDialog setCancleBtnName(String cancleBtnName) {
         if (tvDialogCancle != null) {
             tvDialogCancle.setVisibility(View.VISIBLE);
             if (Util.isEmpty(cancleBtnName)) {
@@ -167,10 +168,11 @@ public class CommonMdDialog extends BaseDialog{
                 }
             }
         }
+        return self();
     }
 
     @Override
-    public void setCommitBtnName(String commitBtnName) {
+    public CommonMdDialog setCommitBtnName(String commitBtnName) {
         if (tvDialogCommit != null) {
             if (Util.isEmpty(commitBtnName)) {
                 tvDialogCommit.setText(R.string.confirm);
@@ -179,35 +181,40 @@ public class CommonMdDialog extends BaseDialog{
                 tvDialogCommit.setText(commitBtnName);
             }
         }
+        return self();
     }
 
     @Override
-    public void edtViewCanEdit(boolean needEdit) {
+    public CommonMdDialog edtViewCanEdit(boolean needEdit) {
         if (needEdit) {
             switchContentLayoutType(ContentLayouType.EDIT_INPUT);
         }
         if (edtInDialog != null) {
             edtInDialog.setEnabled(needEdit);
         }
+        return self();
     }
 
     @Override
-    public void toggleCancelBtnVisibility(boolean hideCancelBtn) {
+    public CommonMdDialog toggleCancelBtnVisibility(boolean hideCancelBtn) {
         if (tvDialogCancle != null) {
             tvDialogCancle.setVisibility(hideCancelBtn ? View.GONE : View.VISIBLE);
         }
+        return self();
     }
 
-    public void setAdapter4Lv(ListAdapter dataAdapter) {
+    public CommonMdDialog setAdapter4Lv(ListAdapter dataAdapter) {
         if (lvItems != null) {
             lvItems.setAdapter(dataAdapter);
         }
+        return self();
     }
 
-    public void setOnItemClickListener(AdapterView.OnItemClickListener itemClickListener) {
+    public CommonMdDialog setOnItemClickListener(AdapterView.OnItemClickListener itemClickListener) {
         if (lvItems != null) {
             lvItems.setOnItemClickListener(itemClickListener);
         }
+        return self();
     }
 
     @Override
@@ -237,10 +244,63 @@ public class CommonMdDialog extends BaseDialog{
         return this.tvDialogHint;
     }
 
+    /**
+     * 供外部获取到"取消"按钮控件,从而可以设置该控件的样式
+     * @return
+     */
+    public TextView getTvDialogCancle() {
+        return tvDialogCancle;
+    }
+
+    /**
+     * 供外部获取到"确定"按钮控件,从而可以设置该控件的样式
+     * @return
+     */
+    public TextView getTvDialogCommit() {
+        return tvDialogCommit;
+    }
+
+    /**
+     * 供外部获取到"标题"按钮控件,从而可以设置该控件的样式
+     * @return
+     */
+    public TextView getTvDialogTitle() {
+        return tvDialogTitle;
+    }
+
     @Override
-    public void setHintMsgGravity(int gravity) {
+    public CommonMdDialog setHintMsgGravity(int gravity) {
         if (tvDialogHint != null) {
             tvDialogHint.setGravity(gravity);
         }
+        return self();
+    }
+
+    @Override
+    public CommonMdDialog adjustDialogContentWH(int dpUnitW, int dpUnitH) {
+        if (mdDialogContentLayout != null) {
+            ViewGroup.LayoutParams vlp = mdDialogContentLayout.getLayoutParams();
+            if (vlp != null) {
+                vlp.width = Util.dip2px(mContext,dpUnitW);
+                vlp.height = Util.dip2px(mContext, dpUnitH);
+                mdDialogContentLayout.setLayoutParams(vlp);
+            }
+        }
+        return self();
+    }
+
+    public CommonMdDialog adjustContentViewPaddingLR(int dpPaddingLR) {
+        if (containerView != null) {
+            int paddingLrPix = Util.dip2px(mContext, dpPaddingLR);
+            containerView.setPadding(paddingLrPix, containerView.getPaddingTop(), paddingLrPix, containerView.getPaddingBottom());
+        }
+        return self();
+    }
+
+    public CommonMdDialog changeDialogContentBackground(int bgResId) {
+        if (mdDialogContentLayout != null) {
+            mdDialogContentLayout.setBackgroundResource(bgResId);
+        }
+        return self();
     }
 }
