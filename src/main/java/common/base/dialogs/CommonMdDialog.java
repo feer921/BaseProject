@@ -24,7 +24,7 @@ import common.base.utils.ViewUtil;
 public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     private TextView tvDialogTitle;
     private TextView tvDialogHint;
-    private TextView tvDialogCancle;
+    private TextView tvDialogCancel;
     private TextView tvDialogCommit;
     private EditText edtInDialog;
     private ListView lvItems;
@@ -48,7 +48,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     }
 
     @Override
-    protected int getContentViewResID() {
+    protected int getDialogViewResID() {
         return R.layout.common_md_dialog_layout;
     }
 
@@ -59,10 +59,10 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
 
         tvDialogTitle = ViewUtil.findViewInContainer(containerLayout, R.id.tv_dialog_title);
         tvDialogHint = ViewUtil.findViewInContainer(containerLayout, R.id.tv_4_dialog_msg);
-        tvDialogCancle = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_cancel);
+        tvDialogCancel = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_cancel);
         tvDialogCommit = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_commit);
-        if(tvDialogCancle != null){
-            tvDialogCancle.setOnClickListener(this);
+        if(tvDialogCancel != null){
+            tvDialogCancel.setOnClickListener(this);
         }
         if (tvDialogCommit != null) {
             tvDialogCommit.setOnClickListener(this);
@@ -71,11 +71,29 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         lvItems = ViewUtil.findViewInContainer(containerLayout, R.id.lv_selection_items);
         lvItems.addHeaderView(getLayoutInflater().inflate(R.layout.gray_divider_line,null));
         llBottomBtnsLayout = ViewUtil.findViewInContainer(containerLayout, R.id.ll_btns);
+        clearOldTexts();
     }
 
-    public void switchContentLayoutType(ContentLayouType needLayoutType) {
+    /**
+     * 把除取消、确定按钮外写在控件上的文本全部清空了
+     * @return
+     */
+    public CommonMdDialog clearOldTexts() {
+        if (tvDialogTitle != null) {
+            tvDialogTitle.setText(R.string.hint);
+        }
+        if (tvDialogHint != null) {
+            tvDialogHint.setText(null);
+        }
+        if (edtInDialog != null) {
+            edtInDialog.setText(null);
+            edtInDialog.setHint(null);
+        }
+        return self();
+    }
+    public CommonMdDialog switchContentLayoutType(ContentLayouType needLayoutType) {
         if (needLayoutType == null) {
-            return;
+            return self();
         }
         if (tvDialogHint != null) {
             tvDialogHint.setVisibility(View.GONE);
@@ -111,12 +129,13 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
                 break;
         }
         curContentLayoutType = needLayoutType;
+        return self();
     }
     @Override
     public void onClick(View v) {
         super.onClick(v);
         int curClickedBtnType = DialogInterface.BUTTON_NEGATIVE;
-        if (v == tvDialogCancle) {
+        if (v == tvDialogCancel) {
             curClickedBtnType = DialogInterface.BUTTON_NEGATIVE;
             dismiss();
         } else if (v == tvDialogCommit) {
@@ -127,6 +146,10 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         }
     }
 
+    /**
+     * 这里重写的是Dialog.java中的方法，原方法为给window设置title
+     * @param title
+     */
     @Override
     public void setTitle(CharSequence title) {
         if (tvDialogTitle != null) {
@@ -156,15 +179,15 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     }
     @Override
     public CommonMdDialog setCancleBtnName(String cancleBtnName) {
-        if (tvDialogCancle != null) {
-            tvDialogCancle.setVisibility(View.VISIBLE);
+        if (tvDialogCancel != null) {
+            tvDialogCancel.setVisibility(View.VISIBLE);
             if (Util.isEmpty(cancleBtnName)) {
-                tvDialogCancle.setText(R.string.cancel);
+                tvDialogCancel.setText(R.string.cancel);
             }
             else{
-                tvDialogCancle.setText(cancleBtnName);
+                tvDialogCancel.setText(cancleBtnName);
                 if ("hide".equals(cancleBtnName)) {
-                    tvDialogCancle.setVisibility(View.GONE);
+                    tvDialogCancel.setVisibility(View.GONE);
                 }
             }
         }
@@ -197,8 +220,8 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
 
     @Override
     public CommonMdDialog toggleCancelBtnVisibility(boolean hideCancelBtn) {
-        if (tvDialogCancle != null) {
-            tvDialogCancle.setVisibility(hideCancelBtn ? View.GONE : View.VISIBLE);
+        if (tvDialogCancel != null) {
+            tvDialogCancel.setVisibility(hideCancelBtn ? View.GONE : View.VISIBLE);
         }
         return self();
     }
@@ -240,35 +263,6 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     }
 
     @Override
-    public TextView getTvHintMsg() {
-        return this.tvDialogHint;
-    }
-
-    /**
-     * 供外部获取到"取消"按钮控件,从而可以设置该控件的样式
-     * @return
-     */
-    public TextView getTvDialogCancle() {
-        return tvDialogCancle;
-    }
-
-    /**
-     * 供外部获取到"确定"按钮控件,从而可以设置该控件的样式
-     * @return
-     */
-    public TextView getTvDialogCommit() {
-        return tvDialogCommit;
-    }
-
-    /**
-     * 供外部获取到"标题"按钮控件,从而可以设置该控件的样式
-     * @return
-     */
-    public TextView getTvDialogTitle() {
-        return tvDialogTitle;
-    }
-
-    @Override
     public CommonMdDialog setHintMsgGravity(int gravity) {
         if (tvDialogHint != null) {
             tvDialogHint.setGravity(gravity);
@@ -290,9 +284,9 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     }
 
     public CommonMdDialog adjustContentViewPaddingLR(int dpPaddingLR) {
-        if (containerView != null) {
+        if (dialogView != null) {
             int paddingLrPix = Util.dip2px(mContext, dpPaddingLR);
-            containerView.setPadding(paddingLrPix, containerView.getPaddingTop(), paddingLrPix, containerView.getPaddingBottom());
+            dialogView.setPadding(paddingLrPix, dialogView.getPaddingTop(), paddingLrPix, dialogView.getPaddingBottom());
         }
         return self();
     }
@@ -302,5 +296,45 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
             mdDialogContentLayout.setBackgroundResource(bgResId);
         }
         return self();
+    }
+
+    /**
+     * 获取dialog中负责显示title的控件,从而外部就可以再定义其样式了
+     *
+     * @return
+     */
+    @Override
+    public TextView getDialogTitleView() {
+        return tvDialogTitle;
+    }
+
+    /**
+     * 获取dialog中负责显示hint msg的控件,从而外部就可以再定义其样式了
+     *
+     * @return
+     */
+    @Override
+    public <T extends View> T getDialogHintView() {
+        return (T) tvDialogHint;
+    }
+
+    /**
+     * 获取dialog中 取消按钮控件,从而外部就可以再定义其样式了
+     *
+     * @return
+     */
+    @Override
+    public <T extends View> T getDialogCancelBtn() {
+        return (T) tvDialogCancel;
+    }
+
+    /**
+     * 获取dialog中确定按钮控件,从而外部就可以再定义其样式了
+     *
+     * @return
+     */
+    @Override
+    public <T extends View> T getDialogCommitBtn() {
+        return (T) tvDialogCommit;
     }
 }

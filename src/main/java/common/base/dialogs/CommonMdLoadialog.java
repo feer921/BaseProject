@@ -26,7 +26,7 @@ public class CommonMdLoadialog extends BaseDialog<CommonMdLoadialog>{
     }
 
     @Override
-    protected int getContentViewResID() {
+    protected int getDialogViewResID() {
         return R.layout.common_md_load_dialog_layout;
     }
 

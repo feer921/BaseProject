@@ -25,7 +25,7 @@ public class CommonHintDialog extends BaseDialog<CommonHintDialog>{
         dialogHeigth = height;
     }
     @Override
-    protected int getContentViewResID() {
+    protected int getDialogViewResID() {
         return R.layout.common_dialog_layout;
     }
     @Override

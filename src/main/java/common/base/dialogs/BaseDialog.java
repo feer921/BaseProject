@@ -6,14 +6,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import common.base.R;
 
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected OnClickListener dialogClickListener;
-    protected View containerView;
-    protected int contentLayoutResId;
+    /**
+     * 对话框的布局视图
+     */
+    View dialogView;
+//    protected int contentLayoutResId;
 
     protected Context mContext;
     /**
@@ -22,6 +24,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected int dialogWidth,dialogHeigth;
     protected int dialogShowGrivity;
     protected int dialogAnimStyle;
+    /**
+     * 点击Dialog内容外部空间时，是否能dismiss
+     * 默认为点击dialog外部不dismiss
+     */
     protected boolean cancelableOutSide = false;
     /**
      * 当前Dialog 所处的提示类型
@@ -34,8 +40,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 
     public BaseDialog(Context context, int theme) {
         super(context, theme);
-        containerView = getLayoutInflater().inflate(getContentViewResID(), null);
-        initViews(containerView);
+        if (getDialogViewResID() > 0) {
+            dialogView = getLayoutInflater().inflate(getDialogViewResID(), null);
+        }
+        else{
+            dialogView = getDialogView();
+        }
+        initViews(dialogView);
         mContext = context;
     }
 
@@ -43,28 +54,30 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(cancelableOutSide);
-        setContentView(getContainerView());
+        setContentView(dialogView);
         Window w = getWindow();
-        WindowManager.LayoutParams lp = w.getAttributes();
-        if(dialogWidth > 0 ){
-            lp.width = dialogWidth;
+        if (w != null) {
+            WindowManager.LayoutParams lp = w.getAttributes();
+            if(dialogWidth > 0 ){
+                lp.width = dialogWidth;
+            }
+            else{
+                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            }
+            if(dialogHeigth > 0){
+                lp.height = dialogHeigth;
+            }
+            else{
+                //            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            }
+            if(dialogShowGrivity != 0){
+                lp.gravity = dialogShowGrivity;
+            }
+            w.setAttributes(lp);
         }
-        else{
-            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        }
-        if(dialogHeigth > 0){
-            lp.height = dialogHeigth;
-        }
-        else{
-//            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        }
-        if(dialogShowGrivity != 0){
-            lp.gravity = dialogShowGrivity;
-        }
-        if(dialogAnimStyle != 0){
+        if(dialogAnimStyle != 0){//???没什么作用目前
             setDialogAnimStyle(dialogAnimStyle);
         }
-        w.setAttributes(lp);
     }
 
     /**
@@ -73,9 +86,11 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     protected abstract void initViews(View containerView);
 
-    protected int getContentViewResID(){
-        return 0;
-    }
+    /**
+     * 获取本Dialog的布局视图资源ID
+     * @return
+     */
+    protected abstract int getDialogViewResID();
     @Override
     public void onClick(View v) {
         
@@ -87,21 +102,25 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
 
-    public View getContainerView() {
-        return containerView;
+    public View getDialogView() {
+        return dialogView;
     }
 
-
-    public I setContainerView(View containerView) {
-        this.containerView = containerView;
-        return self();
-    }
-
-
-    public I setContentLayoutResId(int contentLayoutResId) {
-        this.contentLayoutResId = contentLayoutResId;
-        return self();
-    }
+//    /**
+//     * 各子类按需需要
+//     * @param dialogView
+//     * @return
+//     */
+//    public I setContainerView(View dialogView) {
+//        this.dialogView = dialogView;
+//        return self();
+//    }
+//
+//
+//    public I setContentLayoutResId(int contentLayoutResId) {
+//        this.contentLayoutResId = contentLayoutResId;
+//        return self();
+//    }
 
     public I setDialogShowGrivity(int dialogShowGrivity) {
         this.dialogShowGrivity = dialogShowGrivity;
@@ -116,12 +135,17 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         return getContext().getResources().getString(resID);
     }
 
-    public I setHintMsg(String hintMsg) {
+    /**
+     * 设置提示对话框的提示标题
+     * @param title
+     * @return
+     */
+    public I setHintTitle(String title) {
+        setTitle(title);
         return self();
     }
-
-    public TextView getTvHintMsg() {
-        return null;
+    public I setHintMsg(String hintMsg) {
+        return self();
     }
 
     /**
@@ -156,6 +180,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         this.cancelableOutSide = cancel;
     }
 
+    public I setCanceledOnTouchOut(boolean cancelableOutSide) {
+        setCanceledOnTouchOutside(cancelableOutSide);
+        return self();
+    }
     /**
      * 是否隐藏“取消”按钮
      * @param hideCancelBtn
@@ -178,9 +206,43 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         return self();
     }
 
-    public I setDialogHeigth(int dialogHeigth) {
+    public I setDialogHeight(int dialogHeigth) {
         this.dialogHeigth = dialogHeigth;
         return self();
+    }
+
+    /**
+     * 获取dialog中负责显示title的控件,从而外部就可以再定义其样式了
+     * @param <T>
+     * @return
+     */
+    public <T extends View> T getDialogTitleView() {
+        return null;
+    }
+
+    /**
+     * 获取dialog中负责显示hint msg的控件,从而外部就可以再定义其样式了
+     * @param <T>
+     * @return
+     */
+    public <T extends View> T getDialogHintView() {
+        return null;
+    }
+    /**
+     * 获取dialog中 取消按钮控件,从而外部就可以再定义其样式了
+     * @param <T>
+     * @return
+     */
+    public <T extends View> T getDialogCancelBtn() {
+        return null;
+    }
+    /**
+     * 获取dialog中确定按钮控件,从而外部就可以再定义其样式了
+     * @param <T>
+     * @return
+     */
+    public <T extends View> T getDialogCommitBtn() {
+        return null;
     }
     protected I self() {
         return (I) this;

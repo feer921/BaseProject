@@ -18,7 +18,7 @@
             style="@style/tv_fill_w_h_style"
             android:layout_height="wrap_content"
             android:padding="@dimen/common_md_dialog_title_padding"
-            android:text="请选择支付方式"
+            android:text="@string/hint"
             android:textColor="#445979"
             android:textSize="@dimen/common_md_dialog_title_textsize"
             android:layout_alignParentTop="true"
