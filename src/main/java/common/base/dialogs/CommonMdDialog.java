@@ -2,6 +2,7 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.DrawableRes;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import common.base.R;
+import common.base.utils.CommonLog;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
@@ -49,7 +51,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
 
     @Override
     protected int getDialogViewResID() {
-        return R.layout.common_md_dialog_layout;
+        return R.layout.common_md_dialog_weight;
     }
 
     @Override
@@ -275,29 +277,48 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         if (mdDialogContentLayout != null) {
             ViewGroup.LayoutParams vlp = mdDialogContentLayout.getLayoutParams();
             if (vlp != null) {
-                vlp.width = Util.dip2px(mContext,dpUnitW);
-                vlp.height = Util.dip2px(mContext, dpUnitH);
-                mdDialogContentLayout.setLayoutParams(vlp);
+                if (dpUnitW > 0) {
+                    vlp.width = Util.dip2px(mContext,dpUnitW);
+                }
+                if (dpUnitH > 0) {
+                    vlp.height = Util.dip2px(mContext, dpUnitH);
+                }
+                CommonLog.e("info","--> width  " + vlp.width + " h;" + vlp.height);
+                if (dpUnitW > 0 || dpUnitH > 0) {
+                    mdDialogContentLayout.setLayoutParams(vlp);
+                }
             }
         }
         return self();
     }
 
     public CommonMdDialog adjustContentViewPaddingLR(int dpPaddingLR) {
-        if (dialogView != null) {
+        if (dialogView != null && dpPaddingLR >= 0) {
             int paddingLrPix = Util.dip2px(mContext, dpPaddingLR);
             dialogView.setPadding(paddingLrPix, dialogView.getPaddingTop(), paddingLrPix, dialogView.getPaddingBottom());
         }
         return self();
     }
 
-    public CommonMdDialog changeDialogContentBackground(int bgResId) {
+    public CommonMdDialog changeDialogContentBackground(@DrawableRes int bgResId) {
         if (mdDialogContentLayout != null) {
             mdDialogContentLayout.setBackgroundResource(bgResId);
         }
         return self();
     }
 
+    public CommonMdDialog changeDialogCancelViewBg(@DrawableRes int selectorBgResId) {
+        if (tvDialogCancel != null) {
+            tvDialogCancel.setBackgroundResource(selectorBgResId);
+        }
+        return self();
+    }
+    public CommonMdDialog changeDialogCommitViewBg(@DrawableRes int selectorBgResId) {
+        if (tvDialogCommit != null) {
+            tvDialogCommit.setBackgroundResource(selectorBgResId);
+        }
+        return self();
+    }
     /**
      * 获取dialog中负责显示title的控件,从而外部就可以再定义其样式了
      *
@@ -337,4 +358,12 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     public <T extends View> T getDialogCommitBtn() {
         return (T) tvDialogCommit;
     }
+
+    public View getHintAndBtnsLayoutDivider() {
+        return getViewFromDialog(R.id.view_gray_divider);
+    }
+    public View getBtnsDividerView() {
+        return getViewFromDialog(R.id.dialog_btns_divider_view);
+    }
+
 }

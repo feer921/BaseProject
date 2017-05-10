@@ -3,6 +3,8 @@ package common.base.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -129,7 +131,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         this.dialogAnimStyle = dialogAnimStyle;
         return self();
     }
-    protected String getStrFromResId(int resID){
+    protected String getStrFromResId(@StringRes int resID){
         return getContext().getResources().getString(resID);
     }
 
@@ -241,6 +243,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     public <T extends View> T getDialogCommitBtn() {
         return null;
+    }
+
+    public <T extends View> T getViewFromDialog(@IdRes int viewId) {
+        return (T) findViewById(viewId);
     }
     protected I self() {
         return (I) this;

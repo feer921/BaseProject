@@ -4,20 +4,20 @@
     <item android:state_pressed="true" >
         <shape>
             <!-- 渐变 -->
-            <gradient
-                android:startColor="#eeefef"
-                android:endColor="#eeefef"
-                android:type="radial"
-                android:gradientRadius="50" />
+            <!--<gradient-->
+                <!--android:startColor="#eeefef"-->
+                <!--android:endColor="#eeefef"-->
+                <!--android:type="radial"-->
+                <!--android:gradientRadius="50" />-->
             <!-- 描边 -->
             <stroke
-                android:width="2dp"
+                android:width="1dp"
                 android:color="#dcdcdc"
                 android:dashWidth="5dp"
                 android:dashGap="3dp" />
             <!-- 圆角 -->
             <corners
-                android:bottomRightRadius="7dp"
+                android:bottomRightRadius="@dimen/common_md_dialog_bg_radius"
                 />
             <!--<padding
                 android:left="10dp"
@@ -49,13 +49,13 @@
     <item>
         <shape>
             <corners
-                android:bottomRightRadius="7dp"
+                android:bottomRightRadius="@dimen/common_md_dialog_bg_radius"
                 />
 
-            <gradient
-                android:startColor="#ffffff"
-                android:endColor="#ffffff"
-                />
+            <!--<gradient-->
+                <!--android:startColor="#ffffff"-->
+                <!--android:endColor="#ffffff"-->
+                <!--/>-->
             <stroke
                 android:width="0.5dp"
                 android:color="@color/grey_line"
