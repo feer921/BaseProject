@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -246,7 +247,11 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
     public <T extends View> T getViewFromDialog(@IdRes int viewId) {
-        return (T) findViewById(viewId);
+        if (dialogView == null) {
+            return null;
+        }
+        ViewGroup viewGroup = (ViewGroup) dialogView;
+        return (T) viewGroup.findViewById(viewId);
     }
     protected I self() {
         return (I) this;
