@@ -7,8 +7,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import common.base.R;
-
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected OnClickListener dialogClickListener;
     /**
@@ -34,7 +32,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     public int curDialogInCase;
     public BaseDialog(Context context) {
-        this(context, R.style.login_dialog);
+        this(context, android.R.style.Theme_Translucent_NoTitleBar);
     }
 
 

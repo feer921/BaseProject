@@ -41,9 +41,9 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         LIST_SELECTIONS;
     }
     public CommonMdDialog(Context context) {
-        this(context, android.R.style.Theme_Translucent);
+        this(context, android.R.style.Theme_Translucent_NoTitleBar);
     }
-    protected CommonMdDialog(Context context, int theme) {
+    public CommonMdDialog(Context context, int theme) {
         super(context, theme);
     }
 
