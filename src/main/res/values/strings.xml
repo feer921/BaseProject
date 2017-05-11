@@ -1,4 +1,7 @@
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation"
+    >
     <string name="app_name">BaseProject</string>
     <string name="confirmed">确认</string>
     <string name="confirm">"确  定"</string>
