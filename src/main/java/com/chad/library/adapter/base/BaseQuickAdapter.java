@@ -1440,10 +1440,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * Implement this method and use the helper to adapt the view to the given item.
      *
-     * @param helper A fully initialized helper.
+     * @param viewHolder A fully initialized viewHolder.
      * @param item   The item that needs to be displayed.
      */
-    protected abstract void convert(K helper, T item);
+    protected abstract void convert(K viewHolder, T item);
 
     /**
      * get the specific view by position,e.g. getViewByPosition(2, R.id.textView)
