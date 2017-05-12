@@ -20,7 +20,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="15dp"
-        android:background="@drawable/rounded_corner_white_stroke"
+        android:background="@drawable/rounded_black_bg"
         android:paddingBottom="8dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
