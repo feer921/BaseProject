@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import common.base.utils.Util;
+
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected OnClickListener dialogClickListener;
     /**
@@ -200,6 +202,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * @return
      */
     public I adjustDialogContentWH(int dpUnitW, int dpUnitH) {
+        return self();
+    }
+    public I adjustContentViewPaddingLR(int dpPaddingLR) {
+        if (dialogView != null && dpPaddingLR >= 0) {
+            int paddingLrPix = Util.dip2px(mContext, dpPaddingLR);
+            dialogView.setPadding(paddingLrPix, dialogView.getPaddingTop(), paddingLrPix, dialogView.getPaddingBottom());
+        }
         return self();
     }
     public I setDialogWidth(int dialogWidth) {

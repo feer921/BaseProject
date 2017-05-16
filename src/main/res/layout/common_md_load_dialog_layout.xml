@@ -12,6 +12,7 @@
         android:layout_centerInParent="true"
         android:background="@drawable/rounded_white_shape"
         android:padding="24dp"
+        android:id="@+id/common_md_dialog_content_layout"
         >
         <ImageView
             android:layout_width="80dp"

@@ -292,14 +292,6 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         return self();
     }
 
-    public CommonMdDialog adjustContentViewPaddingLR(int dpPaddingLR) {
-        if (dialogView != null && dpPaddingLR >= 0) {
-            int paddingLrPix = Util.dip2px(mContext, dpPaddingLR);
-            dialogView.setPadding(paddingLrPix, dialogView.getPaddingTop(), paddingLrPix, dialogView.getPaddingBottom());
-        }
-        return self();
-    }
-
     public CommonMdDialog changeDialogContentBackground(@DrawableRes int bgResId) {
         if (mdDialogContentLayout != null) {
             mdDialogContentLayout.setBackgroundResource(bgResId);
