@@ -3,8 +3,12 @@ package common.base.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.StyleRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -73,13 +77,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             else{
                 //            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             }
+            if(dialogAnimStyle != 0){
+                w.setWindowAnimations(dialogAnimStyle);
+            }
             if(dialogShowGrivity != 0){
                 lp.gravity = dialogShowGrivity;
             }
             w.setAttributes(lp);
-        }
-        if(dialogAnimStyle != 0){//???没什么作用目前
-            setDialogAnimStyle(dialogAnimStyle);
         }
     }
 
@@ -130,8 +134,35 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         return self();
     }
 
-    public I setDialogAnimStyle(int dialogAnimStyle) {
+    public I changeDialogAnimStyle(@StyleRes int dialogAnimStyle) {
         this.dialogAnimStyle = dialogAnimStyle;
+        if (dialogAnimStyle > 0){
+            Window dialogWindow = getWindow();
+            if (dialogWindow != null) {
+                dialogWindow.setWindowAnimations(dialogAnimStyle);
+            }
+        }
+        return self();
+    }
+
+    /**
+     * //根据重力方向，x，y坐标设置窗口需要显示的位置
+     * @param gravity
+     * @param x
+     * @param y
+     * @return
+     */
+    public I changeDialogGravityInfo(int gravity, int x, int y) {
+        Window w = getWindow();
+        if (w != null) {
+            WindowManager.LayoutParams wlp = w.getAttributes();
+            if (wlp != null) {
+                wlp.gravity = gravity;
+                wlp.x = x;
+                wlp.y = y;
+                w.setAttributes(wlp);
+            }
+        }
         return self();
     }
     protected String getStrFromResId(@StringRes int resID){
@@ -261,6 +292,65 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         }
         ViewGroup viewGroup = (ViewGroup) dialogView;
         return (T) viewGroup.findViewById(viewId);
+    }
+
+    protected Handler mHandler;
+
+
+    protected static final int MSG_TYPE_DISMISS = 0x10;
+    /**
+     * 显示维持时间
+     */
+    private long showHoldTime = 0;
+    public I showHoldTime(long showTimeInMs){
+        this.showHoldTime = showTimeInMs;
+        clearShowHoldTaskInfo();
+        return self();
+    }
+
+
+
+    protected void handlerMsg(Message msg) {
+        if (msg == null) {
+            return;
+        }
+        int what = msg.what;
+        switch (what) {
+            case MSG_TYPE_DISMISS:
+                if (isShowing()) {
+                    dismiss();
+                }
+                break;
+        }
+    }
+    @Override
+    public void show() {
+        super.show();
+        if (showHoldTime > 0) {
+            if (mHandler == null) {
+                mHandler = new Handler(Looper.getMainLooper()){
+                    @Override
+                    public void handleMessage(Message msg) {
+                        handlerMsg(msg);
+                    }
+                };
+            }
+            mHandler.removeMessages(MSG_TYPE_DISMISS);
+            mHandler.sendEmptyMessageDelayed(MSG_TYPE_DISMISS, showHoldTime);
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        clearShowHoldTaskInfo();
+    }
+
+    public I clearShowHoldTaskInfo() {
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+        }
+        return self();
     }
     protected I self() {
         return (I) this;

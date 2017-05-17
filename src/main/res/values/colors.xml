@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 常用颜色值 -->
-    <color name="tab_indicator_selected">#6666FF</color>
     <color name="white40">#40FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#ff000000</color>
@@ -20,64 +19,35 @@
     <color name="grayslate">#e6e6e6</color>
     <color name="lightblue">#0083FF</color>
     <color name="holo_blue">#FF33E5B5</color>
-    <color name="tab_text_normal">#666666</color>
-    <color name="tab_text_selected">#007AFF</color>
+    <!-- 透明 -->
     <color name="transparent">#00000000</color>
     <color name="light_green">#a1decc</color>
-    <color name="light_yellow">#ffd376 </color>
-        <color name="pop_black">#494949 </color>
-       <!-- 透明 -->
-    <color name="vifrification">#00000000</color>
-    <!-- 线条 -->
-    <color name="province_line_border">#C7C7C7</color>
-  <!--   背景 -->
-  <color name="back_gound_line">#F0F0F0</color>
-  
-  
-  
-  
-  <!-- 充值 提现  -->
-  <color name="txt_black">#333333</color>
-  <color name="txt_gray">#666666</color>
-  <color name="txt_hint_gray">#bbbbbb</color>
-  <color name="txt_tips_gray">#999999</color>
-  <color name="background_gray">#f0f0f0</color>
-  <color name="grey_line">#e6e6e6</color> <!--	灰边描线  -->
-  
-  <color name="normal">#fff</color>
-    <color name="press">#e6e6e6</color>
-    <color name="focue">#e6e6e6</color>
-    <color name="sidebar">#CCCCCC</color>
-  
-  <drawable name="transparent_background">#00000000</drawable>  
-  <color name="text_color_4_main_body">#333333</color>
-  <color name="text_color_4_common_hint">#cccccc</color>
-  <color name="text_color_4_subtitle">#b0b0b0</color>
-  <color name="text_color_4_grey">#e6e6e6</color>
-  <color name="btn_color_orange_yellow_bg">#ff9331</color>
-  <color name="btn_color_orange_yellow_pressed">#e37715</color>
-  <color name="btn_color_orange_yellow_disenable">#d7d7d7</color>
-  <color name="text_color_4_sidebar_show">#4275b4</color>
-  <color name="background_4_title">#285187</color>
-  <color name="text_color_4_myaccount">#aab5c8</color>
-  <color name="text_color_4_red">#e26158</color>
-  <color name="background_4_gray">#d7d7d7</color>
-  <color name="background_4_remind">#ff9331</color>
-  <color name="text_red">#E26158</color>
-   <color name="text_pressed_watch_detail">#848484</color>
-  <color name="text_unable_watch_detail">#d4d4d4</color>
-  <color name="text_unable_support">#ffd2a9</color>
-  <color name="text_4_pressed_headlayout_textcolor">#8099ba</color>
-  
-   <color name="pink_4_cash_bonus">#FFB2B9</color>
-   <color name="light_blue_4_coupon">#6CC5E9</color>
-   <color name="light_gree_4_coupon">#84CCC9</color>
-   <color name="background_20_percent">#20000000</color>
-   <color name="light_gray">#ebebeb</color>
-    <!-- 没有完成金额的颜色  -->
-    <color name="overmoney">#FF9331</color>
-    <!-- 账户明细 -->
-    <color name="account_detail_blue">#007aff</color>
-    <color name="account_detail_orange">#e26158</color>
+    <color name="light_yellow">#ffd376</color>
+    <color name="pop_black">#494949</color>
+
+    <color name="txt_black">#333333</color>
+    <color name="txt_gray">#666666</color>
+    <color name="txt_hint_gray">#bbbbbb</color>
+    <color name="txt_tips_gray">#999999</color>
+    <color name="grey_line">#e6e6e6</color> <!--	灰边描线  -->
+
+
+    <color name="text_color_4_common_hint">#cccccc</color>
+    <color name="text_color_4_subtitle">#b0b0b0</color>
+    <color name="text_color_4_grey">#e6e6e6</color>
+    <color name="btn_color_orange_yellow_bg">#ff9331</color>
+    <color name="btn_color_orange_yellow_pressed">#e37715</color>
+    <color name="btn_color_orange_yellow_disenable">#d7d7d7</color>
+    <color name="text_color_4_myaccount">#aab5c8</color>
+    <color name="text_color_4_red">#e26158</color>
+    <color name="background_4_gray">#d7d7d7</color>
+    <color name="background_4_remind">#ff9331</color>
+    <color name="text_red">#E26158</color>
+    <color name="text_pressed_watch_detail">#848484</color>
+    <color name="text_unable_watch_detail">#d4d4d4</color>
+    <color name="text_unable_support">#ffd2a9</color>
+    <color name="text_4_pressed_headlayout_textcolor">#8099ba</color>
+
+    <color name="background_20_percent">#20000000</color>
     <color name="divider_line_gray_color">#d7dade</color>
 </resources>

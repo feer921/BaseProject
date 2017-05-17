@@ -14,7 +14,7 @@
         android:layout_height="44dip"
         android:background="@color/white"
         android:textSize="14sp"
-        app:pstsIndicatorColor="@color/tab_indicator_selected"
+        app:pstsIndicatorColor="@color/lightblue"
         app:pstsIndicatorHeight="1dp"
         app:pstsTabPaddingLeftRight="15dp" />
 
