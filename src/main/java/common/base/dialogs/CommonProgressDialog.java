@@ -88,6 +88,9 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
         if (cancelCallback != null) {
             setOnCancelListener(this);
         }
+        else{
+            setOnCancelListener(null);
+        }
         return this;
     }
     public TextView getHintView() {
