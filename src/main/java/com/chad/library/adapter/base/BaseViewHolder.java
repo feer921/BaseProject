@@ -574,6 +574,9 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    protected BaseQuickAdapter getAdapter() {
+        return adapter;
+    }
     @SuppressWarnings("unchecked")
     public <T extends View> T getView(@IdRes int viewId) {
         View view = views.get(viewId);
