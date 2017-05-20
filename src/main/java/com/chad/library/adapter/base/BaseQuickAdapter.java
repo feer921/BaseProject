@@ -18,6 +18,7 @@ package com.chad.library.adapter.base;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Point;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
@@ -1947,5 +1948,33 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         for (T one : datas) {
             addData(one);
         }
+    }
+    public Point findOutFirstAndLastVisiblePos() {
+        Point curFirstAndLastVisiblePos = null;
+        if (mRecyclerView != null) {
+            RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
+            if (manager != null) {
+                if (manager instanceof LinearLayoutManager) {
+                    curFirstAndLastVisiblePos = new Point();
+                    final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) manager;
+                    curFirstAndLastVisiblePos.x = linearLayoutManager.findFirstVisibleItemPosition();
+                    curFirstAndLastVisiblePos.y = linearLayoutManager.findLastVisibleItemPosition();
+                }
+                else if (manager instanceof StaggeredGridLayoutManager) {
+                    final StaggeredGridLayoutManager staggeredGridLayoutManager = (StaggeredGridLayoutManager) manager;
+                    curFirstAndLastVisiblePos = new Point();
+                    final int[] positions = new int[staggeredGridLayoutManager.getSpanCount()];
+                    int[] firstVisiblePos = staggeredGridLayoutManager.findFirstVisibleItemPositions(positions);
+                    if (firstVisiblePos != null && firstVisiblePos.length > 0) {
+                        curFirstAndLastVisiblePos.x = firstVisiblePos[0];
+                    }
+                    int[] lastVisiblePos = staggeredGridLayoutManager.findLastVisibleItemPositions(positions);
+                    if (lastVisiblePos != null && lastVisiblePos.length > 0) {
+                        curFirstAndLastVisiblePos.y = lastVisiblePos[lastVisiblePos.length - 1];//拿到最后一个
+                    }
+                }
+            }
+        }
+        return curFirstAndLastVisiblePos;
     }
 }
