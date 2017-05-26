@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import common.base.R;
 import common.base.utils.NetHelper;
 import common.base.utils.Util;
@@ -35,6 +36,8 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
      */
     public static final int NO_MORE_DATA_DISABLE_CLICK = 8;
     public static final int NET_WORK_LOADING_NO_PROGRESS = 9;
+    public static final int NO_NET_WORK = 10;
+    public static final int OTHER_EXCEPTION_UNDER_NETWORK = 11;
     private ProgressBar animProgress;
     private boolean clickEnable = true;
     private final Context context;
@@ -42,6 +45,11 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
     private OnClickListener listener;
     private int mErrorState;
     private String strNoDataContent = "";
+
+    public TextView getTvHint() {
+        return tvHint;
+    }
+
     private TextView tvHint;
     private LinearLayout llLoadAndHintLayout;
     /**
@@ -63,26 +71,27 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
     private void init() {
         inflate(context, R.layout.empty_error_layout, this);
         llLoadAndHintLayout = (LinearLayout)findViewById(R.id.ll_load_and_hint);
-        if(!isInEditMode())
+//        if(!isInEditMode())
         img = (ImageView) findViewById(R.id.img_error_layout);
         tvHint = (TextView) findViewById(R.id.tv_error_layout);
-        if(!isInEditMode())
+//        if(!isInEditMode())
         animProgress = (ProgressBar) findViewById(R.id.animProgress);
-        setBackgroundColor(-1);
-        setOnClickListener(this);
-        if(!isInEditMode()){
-            img.setOnClickListener(new OnClickListener() {
-                
-                @Override
-                public void onClick(View v) {
-                    if (clickEnable) {
-                        // setErrorType(NETWORK_LOADING);
-                        if (listener != null)
-                            listener.onClick(v);
-                    }
-                }
-            });
-        }
+//        setBackgroundColor(-1);//why need this???
+//        setOnClickListener(this);//why need this???
+//        if(!isInEditMode()){
+//            img.setOnClickListener(new OnClickListener() {
+//
+//                @Override
+//                public void onClick(View v) {
+//                    if (clickEnable) {
+//                        // setErrorType(NETWORK_LOADING);
+//                        if (listener != null)
+//                            listener.onClick(v);
+//                    }
+//                }
+//            });
+//        }
+        tvHint.setOnClickListener(this);
     }
 
 
@@ -112,26 +121,110 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
         }
     }
 
-    public void setHintMsg(String msg) {
+    @Deprecated
+    public EmptyLayout setHintMsg(String msg) {
         tvHint.setText(msg);
+        return this;
     }
-    public void setHintMsg(int msgResID){
+    @Deprecated
+    public EmptyLayout setHintMsg(int msgResID){
         tvHint.setText(msgResID);
+        return this;
     }
-    public void setErrorImag(int imgResource) {
+    @Deprecated
+    public EmptyLayout setErrorImag(int imgResource) {
         try {
             img.setImageResource(imgResource);
         } catch (Exception e) {
         }
+        return this;
     }
 
-    public void setErrorType(int i) {
+    public EmptyLayout withHintMsg(String hintMsg) {
+        if (tvHint != null) {
+            tvHint.setText(hintMsg);
+        }
+        return this;
+    }
+
+    public EmptyLayout withHintImgIcon(int hintImgResId) {
+        if (img != null) {
+            img.setImageResource(hintImgResId);
+        }
+        return this;
+    }
+
+    public EmptyLayout showHintImg(boolean needShow) {
+        if (img != null) {
+            img.setVisibility(needShow ? VISIBLE : GONE);
+        }
+        return this;
+    }
+
+    public EmptyLayout showLoading(boolean needShow) {
+        if (animProgress != null) {
+            animProgress.setVisibility(needShow ? VISIBLE : GONE);
+        }
+        return this;
+    }
+
+    public EmptyLayout thenCanClick(boolean canClick) {
+        clickEnable = canClick;
+        return this;
+    }
+
+    public EmptyLayout showType(int hintType) {
+        mErrorState = hintType;
+        return this;
+    }
+    public EmptyLayout show(int hintType) {
+        setVisibility(VISIBLE);
+        mErrorState = hintType;
+        animProgress.setVisibility(View.GONE);//进度条默认隐藏
+        clickEnable = false;//不可点击
+        img.setVisibility(View.GONE);//提示的图标icon隐藏
+        switch (hintType) {
+            case NETWORK_LOADING:
+                animProgress.setVisibility(View.VISIBLE);
+                break;
+            case NET_WORK_LOADING_NO_PROGRESS:
+                break;
+            case HIDE_LAYOUT:
+                setVisibility(View.GONE);
+                break;
+            case NO_MORE_DATA_DISABLE_CLICK:
+                llLoadAndHintLayout.setVisibility(View.GONE);
+                tvHint.setText("没有更多数据了");
+                break;
+            case CLICK_2_LOAD_MORE:
+                tvHint.setText("点击加载更多数据");
+                clickEnable = true;
+                break;
+            case NODATA:
+            case NODATA_ENABLE_CLICK:
+                img.setVisibility(View.VISIBLE);
+                clickEnable = hintType == NODATA_ENABLE_CLICK;
+                break;
+            case NETWORK_ERROR:
+                img.setVisibility(VISIBLE);
+                clickEnable = true;
+                break;
+            case NO_NET_WORK:
+            case OTHER_EXCEPTION_UNDER_NETWORK:
+                img.setVisibility(VISIBLE);
+                clickEnable = true;
+                break;
+        }
+        return this;
+    }
+    @Deprecated
+    public EmptyLayout setErrorType(int errorOrHintType) {
         setVisibility(View.VISIBLE);
         if(!isInAFullMode){
             img.setBackgroundResource(R.drawable.hint_info_pink_icon);
         }
-        mErrorState = i;
-        switch (i) {
+        mErrorState = errorOrHintType;
+        switch (errorOrHintType) {
             case NETWORK_ERROR:
                 if (NetHelper.isNetworkConnected(getContext())) {
                     tvHint.setText("内容加载失败\r\n点击重新加载");
@@ -139,7 +232,8 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
 //                        img.setBackgroundResource(R.drawable.pagefailed_bg);
                         img.setBackgroundResource(0);
                     }
-                } else {
+                }
+                else {
                     tvHint.setText("没有可用的网络");
                     if(isInAFullMode){
 //                        img.setBackgroundResource(R.drawable.network_icon);
@@ -164,18 +258,6 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
                 clickEnable = false;
                 break;
             case NODATA:
-                if(isInAFullMode){
-//                    img.setBackgroundResource(R.drawable.info_hint_icon);
-                    img.setBackgroundResource(0);
-                }
-                img.setVisibility(View.VISIBLE);
-                animProgress.setVisibility(View.GONE);
-                setTvNoDataContent();
-                clickEnable = true;
-                break;
-            case HIDE_LAYOUT:
-                setVisibility(View.GONE);
-                break;
             case NODATA_ENABLE_CLICK:
                 if(isInAFullMode){
 //                    img.setBackgroundResource(R.drawable.info_hint_icon);
@@ -184,7 +266,13 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
                 img.setVisibility(View.VISIBLE);
                 animProgress.setVisibility(View.GONE);
                 setTvNoDataContent();
-                clickEnable = true;
+//                if (errorOrHintType == NODATA_ENABLE_CLICK) {
+//                    clickEnable = true;
+//                }
+                clickEnable = errorOrHintType == NODATA_ENABLE_CLICK;
+                break;
+            case HIDE_LAYOUT:
+                setVisibility(View.GONE);
                 break;
             case CLICK_2_LOAD_MORE:
                 tvHint.setText("点击加载更多数据");
@@ -199,21 +287,25 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
             default:
                 break;
         }
+        return this;
     }
 
-    public void setNoDataContent(String noDataContent) {
+    public EmptyLayout setNoDataContent(String noDataContent) {
         strNoDataContent = noDataContent;
+        return this;
     }
 
-    public void setOnLayoutClickListener(OnClickListener listener) {
+    public EmptyLayout setOnLayoutClickListener(OnClickListener listener) {
         this.listener = listener;
+        return this;
     }
 
-    public void setTvNoDataContent() {
+    public EmptyLayout setTvNoDataContent() {
         if (!Util.isEmpty(strNoDataContent))
             tvHint.setText(strNoDataContent);
         else
             tvHint.setText("暂无数据");
+        return this;
     }
 
     @Override
@@ -227,7 +319,8 @@ public class EmptyLayout extends LinearLayout implements View.OnClickListener {
         return isInAFullMode;
     }
 
-    public void setInAFullMode(boolean isInAFullMode) {
+    public EmptyLayout setInAFullMode(boolean isInAFullMode) {
         this.isInAFullMode = isInAFullMode;
+        return this;
     }
 }

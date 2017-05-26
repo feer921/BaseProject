@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pageerrLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:gravity="center"
-    android:background="@color/transparent"
     >
 
     <LinearLayout
@@ -39,11 +39,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/ll_load_and_hint"
         android:lines="2"
-        android:text="点击重新加载"
+        android:text="@string/loading"
         android:textColor="@color/text_color_4_subtitle"
         android:textSize="14sp" 
         android:layout_centerInParent="true"
         android:gravity="center"
+        android:padding="3dp"
         />
 
 </RelativeLayout>

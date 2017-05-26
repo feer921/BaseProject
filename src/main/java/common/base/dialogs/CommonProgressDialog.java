@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -97,7 +100,10 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
         return mTvLoadingHint;
     }
     public void run() {
-        show();
+        clearOldMsg();
+        if (!isShowing()) {
+            show();
+        }
     }
 
     public void over() {
@@ -106,12 +112,13 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
 
     @Override
     public void show() {
+        clearOldMsg();
         super.show();
         showAnim();
     }
-
     @Override
     public void dismiss() {
+        clearOldMsg();
 //        CommonLog.e("info","-------CommonProgressDialog-------dismiss()---------------------------");
         if (mAnimBgDrawable != null) {
             mAnimBgDrawable.stop();
@@ -155,4 +162,32 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
             callback.ownerToCancelLoadingRequest();
         }
     }
+
+    public void dismissDelay(long delayTimeMs) {
+        if (delayTimeMs > 0) {
+            if (mHandler == null) {
+                mHandler = new Handler(Looper.getMainLooper()){
+                    @Override
+                    public void handleMessage(Message msg) {
+                        int msgWhat = msg.what;
+                        switch (msgWhat) {
+                            case MSG_DELAY_TO_DISMISS:
+                                dismiss();
+                                break;
+                        }
+                    }
+                };
+            }
+            clearOldMsg();
+            mHandler.sendEmptyMessageDelayed(MSG_DELAY_TO_DISMISS, delayTimeMs);
+        }
+    }
+
+    private void clearOldMsg() {
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+        }
+    }
+    private static final int MSG_DELAY_TO_DISMISS = 0x10;
+    private Handler mHandler;
 }
