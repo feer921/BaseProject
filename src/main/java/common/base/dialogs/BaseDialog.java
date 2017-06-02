@@ -29,7 +29,14 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * 这两个变量，是调整加载Dialog内容视图的Window的整体宽、高
      */
     protected int dialogWidth,dialogHeigth;
-    protected int dialogShowGrivity;
+    /**
+     * Dialog 在window中的重心位置
+     */
+    protected int dialogShowGravity;
+    private int dialogOffsetX,dialogOffsetY;
+    /**
+     * Dialog 进、出的动画效果
+     */
     protected int dialogAnimStyle;
     /**
      * 点击Dialog内容外部空间时，是否能dismiss
@@ -80,9 +87,11 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             if(dialogAnimStyle != 0){
                 w.setWindowAnimations(dialogAnimStyle);
             }
-            if(dialogShowGrivity != 0){
-                lp.gravity = dialogShowGrivity;
+            if(dialogShowGravity != 0){
+                lp.gravity = dialogShowGravity;
             }
+            lp.x = dialogOffsetX;
+            lp.y = dialogOffsetY;
             w.setAttributes(lp);
         }
     }
@@ -129,14 +138,14 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 //        return self();
 //    }
 
-    public I setDialogShowGrivity(int dialogShowGrivity) {
-        this.dialogShowGrivity = dialogShowGrivity;
+    public I setDialogShowGravity(int dialogShowGravity) {
+        changeDialogGravityInfo(dialogShowGravity, 0, 0);
         return self();
     }
 
     public I changeDialogAnimStyle(@StyleRes int dialogAnimStyle) {
-        this.dialogAnimStyle = dialogAnimStyle;
-        if (dialogAnimStyle > 0){
+        if (dialogAnimStyle > 0 && this.dialogAnimStyle != dialogAnimStyle) {
+            this.dialogAnimStyle = dialogAnimStyle;
             Window dialogWindow = getWindow();
             if (dialogWindow != null) {
                 dialogWindow.setWindowAnimations(dialogAnimStyle);
@@ -153,14 +162,29 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * @return
      */
     public I changeDialogGravityInfo(int gravity, int x, int y) {
-        Window w = getWindow();
-        if (w != null) {
-            WindowManager.LayoutParams wlp = w.getAttributes();
-            if (wlp != null) {
-                wlp.gravity = gravity;
-                wlp.x = x;
-                wlp.y = y;
-                w.setAttributes(wlp);
+        boolean needToReset = false;
+        if (this.dialogShowGravity != gravity) {
+            needToReset = true;
+            this.dialogShowGravity = gravity;
+        }
+        if (dialogOffsetX != x) {
+            this.dialogOffsetX = x;
+            needToReset = true;
+        }
+        if (dialogOffsetY != y) {
+            this.dialogOffsetY = y;
+            needToReset = true;
+        }
+        if (needToReset) {
+            Window w = getWindow();
+            if (w != null) {
+                WindowManager.LayoutParams wlp = w.getAttributes();
+                if (wlp != null) {
+                    wlp.gravity = gravity;
+                    wlp.x = x;
+                    wlp.y = y;
+                    w.setAttributes(wlp);
+                }
             }
         }
         return self();

@@ -23,6 +23,7 @@ import android.os.StatFs;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Telephony;
+import android.support.annotation.DimenRes;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -285,7 +286,10 @@ public class Util {
         return (int) (pxValue / scale + 0.5f);
     }
 
-    public static Bitmap Bytes2Bimap(byte[] b) {
+    public static int getDimenResPixelSize(Context context,@DimenRes int dimeResId) {
+        return context.getResources().getDimensionPixelSize(dimeResId);
+    }
+    public static Bitmap bytes2Bimap(byte[] b) {
         if (b != null && b.length != 0) {
             return BitmapFactory.decodeByteArray(b, 0, b.length);
         } else {
