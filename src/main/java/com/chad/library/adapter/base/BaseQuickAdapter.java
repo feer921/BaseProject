@@ -1311,7 +1311,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
-        Log.e("info", TAG + "--> trigger load more the pos = " + position);
+        Log.e("info", this + "--> trigger load more the pos = " + position);
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mLoading) {
             mLoading = true;

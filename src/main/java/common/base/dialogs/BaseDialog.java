@@ -82,7 +82,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
                 lp.height = dialogHeigth;
             }
             else{
-                //            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;//不加上这句，默认高度会match_parent
             }
             if(dialogAnimStyle != 0){
                 w.setWindowAnimations(dialogAnimStyle);
