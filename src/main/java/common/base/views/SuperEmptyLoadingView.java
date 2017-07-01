@@ -119,6 +119,9 @@ public class SuperEmptyLoadingView extends LinearLayout {
                     return;
                 }
                 //回调出去
+                if (optListener != null) {
+                    optListener.optCallback(curStatus);
+                }
             }
         };
         llHintAndLoad.setOnClickListener(onClickListener);
@@ -311,7 +314,11 @@ public class SuperEmptyLoadingView extends LinearLayout {
         }
         return this;
     }
-
+    private IoptCallback optListener;
+    public SuperEmptyLoadingView withOptCallback(IoptCallback callback) {
+        optListener = callback;
+        return this;
+    }
     /**
      * 获取显示 提示内容的控件 以便于设置字体、颜色等
      * @return
@@ -330,5 +337,14 @@ public class SuperEmptyLoadingView extends LinearLayout {
 
     private String getResStr(@StringRes int strResId) {
         return getContext().getString(strResId);
+    }
+
+
+    public interface IoptCallback{
+        /**
+         * 主要为本SuperEmptyLoadingView 在Loading之后的点击操作的回调，供外部作具体的处理
+         * @param curLayoutStatus
+         */
+        void optCallback(LayoutStatus curLayoutStatus);
     }
 }
