@@ -1,5 +1,12 @@
 <resources>
-    <string name="loading">Loading...</string>
-    <string name="load_failed">load more failed</string>
+    <string name="loading">Loading,please wait...</string>
+    <string name="load_failed">Load more failed</string>
     <string name="load_end">No more data</string>
+
+
+    <string name="load_failure">Load data failed.</string>
+    <string name="no_data">No anything data.</string>
+    <string name="no_network">The network may be invalid.</string>
+    <string name="click_retry">Click to retry.</string>
+    <string name="setting_network">Setting NetWork</string>
 </resources>
