@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
+
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
         android:orientation="horizontal"
         >
+
         <ProgressBar
             android:id="@+id/def_left_load_anim"
             style="@style/circle_pb_loading_style"
@@ -17,25 +20,27 @@
             android:layout_height="20dp"
             android:visibility="gone"
             />
+
         <ImageView
+            android:id="@+id/iv_horizontal_load_anim"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
             android:src="@drawable/pagefailed_bg"
-            android:id="@+id/iv_horizontal_load_anim"
             android:visibility="gone"
             />
 
         <LinearLayout
+            android:id="@+id/ll_load_and_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:id="@+id/ll_load_and_hint"
             android:layout_marginLeft="3dp"
             android:layout_marginStart="3dp"
+            android:gravity="center"
+            android:orientation="vertical"
             >
+
             <ProgressBar
                 android:id="@+id/def_up_load_anim"
                 style="@style/circle_pb_loading_style"
@@ -43,28 +48,31 @@
                 android:layout_height="20dp"
                 android:visibility="gone"
                 />
+
             <ImageView
+                android:id="@+id/iv_load_or_hint_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_launcher"
                 android:contentDescription="@null"
                 android:scaleType="centerCrop"
-                android:id="@+id/iv_load_or_hint_image"
+                android:src="@drawable/ic_launcher"
                 />
+
             <TextView
-                style="@style/common_tv_style"
-                android:text="正在加载..."
-                android:singleLine="false"
                 android:id="@+id/tv_hint_msg"
-                android:layout_marginTop="2dp"
-                />
-            <TextView
                 style="@style/common_tv_style"
-                android:text="点击重试"
-                android:singleLine="false"
-                android:id="@+id/tv_extra_desc_or_click"
-                android:visibility="gone"
                 android:layout_marginTop="2dp"
+                android:singleLine="false"
+                android:text="正在加载..."
+                />
+
+            <TextView
+                android:id="@+id/tv_extra_desc_or_click"
+                style="@style/common_tv_style"
+                android:layout_marginTop="2dp"
+                android:singleLine="false"
+                android:text="点击重试"
+                android:visibility="gone"
                 />
         </LinearLayout>
     </LinearLayout>

@@ -144,10 +144,14 @@ public class SuperEmptyLoadingView extends LinearLayout {
             mAnimBgDrawable.stop();
         }
         if (curHintMsgResId <= 0) {
-            tvHintMsg.setText(targetStatus.hintMsgResId);
+            if (targetStatus.hintMsgResId > 0) {
+                tvHintMsg.setText(targetStatus.hintMsgResId);
+            }
         }
         if (curExtraOptResId <= 0) {
-            tvExtraOptHint.setText(targetStatus.extraOptInfoResId);
+            if (targetStatus.extraOptInfoResId > 0) {
+                tvExtraOptHint.setText(targetStatus.extraOptInfoResId);
+            }
         }
         ivShowStateIconOrAnim.setBackgroundDrawable(null);//把动画背景资源去除掉
 
