@@ -58,6 +58,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -75,6 +76,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     private boolean mLoading = false;
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
     private RequestLoadMoreListener mRequestLoadMoreListener;
+    private boolean mEnableLoadMoreEndClick = false;
 
     //Animation
     /**
@@ -197,6 +199,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * check if full page after {@link #setNewData(List)}, if full, it will enable load more again.
+     * <p>
+     * 不是配置项！！
+     * <p>
+     * 这个方法是用来检查是否满一屏的，所以只推荐在 {@link #setNewData(List)} 之后使用
+     * 原理很简单，先关闭 load more，检查完了再决定是否开启
+     * <p>
+     * 不是配置项！！
      *
      * @param recyclerView your recyclerView
      * @see #setNewData(List)
@@ -245,6 +254,58 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return tmp;
     }
 
+    /**
+     * up fetch start
+     */
+    private boolean mUpFetchEnable;
+    private boolean mUpFetching;
+    private UpFetchListener mUpFetchListener;
+
+    public void setUpFetchEnable(boolean upFetch) {
+        this.mUpFetchEnable = upFetch;
+    }
+
+    public boolean isUpFetchEnable() {
+        return mUpFetchEnable;
+    }
+
+    /**
+     * start up fetch position, default is 1.
+     */
+    private int mStartUpFetchPosition = 1;
+
+    public void setStartUpFetchPosition(int startUpFetchPosition) {
+        mStartUpFetchPosition = startUpFetchPosition;
+    }
+
+    private void autoUpFetch(int positions) {
+        if (!isUpFetchEnable() || isUpFetching()) {
+            return;
+        }
+        if (positions <= mStartUpFetchPosition && mUpFetchListener != null) {
+            mUpFetchListener.onUpFetch();
+        }
+    }
+
+    public boolean isUpFetching() {
+        return mUpFetching;
+    }
+
+    public void setUpFetching(boolean upFetching) {
+        this.mUpFetching = upFetching;
+    }
+
+    public void setUpFetchListener(UpFetchListener upFetchListener) {
+        mUpFetchListener = upFetchListener;
+    }
+
+    public interface UpFetchListener {
+        void onUpFetch();
+    }
+
+    /**
+     * up fetch end
+     */
     public void setNotDoAnimationCount(int count) {
         mLastPosition = count;
     }
@@ -277,6 +338,15 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     /**
+     * Gets to load more locations
+     *
+     * @return
+     */
+    public int getLoadMoreViewPosition() {
+        return getHeaderLayoutCount() + mData.size() + getFooterLayoutCount();
+    }
+
+    /**
      * @return Whether the Adapter is actively showing load
      * progress.
      */
@@ -305,10 +375,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         mNextLoadEnable = false;
         mLoadMoreView.setLoadMoreEndGone(gone);
         if (gone) {
-            notifyItemRemoved(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+            notifyItemRemoved(getLoadMoreViewPosition());
         } else {
             mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_END);
-            notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+            notifyItemChanged(getLoadMoreViewPosition());
         }
     }
 
@@ -320,8 +390,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             return;
         }
         mLoading = false;
+        mNextLoadEnable = true;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-        notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());//这里就相当于更新Load More Layout[position = Load more view 的position]
+        notifyItemChanged(getLoadMoreViewPosition());
     }
 
     /**
@@ -333,7 +404,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
         mLoading = false;
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_FAIL);
-        notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+        notifyItemChanged(getLoadMoreViewPosition());
     }
 
     /**
@@ -348,12 +419,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
         if (oldLoadMoreCount == 1) {
             if (newLoadMoreCount == 0) {
-                notifyItemRemoved(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                notifyItemRemoved(getLoadMoreViewPosition());
             }
         } else {
             if (newLoadMoreCount == 1) {
                 mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-                notifyItemInserted(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                notifyItemInserted(getLoadMoreViewPosition());
             }
         }
     }
@@ -477,29 +548,39 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * add new data in to certain location
      *
-     * @param position
+     * @param position the insert position
+     * @param newData  the new data collection
      */
-    public void addData(@IntRange(from = 0) int position, @NonNull List<T> data) {
-        if (data == null) {
-            return;
-        }
-        mData.addAll(position, data);
-        notifyItemRangeInserted(position + getHeaderLayoutCount(), data.size());
-        compatibilityDataSizeChanged(data.size());
+    public void addData(@IntRange(from = 0) int position, @NonNull Collection<? extends T> newData) {
+        mData.addAll(position, newData);
+        notifyItemRangeInserted(position + getHeaderLayoutCount(), newData.size());
+        compatibilityDataSizeChanged(newData.size());
     }
 
     /**
-     * additional data;
+     * add new data to the end of mData
      *
-     * @param newData 虽然这里限制了NonNull,但传入的参数如果为计算获取的，则可能仍然为null
+     * @param newData the new data collection 虽然这里限制了NonNull,但传入的参数如果为计算获取的，则可能仍然为null
      */
-    public void addData(@NonNull List<T> newData) {
-        if (newData == null) {
+    public void addData(@NonNull Collection<? extends T> newData) {
+		if (newData == null) {
             return;
         }
-        this.mData.addAll(newData);
+        mData.addAll(newData);
         notifyItemRangeInserted(mData.size() - newData.size() + getHeaderLayoutCount(), newData.size());
         compatibilityDataSizeChanged(newData.size());
+    }
+
+    /**
+     * use data to replace all item in mData. this method is different {@link #setNewData(List)},
+     * it doesn't change the mData reference
+     *
+     * @param data data collection
+     */
+    public void replaceData(@NonNull Collection<? extends T> data) {
+        mData.clear();
+        mData.addAll(data);
+        notifyDataSetChanged();
     }
 
     /**
@@ -693,20 +774,41 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     }
 
-
     private K getLoadingView(ViewGroup parent) {
         View view = getItemView(mLoadMoreView.getLayoutId(), parent);
         K holder = createBaseViewHolder(view);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {//只有在加载更多失败时，点击加载更多布局(item),才重新去加载
-                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
-                    notifyItemChanged(getHeaderLayoutCount() + mData.size() + getFooterLayoutCount());
+                if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_FAIL) {
+                    notifyLoadMoreToLoading();
+                }
+                if (mEnableLoadMoreEndClick && mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_END) {
+                    notifyLoadMoreToLoading();
                 }
             }
         });
         return holder;
+    }
+
+    /**
+     * The notification starts the callback and loads more
+     */
+    public void notifyLoadMoreToLoading() {
+        if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_LOADING) {
+            return;
+        }
+        mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
+        notifyItemChanged(getLoadMoreViewPosition());
+    }
+
+    /**
+     * Load more without data when settings are clicked loaded
+     *
+     * @param enable
+     */
+    public void enableLoadMoreEndClick(boolean enable) {
+        mEnableLoadMoreEndClick = enable;
     }
 
     /**
@@ -821,6 +923,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Override
     public void onBindViewHolder(K holder, int positions) {
+        //Add up fetch logic, almost like load more, but simpler.
+        autoUpFetch(positions);
         //Do not move position, need to change before LoadMoreView binding
         autoLoadMore(positions);
         int viewType = holder.getItemViewType();
@@ -924,14 +1028,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     private K createGenericKInstance(Class z, View view) {
         try {
             Constructor constructor;
-            String buffer = Modifier.toString(z.getModifiers());
-            String className = z.getName();
             // inner and unstatic class
-            if (className.contains("$") && !buffer.contains("static")) {
+            if (z.isMemberClass() && !Modifier.isStatic(z.getModifiers())) {
                 constructor = z.getDeclaredConstructor(getClass(), View.class);
+                constructor.setAccessible(true);
                 return (K) constructor.newInstance(this, view);
             } else {
                 constructor = z.getDeclaredConstructor(View.class);
+                constructor.setAccessible(true);
                 return (K) constructor.newInstance(view);
             }
         } catch (NoSuchMethodException e) {
@@ -1453,11 +1557,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      *
      * @see #bindToRecyclerView(RecyclerView)
      */
+    @Nullable
     public View getViewByPosition(int position, @IdRes int viewId) {
         checkNotNull();
         return getViewByPosition(getRecyclerView(), position, viewId);
     }
 
+    @Nullable
     public View getViewByPosition(RecyclerView recyclerView, int position, @IdRes int viewId) {
         if (recyclerView == null) {
             return null;
@@ -1610,7 +1716,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     public void expandAll() {
-        for (int i = mData.size() - 1; i >= 0; i--) {
+        for (int i = mData.size() - 1; i >= 0 + getHeaderLayoutCount(); i--) {
             expandAll(i, false, false);
         }
     }
@@ -1771,7 +1877,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
 
-    /**a
+    /**
      * Interface definition for a callback to be invoked when an childView in this
      * view has been clicked and held.
      */

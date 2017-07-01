@@ -343,7 +343,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
     public interface IoptCallback{
         /**
          * 主要为本SuperEmptyLoadingView 在Loading之后的点击操作的回调，供外部作具体的处理
-         * @param curLayoutStatus
+         * @param curLayoutStatus 当前的布局状态参见{@link LayoutStatus}
          */
         void optCallback(LayoutStatus curLayoutStatus);
     }
