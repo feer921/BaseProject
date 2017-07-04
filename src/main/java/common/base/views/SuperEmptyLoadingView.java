@@ -130,7 +130,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
         pbDefUpAnim = (ProgressBar) findViewById(R.id.def_up_load_anim);
     }
 
-    public void showCase(LayoutStatus targetStatus) {
+    public SuperEmptyLoadingView showCase(LayoutStatus targetStatus) {
         curStatus = targetStatus;
         ivHorizontalLoad.setVisibility(GONE);//水平方向的默认为隐藏
         isWholeLayoutClickable = true;
@@ -225,6 +225,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 break;
         }
         resetHintImageRes = 0;
+        return this;
     }
 
     private SuperEmptyLoadingView withHintMsg(String hintMsg) {
