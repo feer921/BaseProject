@@ -120,7 +120,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 }
                 //回调出去
                 if (optListener != null) {
-                    optListener.optCallback(curStatus);
+                    optListener.optCallback(SuperEmptyLoadingView.this,curStatus);
                 }
             }
         };
@@ -350,6 +350,6 @@ public class SuperEmptyLoadingView extends LinearLayout {
          * 主要为本SuperEmptyLoadingView 在Loading之后的点击操作的回调，供外部作具体的处理
          * @param curLayoutStatus 当前的布局状态参见{@link LayoutStatus}
          */
-        void optCallback(LayoutStatus curLayoutStatus);
+        void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus);
     }
 }
