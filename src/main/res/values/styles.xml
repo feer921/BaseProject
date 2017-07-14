@@ -1,22 +1,26 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <style name="common_dialog" parent="@android:style/Theme.Dialog">
+        <!-- 内容覆盖物 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowNoTitle">true</item>
+
+        <!--<item name="android:background">@null</item>-->
+        <!-- 背景:透明,如果是@null，则没有了背景(应该是黑的??) -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 背景是否暗淡 周围变暗 -->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
     <style name="BaseProject_Theme.Base" parent="Theme.AppCompat" >
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
-    </style>
-    <style name="common_dialog" parent="@android:style/Theme.Dialog">
-        <item name="android:windowFrame">@null</item>
-        <!-- 边框 -->
-        <item name="android:windowIsFloating">true</item>
-        <!-- 是否浮现在activity之上 -->
-        <item name="android:windowIsTranslucent">false</item>
-        <!-- 半透明 -->
-        <item name="android:windowNoTitle">true</item>
-        <!-- 无标题 -->
-        <item name="android:background">@null</item>
-        <item name="android:windowBackground">@null</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <!-- 周围变暗 -->
     </style>
     <style name="common_dialog_style" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>

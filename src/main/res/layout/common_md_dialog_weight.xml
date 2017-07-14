@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- not use now  -->
+<!-- not use now -> used now(2017-07-14)  -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#55000000"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/common_md_dialog_layout_padding">
-
+    android:padding="@dimen/common_md_dialog_layout_padding"
+    >
+<!-- changed by fee 2017-07-14:removed the background color;注：此根布局的match_parent宽、高是适配于Dialog窗口的宽,高 -->
     <LinearLayout
         android:id="@+id/common_md_dialog_content_layout"
         android:layout_width="match_parent"

@@ -69,20 +69,20 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(cancelableOutSide);
         setContentView(dialogView);
-        Window w = getWindow();
+        Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
             WindowManager.LayoutParams lp = w.getAttributes();
             if(dialogWidth > 0 ){
                 lp.width = dialogWidth;
             }
             else{
-                lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+//                lp.width = WindowManager.LayoutParams.MATCH_PARENT;//changed by fee 2017-07-14:
             }
             if(dialogHeigth > 0){
                 lp.height = dialogHeigth;
             }
             else{
-                lp.height = WindowManager.LayoutParams.WRAP_CONTENT;//不加上这句，默认高度会match_parent
+//                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
             }
             if(dialogAnimStyle != 0){
                 w.setWindowAnimations(dialogAnimStyle);
