@@ -372,6 +372,18 @@ public class UIHintAgent {
     public Dialog getCommonHintDialog() {
         return this.hintDialog;
     }
+
+    /**
+     * added by fee 2017-07-20 : 可以外部设置HintDialog对象进来
+     * @param theExistDialog
+     */
+    public void setExistHintDialog(BaseDialog theExistDialog) {
+        this.hintDialog = theExistDialog;
+        this.hintDialog.setCanceledOnTouchOut(isHintDialogCancelableOutSide)
+                .setDialogClickListener(mClickListenerForDialog)
+                .setCancelable(isHintDialogCancelable);
+        setUpHintDialogCancelListenerInfo();
+    }
     public void popupWindowDismiss() {
         if (hintPopuWindow != null && hintPopuWindow.isShowing()) {
             hintPopuWindow.dismiss();

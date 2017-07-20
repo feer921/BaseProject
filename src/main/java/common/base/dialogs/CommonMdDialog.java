@@ -351,6 +351,9 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         return (T) tvDialogCommit;
     }
 
+    public EditText getEdtInDialog() {
+        return edtInDialog;
+    }
     public View getHintAndBtnsLayoutDivider() {
         return getViewFromDialog(R.id.view_gray_divider);
     }
