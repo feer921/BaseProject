@@ -110,4 +110,26 @@ public final class JsonUtil {
         return null;
     }
 
+    /**
+     * 根据提供的 键值对信息，组装成一个JSONObject对象
+     * @param keys 键
+     * @param values 值
+     * @return JSONObject 对象 eg.: {"name":"feer","sex":"男", ...}
+     */
+    public static JSONObject assembleJSONObj(String[] keys,Object... values) {
+        JSONObject paramJson = new JSONObject();
+        if (keys != null && values != null && values.length >= keys.length) {
+            int keyLen = keys.length;
+            for(int i = 0; i < keyLen;i++) {
+                String curKey = keys[i];
+                Object curV = values[i];
+                try {
+                    paramJson.put(curKey,curV);
+                } catch (JSONException e) {
+                    CommonLog.e("info", "JsonUtil --> assembleJsonObj() put the key :" + curKey + " the value: " + curV + " occur :" + e);
+                }
+            }
+        }
+        return paramJson;
+    }
 }
