@@ -93,7 +93,7 @@ public class ReflectUtil {
     }
     /**
      * 通过反射 获取一个类中所声明的外部不可直接访问的属性对象
-     * @param fieldOfObj 扔在目标属性的类的对象
+     * @param fieldOfObj 持有目标属性的类的对象
      * @param declaredFieldName 类中所声明的属性名称 eg.: PrivateObj myObjName;
      * @param <T>               返回通过反射出的该属性的对象
      * @return
