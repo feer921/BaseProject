@@ -45,6 +45,23 @@
         <item name="android:gravity">center</item>
         <item name="android:singleLine">true</item>
     </style>
+
+    <style name="common_edittext_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@null</item>
+    </style>
+    <style name="common_edittext_style_full_width" parent="common_edittext_style">
+        <item name="android:layout_width">match_parent</item>
+    </style>
+    <style name="common_iv_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:contentDescription">@string/app_name</item>
+    </style>
     <style name="tv_fill_w_h_style" parent="common_tv_style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
