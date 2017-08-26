@@ -1,8 +1,8 @@
 package com.lzy.okgo.callback;
 
-import com.lzy.okgo.utils.OkLogger;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+
 import common.base.utils.JsonUtil;
 import okhttp3.Call;
 import okhttp3.Response;
@@ -140,9 +140,9 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
         }
         else {
             paramTypeClass = genericsTypeClass;
-            OkLogger.i("info", "---> 泛型擦试下： paramTypeClass = " + paramTypeClass);
+//            OkLogger.i("info", "---> 泛型擦试下： paramTypeClass = " + paramTypeClass);
         }
-        OkLogger.e("info", "--> 泛型参数T的类名为：" + paramTypeClass.getSimpleName());
+//        OkLogger.e("info", "--> 泛型参数T的类名为：" + paramTypeClass.getSimpleName());
         //这里直接拿到服务器的完整字符串响应,以便使用各种框架直接转化成T对象就行
         String bodyStr = response.body().string();
 //        OkLogger.i("info","--> 服务器响应数据：" + bodyStr);

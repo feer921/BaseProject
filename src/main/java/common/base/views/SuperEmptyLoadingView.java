@@ -131,6 +131,10 @@ public class SuperEmptyLoadingView extends LinearLayout {
     }
 
     public SuperEmptyLoadingView showCase(LayoutStatus targetStatus) {
+        //???
+        if (targetStatus == curStatus) {
+            return this;
+        }
         curStatus = targetStatus;
         ivHorizontalLoad.setVisibility(GONE);//水平方向的默认为隐藏
         isWholeLayoutClickable = true;

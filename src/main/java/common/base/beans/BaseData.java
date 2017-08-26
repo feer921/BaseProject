@@ -9,4 +9,5 @@ import java.io.Serializable;
  * DESC: 基础数据
  */
 public class BaseData implements Serializable{
+    private static final long serialVersionUID = 4410080819054865875L;
 }

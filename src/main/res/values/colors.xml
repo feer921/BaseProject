@@ -32,7 +32,7 @@
     <color name="grey_line">#e6e6e6</color> <!--	灰边描线  -->
 
 
-    <color name="text_color_4_common_hint">#cccccc</color>
+    <color name="color_ccc">#cccccc</color>
     <color name="text_color_4_subtitle">#b0b0b0</color>
     <color name="text_color_4_grey">#e6e6e6</color>
     <color name="btn_color_orange_yellow_bg">#ff9331</color>

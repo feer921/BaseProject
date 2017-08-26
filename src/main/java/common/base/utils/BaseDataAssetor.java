@@ -33,6 +33,9 @@ public class BaseDataAssetor {
      * @return
      */
     public static Serializable readDataObject(Context context, String fileName){
+        if (Util.isEmpty(fileName)) {
+            return null;
+        }
         File dataFile = new File(fileName);
         if(!dataFile.exists()) return null;
         FileInputStream fis = null;

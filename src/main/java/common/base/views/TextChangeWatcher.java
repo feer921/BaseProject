@@ -3,7 +3,8 @@ package common.base.views;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
-import android.widget.EditText;
+import android.widget.TextView;
+
 import common.base.interfaces.ITextWatcher;
 
 /**
@@ -13,11 +14,12 @@ import common.base.interfaces.ITextWatcher;
  * DESC: 对TextWatcher 的封装，主要是想把当前有EditText通过接口ITextWatcher回调出去
  */
 public class TextChangeWatcher implements TextWatcher{
-    private EditText curEditText;
+    private TextView curEditText;
     private ITextWatcher iTextWatcher;
 
-    public TextChangeWatcher(EditText curEditText, ITextWatcher iTextWatcher) {
+    public TextChangeWatcher(TextView curEditText, ITextWatcher iTextWatcher) {
         this.curEditText = curEditText;
+        this.curEditText.addTextChangedListener(this);
         this.iTextWatcher = iTextWatcher;
     }
 
