@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:state_pressed="true" android:drawable="@color/grayslate"></item>
-    <item android:state_checked="true" android:drawable="@color/grayslate" />
-    <item android:state_selected="true" android:drawable="@color/grayslate" />
-	<item android:drawable="@color/transparent"></item>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--样式：默认透明，点击、选中为灰色背景； 不适合:不建议使用 -->
+    <item android:drawable="@color/grayslate" android:state_pressed="true"/>
+    <item android:drawable="@color/grayslate" android:state_checked="true"/>
+    <item android:drawable="@color/grayslate" android:state_selected="true"/>
+    <item android:drawable="@color/transparent"></item>
 </selector>

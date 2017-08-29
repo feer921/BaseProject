@@ -38,15 +38,42 @@ public class BaseNetCallService<T> extends BaseService implements INetEvent<T> {
         }
         return false;
     }
-
     /***
-     * 取消网络请求
-     * @param curRequestType
+     * 取消网络请求（注：该方法只适合本框架的Retrofit请求模块才会真正取消网络请求，
+     * 如果使用的是本框架的OkGo请求模块，还请各APP的基类再进行处理一下,或本框架再优化来统一处理）
+     * @param curRequestType 要取消的网络请求类型
      */
     protected void cancelNetRequest(int curRequestType) {
         if (netRequestLifeMarker != null) {
             netRequestLifeMarker.cancelCallRequest(curRequestType);
         }
+    }
+    /**
+     * 某个请求类型的网络请求是否已经完成
+     * @param requestDataType
+     * @return
+     */
+    protected boolean curRequestFinished(int requestDataType) {
+        if (netRequestLifeMarker != null) {
+            return netRequestLifeMarker.curRequestLifeState(requestDataType) == NetRequestLifeMarker.REQUEST_STATE_FINISHED;
+        }
+        return false;
+    }
+    /**
+     * 判断是否某些网络请求全部完成了
+     * @param theRequestTypes 对应要加入判断的网络请求类型
+     * @return true:所有参与判断的网络请求都完成了；false:只要有任何一个请求未完成即未完成。
+     */
+    protected boolean isAllRequestFinished(int... theRequestTypes) {
+        if (theRequestTypes == null || theRequestTypes.length == 0) {
+            return false;
+        }
+        for (int oneRequestType : theRequestTypes) {
+            if (!curRequestFinished(oneRequestType)) {
+                return false;//只要有一个请求没有完成，就是未全部完成
+            }
+        }
+        return true;
     }
     /**
      * 标记当前网络请求的状态 : 正在请求、已完成、已取消等
@@ -57,6 +84,15 @@ public class BaseNetCallService<T> extends BaseService implements INetEvent<T> {
     protected void addRequestStateMark(int requestDataType,byte targetState){
         if(netRequestLifeMarker != null){
             netRequestLifeMarker.addRequestToMark(requestDataType, targetState);
+        }
+    }
+    /**
+     * 开始追踪、标记一个对应的网络请求类型的请求状态
+     * @param curRequestDataType
+     */
+    protected void trackARequestState(int curRequestDataType) {
+        if (netRequestLifeMarker != null) {
+            netRequestLifeMarker.addRequestToMark(curRequestDataType, NetRequestLifeMarker.REQUEST_STATE_ING);
         }
     }
     @Override

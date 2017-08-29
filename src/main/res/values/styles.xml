@@ -56,6 +56,11 @@
     <style name="common_edittext_style_full_width" parent="common_edittext_style">
         <item name="android:layout_width">match_parent</item>
     </style>
+    <!-- 宽、高都填充父控件的通用EditeText -->
+    <style name="common_edittext_style_full_w_h" parent="common_edittext_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
     <style name="common_iv_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
