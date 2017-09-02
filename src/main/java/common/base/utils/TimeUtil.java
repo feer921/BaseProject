@@ -103,45 +103,45 @@ public class TimeUtil {
      * @return new String[]{"今天","11-25"}
      */
     public static String[] getTime2DDescInfos(String theGiveMillisTime) {
-        String[] twoDimensionDesc = {
-          "",""
-        };
-        String standardMillisTime = diffLocalMillisTimeAndAppend0(theGiveMillisTime);
-        long standardMillis = 0;
-        try {
-            standardMillis = Long.parseLong(standardMillisTime);
-            Calendar calendar = Calendar.getInstance();//这里拿到的也就是系统当前日历时间
-            long nowMillisTime = System.currentTimeMillis();//系统当前毫秒时间：距离(UTC时间)1970-1-1 00:00:00的毫秒数
-            //本地系统的时间所在时区与UTC对比偏移的毫秒数，比如，当前系统时区为在中国，则所在时区为8，系统初始时间则为1970-1-1 08:00:00开始计算
-            int curTimeZoneRawOffsetMillis = calendar.getTimeZone().getRawOffset();
-
-            //就是系统当前时间 距离所在时区的初始时间 偏移了多少天，说白了就是现在已经过了多少天
-            long daysOffsetToday = (nowMillisTime + curTimeZoneRawOffsetMillis) / 86400000;
-            //所给出的时间距离 所在时区的初始时间 偏移了多少天，说白了就是所给出的时间已经过了多少天
-            long theTimeOffsetDays = (standardMillis + curTimeZoneRawOffsetMillis)/86400000;
-            long gapDays = theTimeOffsetDays - daysOffsetToday;
-            calendar.setTimeInMillis(standardMillis);//把日历切换到参数所给的时间
-            String desc1 = "";
-            if (gapDays == 0) {
-                desc1 = "今天";
-            } else if (gapDays == -1) {
-                desc1 = "昨天";
-            } else if (gapDays == -2) {
-                desc1 = "前天";
-            }
-            else{
-                //拿到周几的信息
-                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-                desc1 = dayOfWeekDesc(dayOfWeek);
-            }
-            int minute = calendar.get(Calendar.MINUTE);
-            String desc2 = calendar.get(Calendar.HOUR_OF_DAY) + ":" + (minute < 10 ? "0" + minute : minute);
-            twoDimensionDesc[0] = desc1;
-            twoDimensionDesc[1] = desc2;
-        } catch (Exception ignored) {
-
-        }
-        return twoDimensionDesc;
+//        String[] twoDimensionDesc = {
+//          "",""
+//        };
+//        String standardMillisTime = diffLocalMillisTimeAndAppend0(theGiveMillisTime);
+//        long standardMillis = 0;
+//        try {
+//            standardMillis = Long.parseLong(standardMillisTime);
+//            Calendar calendar = Calendar.getInstance();//这里拿到的也就是系统当前日历时间
+//            long nowMillisTime = System.currentTimeMillis();//系统当前毫秒时间：距离(UTC时间)1970-1-1 00:00:00的毫秒数
+//            //本地系统的时间所在时区与UTC对比偏移的毫秒数，比如，当前系统时区为在中国，则所在时区为8，系统初始时间则为1970-1-1 08:00:00开始计算
+//            int curTimeZoneRawOffsetMillis = calendar.getTimeZone().getRawOffset();
+//
+//            //就是系统当前时间 距离所在时区的初始时间 偏移了多少天，说白了就是现在已经过了多少天
+//            long daysOffsetToday = (nowMillisTime + curTimeZoneRawOffsetMillis) / 86400000;
+//            //所给出的时间距离 所在时区的初始时间 偏移了多少天，说白了就是所给出的时间已经过了多少天
+//            long theTimeOffsetDays = (standardMillis + curTimeZoneRawOffsetMillis)/86400000;
+//            long gapDays = theTimeOffsetDays - daysOffsetToday;
+//            calendar.setTimeInMillis(standardMillis);//把日历切换到参数所给的时间
+//            String desc1 = "";
+//            if (gapDays == 0) {
+//                desc1 = "今天";
+//            } else if (gapDays == -1) {
+//                desc1 = "昨天";
+//            } else if (gapDays == -2) {
+//                desc1 = "前天";
+//            }
+//            else{
+//                //拿到周几的信息
+//                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//                desc1 = dayOfWeekDesc(dayOfWeek);
+//            }
+//            int minute = calendar.get(Calendar.MINUTE);
+//            String desc2 = calendar.get(Calendar.HOUR_OF_DAY) + ":" + (minute < 10 ? "0" + minute : minute);
+//            twoDimensionDesc[0] = desc1;
+//            twoDimensionDesc[1] = desc2;
+//        } catch (Exception ignored) {
+//
+//        }
+        return getTime2DDescInfos(theGiveMillisTime,3,true);
     }
 
     /**
@@ -189,4 +189,82 @@ public class TimeUtil {
         }
         return desc;
     }
+
+    /***
+     * 根据一个毫秒时间字符串，获取这个时间的二维信息描述
+     * 这里只获取1、该时间距离本地系统当前时间是今天、昨天、然后星期；2、月-日信息
+     * 注：如果是服务器给的时间，则本地去获取是否为今天、昨天，有不准的风险，因为当前系统时间用户可以随便调整，导致比较时间基线变化
+     * @param theGiveMillisTime 所给的毫秒时间串
+     * @param descTodayAndAfterNums 最好为2-3 要求描述含“今天在内的这种描述法，要描述几个，即：如果要描述三个，则为[今天、昨天、前天]，依所传参数类推
+     * @param descDateAfterAWeek 除去前面描述了 ”今天“、”昨天”、“前天”后，距离一星期外的时间是否描述为年月日.为true时：以
+     * @return new String[]{"今天","11-25"}
+     */
+    public static String[] getTime2DDescInfos(String theGiveMillisTime,int descTodayAndAfterNums,boolean descDateAfterAWeek) {
+        String[] twoDimensionDesc = {
+                "",""
+        };
+        String standardMillisTime = diffLocalMillisTimeAndAppend0(theGiveMillisTime);
+        long standardMillis = 0;
+        try {
+            standardMillis = Long.parseLong(standardMillisTime);
+            Calendar calendar = Calendar.getInstance();//这里拿到的也就是系统当前日历时间
+            long nowMillisTime = System.currentTimeMillis();//系统当前毫秒时间：距离(UTC时间)1970-1-1 00:00:00的毫秒数
+            //本地系统的时间所在时区与UTC对比偏移的毫秒数，比如，当前系统时区为在中国，则所在时区为8，系统初始时间则为1970-1-1 08:00:00开始计算
+            int curTimeZoneRawOffsetMillis = calendar.getTimeZone().getRawOffset();
+
+            //就是系统当前时间 距离所在时区的初始时间 偏移了多少天，说白了就是现在已经过了多少天
+            long daysOffsetToday = (nowMillisTime + curTimeZoneRawOffsetMillis) / 86400000;
+            //所给出的时间距离 所在时区的初始时间 偏移了多少天，说白了就是所给出的时间已经过了多少天
+            long theTimeOffsetDays = (standardMillis + curTimeZoneRawOffsetMillis)/86400000;
+            long gapDays = theTimeOffsetDays - daysOffsetToday;
+            calendar.setTimeInMillis(standardMillis);//把日历切换到参数所给的时间
+            String desc1 = "";
+
+            if (gapDays > -descTodayAndAfterNums) {//用来描述 距离今天(含)的总共几天
+                int dayGapPositiveIndex = (int) (gapDays * -1);
+                desc1 = dayDesc[dayGapPositiveIndex];
+            }
+            else{//eg.:前天之前了
+                if (descDateAfterAWeek) {//如果需要在时间过一周后用年月日描述
+                    if (gapDays > -7) {
+                        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                        desc1 = dayOfWeekDesc(dayOfWeek);
+                        descDateAfterAWeek = false;
+                    }
+                    else{
+                        descDateAfterAWeek = true;
+                    }
+                }
+//                else{//再描述了“今天”、“昨天”、“前天”等后，都一律用“年、月、日”描述
+//
+//                }
+                if (descDateAfterAWeek) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(calendar.get(Calendar.YEAR)).append("年")
+                            .append(calendar.get(Calendar.MONTH)).append("月")
+                            .append(calendar.get(Calendar.DATE)).append("日");
+                    desc1 = sb.toString();
+                }
+            }
+//            else if(gapDays > -7){//除去，"今天"，”昨天“，”前天“ 外剩下的在一周之前内的用 ["周X”][10：30]描述
+//                int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+//                desc1 = dayOfWeekDesc(dayOfWeek);
+//            }
+//            else{//用[年月日] [10:30] 描述了
+//                StringBuilder sb = new StringBuilder();
+//                sb.append(calendar.get(Calendar.YEAR)).append("年")
+//                        .append(calendar.get(Calendar.MONTH)).append("月")
+//                        .append(calendar.get(Calendar.DATE)).append("日");
+//                desc1 = sb.toString();
+//            }
+            int minute = calendar.get(Calendar.MINUTE);
+            String desc2 = calendar.get(Calendar.HOUR_OF_DAY) + ":" + (minute < 10 ? "0" + minute : minute);
+            twoDimensionDesc[0] = desc1;
+            twoDimensionDesc[1] = desc2;
+        } catch (Exception ignored) {
+
+        }
+        return twoDimensionDesc;
+    }
+    private static final String[] dayDesc = {"今天","昨天","前天","大前天"};
 }
