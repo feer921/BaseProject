@@ -61,6 +61,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import common.base.utils.CommonLog;
+
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -71,8 +73,17 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends RecyclerView.Adapter<K> {
 
     //load more
+    /**
+     * 是否可以加载下一页
+     */
     private boolean mNextLoadEnable = false;
+    /**
+     * 是否开启加载更多功能
+     */
     private boolean mLoadMoreEnable = false;
+    /**
+     * 是否正在加载更多
+     */
     private boolean mLoading = false;
     private LoadMoreView mLoadMoreView = new SimpleLoadMoreView();
     private RequestLoadMoreListener mRequestLoadMoreListener;
@@ -321,7 +332,9 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * Load more view count
-     *
+     * 加载更多监听者为null或者未开启加载更多功能 == 0
+     * 不可加载下一页并且加载更多视图已经gone==0
+     * 没有数据 == 0
      * @return 0 or 1
      */
     public int getLoadMoreViewCount() {
@@ -416,13 +429,18 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int oldLoadMoreCount = getLoadMoreViewCount();
         mLoadMoreEnable = enable;
         int newLoadMoreCount = getLoadMoreViewCount();
-
-        if (oldLoadMoreCount == 1) {
-            if (newLoadMoreCount == 0) {
+        CommonLog.e("info", " setEnableLoadMore() oldLoadMoreCount = " + oldLoadMoreCount + " newLoadMoreCount= " + newLoadMoreCount);
+        if (oldLoadMoreCount == 1) {//之前LoadMore View数量为1
+            if (newLoadMoreCount == 0) {//这次没有了LoadMore View，则需要移除
                 notifyItemRemoved(getLoadMoreViewPosition());
             }
-        } else {
-            if (newLoadMoreCount == 1) {
+            else{//newLoadMoreCount==1//不然这个下拉逻辑时会不能下拉了：
+                if (mLoadMoreView.getLoadMoreStatus() == LoadMoreView.STATUS_END) {
+                    mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
+                }
+            }
+        } else {//之前LoadMore View数量为0
+            if (newLoadMoreCount == 1) {//这次有了LoadMore View,则初始状态为STATUS_DEFAULT并加入RecyclerView
                 mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_DEFAULT);
                 notifyItemInserted(getLoadMoreViewPosition());
             }
@@ -2025,6 +2043,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             mData.clear();
             if (mRequestLoadMoreListener != null) {
                 mNextLoadEnable = true;
+                mLoading = false;
                 mFooterLayout = null;
             }
             mLastPosition = -1;

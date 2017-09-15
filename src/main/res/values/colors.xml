@@ -28,7 +28,7 @@
     <color name="txt_black">#333333</color>
     <color name="txt_gray">#666666</color>
     <color name="txt_hint_gray">#bbbbbb</color>
-    <color name="txt_tips_gray">#999999</color>
+    <color name="color_999">#999999</color>
     <color name="grey_line">#e6e6e6</color> <!--	灰边描线  -->
 
 

@@ -86,12 +86,16 @@ public abstract class BaseListActivity<T,TListData,VH extends BaseViewHolder> ex
 
     /**
      * 将服务器响应的结果转换成集合数据
+     * totalPage的赋值可在此
      * @param result
      * @return
      */
     protected abstract List<TListData> parseResponseToListData(T result);
 
-
+    /**
+     * 列表数据的请求成功，该方法只负责处理把数据加载进Adapter
+     * @param newDataFromNetWork 网络请求下来的数据
+     */
     protected void listDataRequestSuccess(List<TListData> newDataFromNetWork) {
         if (newDataFromNetWork == null || newDataFromNetWork.isEmpty()) {
             return;
@@ -132,6 +136,7 @@ public abstract class BaseListActivity<T,TListData,VH extends BaseViewHolder> ex
     protected abstract boolean compareData(List<TListData> oldDatas, TListData willAddedOne);
     /**
      * 列表数据请求结束(含网络异常情况下的请求结束)
+     * marked by fee 2017-09-14:好象有点瑕疵，不方便子类如果上拉加载更多功能的情况
      * @param hasListDataResult 一次请求完成后加上上一次的数据最终是否有列表数据,true表示有数据，false表示没有
      * @param errorInfoIfRequestFail 如果是请求失败时的错误信息
      */

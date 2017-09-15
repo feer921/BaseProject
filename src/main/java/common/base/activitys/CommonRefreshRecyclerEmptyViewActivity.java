@@ -15,7 +15,7 @@ import common.base.views.CommonRecyclerViewEmptyView;
  * User: fee(1176610771@qq.com)
  * Date: 2016-06-27
  * Time: 12:52
- * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView[内部包含空布局])的列表界面，可下拉刷新、上拉加载更多，空布局(自定义),头部布局(自定义)
+ * DESC: 指定了通用界面视图布局(即CommonRecyclerViewEmptyView[内部包含空布局])的列表界面，可下拉刷新、上拉加载更多[需子类实现]，空布局(自定义),头部布局(自定义)
  */
 public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData,VH extends BaseViewHolder> extends BaseListActivity<T,TListData,VH> implements SwipeRefreshLayout.OnRefreshListener{
     protected CommonRecyclerViewEmptyView commonRecyclerViewEmptyView;
@@ -81,7 +81,7 @@ public abstract class CommonRefreshRecyclerEmptyViewActivity<T,TListData,VH exte
     protected abstract View getCustomHeaderView();
 
     /**
-     * 初始化BaseQuickAdapter 比如item动画,自定义的空布局等
+     * 初始化BaseQuickAdapter 比如item动画,自定义的空布局、开启加载更多功能等
      * @param adapter4RecyclerView
      */
     protected abstract void initRecyclerAdapter(BaseQuickAdapter<TListData,VH> adapter4RecyclerView);

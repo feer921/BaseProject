@@ -243,7 +243,8 @@ public class SuperEmptyLoadingView extends LinearLayout {
         this.curHintMsgResId = curHintMsgResId;
         return withHintMsg(getResStr(curHintMsgResId));
     }
-    private SuperEmptyLoadingView withExtraHintMsg(String extraHintMsg) {
+    //for test 2017-09-14
+    public SuperEmptyLoadingView withExtraHintMsg(String extraHintMsg) {
         if (tvExtraOptHint != null) {
             tvExtraOptHint.setText(extraHintMsg);
         }
@@ -352,7 +353,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
     public interface IoptCallback{
         /**
          * 主要为本SuperEmptyLoadingView 在Loading之后的点击操作的回调，供外部作具体的处理
-         * @param curLayoutStatus 当前的布局状态参见{@link LayoutStatus}
+         * @param curLayoutStatus 当前的布局状态参见{@link SuperEmptyLoadingView.LayoutStatus}
          */
         void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus);
     }

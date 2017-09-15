@@ -201,7 +201,7 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
         }
     }
 
-    private GradientDrawable getDrawable(int color, float raduis) {
+    protected GradientDrawable getDrawable(int color, float raduis) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setCornerRadius(raduis);
         drawable.setColor(color);
