@@ -316,13 +316,22 @@ public abstract class BaseFragment extends Fragment implements
      * @return T类型的视图控件
      */
     protected <T extends View> T findAviewById(int viewId) {
-//        if (viewId > 0) {
-//            return (T) getActivity().findViewById(viewId);
-//        }
-//        return null;
+
         return findLocalViewById(viewId);//changed by fee 2017-09-13 一个Fragment在宿主Activity中来查找子视图控件不太合适
     }
 
+    /**
+     * 在宿主Activity中根据view id 查找控件
+     * @param viewId
+     * @param <T>
+     * @return
+     */
+    protected <T extends View> T findAviewByIdInHostActivity(int viewId){
+                if (viewId > 0) {
+                    return (T) getActivity().findViewById(viewId);
+                }
+                return null;
+    }
     /**
      * 在Fragment所加载的视图里查找视图控件
      * @param viewId
