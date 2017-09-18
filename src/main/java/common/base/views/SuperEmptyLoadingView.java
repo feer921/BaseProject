@@ -50,41 +50,83 @@ public class SuperEmptyLoadingView extends LinearLayout {
      */
     private boolean isWholeLayoutClickable = false;
 
-    private int curHintMsgResId,curExtraOptResId;
     private ProgressBar pbDefLeftAnim,pbDefUpAnim;
+
+    /**
+    * 加载中时的提示文案
+    */
+    private int loadingHintStr;
+    /**
+     * 加载完后没有数据的提示文案
+      */
+    private int noDataHintStr;
+    /**
+     * 加载失败时的提示文案
+      */
+    private int loadFailureHintStr;
+    /**
+     * 没有网络时的提示文案
+      */
+    private int noNetHintStr;
+    /**
+     * 没有数据时的下面额外的提示文案
+     */
+    private int extraNoDataStr;
+    /**
+     * 加载失败时额外的提示文案
+      */
+    private int extraLoadFailureStr;
+    /**
+     * 没有网络时额外的提示文案
+      */
+    private int extraNoNetStr;
     public LayoutStatus getCurStatus() {
         return curStatus;
     }
 
     public enum LayoutStatus{
         /**
-         * 正在加载...
+         * 正在加载...<br/>
+         * hint msg: 正在加载...<br/>
+         * extraOpt msg: null
          */
         Loading(R.string.loading,0,0),
         /**
-         * 没有数据
+         * 没有数据<br/>
+         * hint msg: 暂时没有任何数据<br/>
+         * extraOpt msg: 点击重试
          */
-        NoData(R.string.no_data,0,1),
+        NoData(R.string.no_data,R.string.click_retry,1),
         /**
-         * 加载失败
+         * 加载失败<br/>
+         * hint msg: 抱歉,加载失败！<br/>
+         * extraOpt msg: 点击重试
          */
         LoadFailure(R.string.load_failure,R.string.click_retry,2),
         /**
-         * 没有网络
+         * 没有网络<br/>
+         * hint msg: 网络好象出问题了<br/>
+         * extraOpt msg: 设置网络
          */
         NoNetWork(R.string.no_network,R.string.setting_network,3),
         /**
-         * 水平方向的正在加载
+         * 水平方向的正在加载<br/>
+         * hint msg: 正在加载,请稍候...<br/>
+         * extraOpt msg: null
          */
         HorizontalLoading(R.string.loading,0,4),
         /**
          * 提示，不带任何图片icon的
-         * 需要配合上面几种布局内容使用
+         * 需要配合上面几种布局内容使用<br/>
+         * hint msg: null<br/>
+         * extraOpt msg: null
          */
         HintNoPic(0,0,5),
         /**
          * 提示：不显示额外操作的内容。
-         * 需要配合上面4以前布局内容使用
+         * 需要配合上面4以前布局内容使用<br/>
+         * hint msg: null<br/>
+         * extraOpt msg: null
          */
         HintNoExtraOpt(0,0,6);
         int statusCode;
@@ -147,22 +189,18 @@ public class SuperEmptyLoadingView extends LinearLayout {
         if (mAnimBgDrawable != null) {
             mAnimBgDrawable.stop();
         }
-        if (curHintMsgResId <= 0) {
-            if (targetStatus.hintMsgResId > 0) {
-                tvHintMsg.setText(targetStatus.hintMsgResId);
-            }
-        }
-        if (curExtraOptResId <= 0) {
-            if (targetStatus.extraOptInfoResId > 0) {
-                tvExtraOptHint.setText(targetStatus.extraOptInfoResId);
-            }
-        }
+
+        //在该showCase下，如果没有提供hint提示性文案，则使用LayoutStatus自备的文案
+        int attachHintMsgResId = targetStatus.hintMsgResId;
+        int attachExtraMsgResId = targetStatus.extraOptInfoResId;
+
         ivShowStateIconOrAnim.setBackgroundDrawable(null);//把动画背景资源去除掉
 
         pbDefLeftAnim.setVisibility(GONE);
         pbDefUpAnim.setVisibility(GONE);
         switch (targetStatus) {
             case Loading:
+                tvHintMsg.setText(loadingHintStr > 0 ? loadingHintStr : attachHintMsgResId);
                 isWholeLayoutClickable = false;
                 if (mAnimBgDrawable == null) {
                     ivShowStateIconOrAnim.setVisibility(GONE);
@@ -177,6 +215,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 }
                 break;
             case HorizontalLoading://水平方向的正在加载...
+                tvHintMsg.setText(loadingHintStr > 0 ? loadingHintStr : attachHintMsgResId);
                 isWholeLayoutClickable = false;
                 ivShowStateIconOrAnim.setVisibility(GONE);//垂直方向的隐藏
                 if (mAnimDrawableAtLeft == null) {
@@ -190,6 +229,8 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 }
                 break;
             case NoData:
+                tvHintMsg.setText(noDataHintStr > 0 ? noDataHintStr : attachHintMsgResId);
+                tvExtraOptHint.setText(extraNoDataStr > 0 ? extraNoDataStr : attachExtraMsgResId);
                 if (resetHintImageRes > 0) {
                     ivShowStateIconOrAnim.setImageResource(resetHintImageRes);
                 }
@@ -200,6 +241,8 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 tvExtraOptHint.setVisibility(VISIBLE);
                 break;
             case NoNetWork:
+                tvHintMsg.setText(noNetHintStr > 0 ? noNetHintStr : attachHintMsgResId);
+                tvExtraOptHint.setText(extraNoNetStr > 0 ? extraNoNetStr : attachExtraMsgResId);
                 if (noNetworkImageRes > 0 && resetHintImageRes == 0) {
                     ivShowStateIconOrAnim.setImageResource(noNetworkImageRes);
                 }
@@ -209,6 +252,8 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 tvExtraOptHint.setVisibility(VISIBLE);
                 break;
             case LoadFailure:
+                tvHintMsg.setText(loadFailureHintStr > 0 ? loadFailureHintStr : attachHintMsgResId);
+                tvExtraOptHint.setText(extraLoadFailureStr > 0 ? extraLoadFailureStr : attachExtraMsgResId);
                 if (loadFailureImageRes > 0 && resetHintImageRes == 0) {
                     ivShowStateIconOrAnim.setImageResource(loadFailureImageRes);
                 }
@@ -232,6 +277,35 @@ public class SuperEmptyLoadingView extends LinearLayout {
         return this;
     }
 
+    /**
+     * 提供在showCase之后直接更改提示性文案的方法
+     * 注：在{@link #showCase(LayoutStatus)}之后调用
+     * @param afterShowCaseHintMsg
+     * @return self
+     */
+    public SuperEmptyLoadingView andHintMsg(String afterShowCaseHintMsg) {
+        return withHintMsg(afterShowCaseHintMsg);
+    }
+
+    /**
+     * 提供在showCase之后直接更改Extra提示文案的方法
+     * 注：在{@link #showCase(LayoutStatus)}之后调用
+     * @param afterShowCaseExtraHintMsg
+     * @return self
+     */
+    public SuperEmptyLoadingView andExtraHintMsg(String afterShowCaseExtraHintMsg) {
+        return withExtraHintMsg(afterShowCaseExtraHintMsg);
+    }
+
+    /**
+     * 提供在{@link #showCase(LayoutStatus)}之后动态更改提示性图片的方法
+     * 注：在{@link #showCase(LayoutStatus)}之后调用
+     * @param afterShowCaseHintImage
+     * @return self
+     */
+    public SuperEmptyLoadingView andHintImagePic(@DrawableRes int afterShowCaseHintImage){
+        return withHintImage(afterShowCaseHintImage);
+    }
     private SuperEmptyLoadingView withHintMsg(String hintMsg) {
         if (tvHintMsg != null) {
             tvHintMsg.setText(hintMsg);
@@ -239,25 +313,66 @@ public class SuperEmptyLoadingView extends LinearLayout {
         return this;
     }
 
-    public SuperEmptyLoadingView withHintMsg(@StringRes int curHintMsgResId) {
-        this.curHintMsgResId = curHintMsgResId;
-        return withHintMsg(getResStr(curHintMsgResId));
+    /**
+     * 在{@link #showCase(LayoutStatus)}之前设置好各case下的提示性文案
+     * 每种case下设置一次，如果在{@link #showCase(LayoutStatus)}之后仍然想更改提示性文案则调用{@link #andHintMsg(String)}
+     * @param hintInCase 相应的case
+     * @param curHintMsgResId 当前case下的提示性文案
+     * @return self
+     */
+    public SuperEmptyLoadingView withHintMsg(LayoutStatus hintInCase,@StringRes int curHintMsgResId) {
+        switch (hintInCase) {
+            case Loading:
+            case HorizontalLoading:
+                loadingHintStr = curHintMsgResId;
+                break;
+            case NoData:
+                noDataHintStr = curHintMsgResId;
+                break;
+            case NoNetWork:
+                noNetHintStr = curHintMsgResId;
+                break;
+            case LoadFailure:
+                loadFailureHintStr = curHintMsgResId;
+                break;
+        }
+        return this;
     }
-    //for test 2017-09-14
-    public SuperEmptyLoadingView withExtraHintMsg(String extraHintMsg) {
+    private SuperEmptyLoadingView withExtraHintMsg(String extraHintMsg) {
         if (tvExtraOptHint != null) {
             tvExtraOptHint.setText(extraHintMsg);
         }
         return this;
     }
 
-    public SuperEmptyLoadingView withExtraHintMsg(@StringRes int extraHintMsgResId) {
-        this.curExtraOptResId = extraHintMsgResId;
-        return withExtraHintMsg(getResStr(extraHintMsgResId));
+    /**
+     * 在{@link #showCase(LayoutStatus)}之前设置好各case下的额外提示性(在提示性文案下面)文案
+     * 每种case下设置一次，如果在{@link #showCase(LayoutStatus)}之后仍然想更改额外提示性文案则调用{@link #andExtraHintMsg(String)}
+     * @param hintInCase 相应的case 只需要设置:NoData NoNetWork LoadFailure三种情况
+     * @param extraHintMsgResId 当前case下的额外提示性文案
+     * @return self
+     */
+    public SuperEmptyLoadingView withExtraHintMsg(LayoutStatus hintInCase,@StringRes int extraHintMsgResId) {
+        switch (hintInCase) {
+            case Loading:
+            case HorizontalLoading:
+                //no need extra hint msg
+                break;
+            case NoData:
+                extraNoDataStr = extraHintMsgResId;
+                break;
+            case NoNetWork:
+                extraNoNetStr = extraHintMsgResId;
+                break;
+            case LoadFailure:
+                extraLoadFailureStr = extraHintMsgResId;
+                break;
+        }
+        return this;
     }
 
-    public SuperEmptyLoadingView withHintImage(@DrawableRes int hintImageResId){
-        resetHintImageRes = hintImageResId;
+    private SuperEmptyLoadingView withHintImage(@DrawableRes int hintImageResId){
+//        resetHintImageRes = hintImageResId;
         if (ivShowStateIconOrAnim != null) {
             ivShowStateIconOrAnim.setImageResource(hintImageResId);
         }

@@ -20,7 +20,7 @@
     <dimen name="sp_16">16sp</dimen>
     <!-- CommonMdDialog中的内容布局内的控件适配尺寸,如果各项目需要适配不同设备尺寸，可在相应的values文件夹下重写这些尺寸 -->
     <dimen name="common_md_dialog_bg_radius">7dp</dimen>
-    <dimen name="common_md_dialog_layout_padding">36dp</dimen> <!-- Dialog整个视图布局的内缩进,以让真实content view在左右方向有间距 -->
+    <dimen name="common_md_dialog_layout_padding">31dp</dimen> <!-- Dialog整个视图布局的内缩进,以让真实content view在左右方向有间距 -->
     <dimen name="common_md_dialog_title_padding">20dp</dimen> <!-- Dialog中title的内缩进,以确定title的高度 -->
     <dimen name="common_md_dialog_title_textsize">18sp</dimen> <!-- Dialog中title的文本大小 -->
     <dimen name="common_md_dialog_center_layout_min_h">40dp</dimen> <!-- Dialog中中间hint布局的最小高度 -->

@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import common.base.utils.Util;
 
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
+    protected final String TAG = getClass().getSimpleName();
     protected OnClickListener dialogClickListener;
     /**
      * 对话框的布局视图
@@ -27,6 +28,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected Context mContext;
     /**
      * 这两个变量，是调整加载Dialog内容视图的Window的整体宽、高
+     * 如果没有指定，系统会有默认的
      */
     protected int dialogWidth,dialogHeigth;
     /**
@@ -47,6 +49,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * 当前Dialog 所处的提示类型
      */
     public int curDialogInCase;
+
+    /**
+     * 初始化时，Dialog的Window是否使用内容布局的宽、高
+     * def : false
+     */
+    protected boolean isWindowUseContentViewWH = false;
     public BaseDialog(Context context) {
         this(context, android.R.style.Theme_Translucent_NoTitleBar);
     }
@@ -71,18 +79,25 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         setContentView(dialogView);
         Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
-            WindowManager.LayoutParams lp = w.getAttributes();
+            WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2)
+            ViewGroup.LayoutParams dialogViewLp =  dialogView.getLayoutParams();
             if(dialogWidth > 0 ){
                 lp.width = dialogWidth;
             }
             else{
-//                lp.width = WindowManager.LayoutParams.MATCH_PARENT;//changed by fee 2017-07-14:
+                //lp.width = WindowManager.LayoutParams.MATCH_PARENT 会使得该Dialog的窗口的宽与手机屏幕的宽相同
+                if (dialogViewLp != null && isWindowUseContentViewWH) {
+                    lp.width  = dialogViewLp.width;
+                }
             }
             if(dialogHeigth > 0){
                 lp.height = dialogHeigth;
             }
             else{
 //                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
+                if (dialogViewLp != null && isWindowUseContentViewWH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
+                    lp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT
+                }
             }
             if(dialogAnimStyle != 0){
                 w.setWindowAnimations(dialogAnimStyle);
