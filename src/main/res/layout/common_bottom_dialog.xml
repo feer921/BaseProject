@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    >
+    <!-- 内容的头部 -->
+    <RelativeLayout
+        android:id="@+id/rl_content_header"
+        android:layout_width="match_parent"
+        android:layout_height="49dp"
+        >
+        <TextView
+            android:id="@+id/tv_top_confirm"
+            style="@style/common_tv_style"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:text="@string/confirm"
+            android:textColor="#ff8855"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            style="@style/common_tv_style"
+            android:text="我是标题"
+            android:textColor="#111111"
+            android:textSize="18sp"
+            android:layout_centerInParent="true"
+            />
+
+        <TextView
+            android:id="@+id/tv_top_cancel"
+            style="@style/common_tv_style"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:text="@string/cancel"
+            android:textColor="#666666"
+            android:textSize="16sp"
+            />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/gray"
+        android:id="@+id/view_gray_divider"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/content_container"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycleview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#939393"
+        android:id="@+id/btns_top_divider"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal"
+        android:id="@+id/ll_bottom_btns"
+        >
+        <TextView
+            style="@style/common_tv_style"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:textColor="#111"
+            android:id="@+id/tv_bottom_cancel"
+            />
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/color_999"
+            android:id="@+id/bottom_btns_divider"
+            />
+        <TextView
+            style="@style/common_tv_style"
+            android:layout_weight="1"
+            android:text="@string/confirm"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textSize="18sp"
+            android:textColor="#111"
+            android:id="@+id/tv_bottom_confirm"
+            />
+    </LinearLayout>
+</LinearLayout>

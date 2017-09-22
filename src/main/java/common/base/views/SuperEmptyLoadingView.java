@@ -80,6 +80,8 @@ public class SuperEmptyLoadingView extends LinearLayout {
      * 没有网络时额外的提示文案
       */
     private int extraNoNetStr;
+
+    private boolean isShowExtraOpt = true;
     public LayoutStatus getCurStatus() {
         return curStatus;
     }
@@ -238,7 +240,9 @@ public class SuperEmptyLoadingView extends LinearLayout {
                     ivShowStateIconOrAnim.setImageResource(noDataImageRes);
 
                 }
-                tvExtraOptHint.setVisibility(VISIBLE);
+                if (isShowExtraOpt) {
+                    tvExtraOptHint.setVisibility(VISIBLE);
+                }
                 break;
             case NoNetWork:
                 tvHintMsg.setText(noNetHintStr > 0 ? noNetHintStr : attachHintMsgResId);
@@ -249,7 +253,9 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 else{
                     ivShowStateIconOrAnim.setImageResource(resetHintImageRes);
                 }
-                tvExtraOptHint.setVisibility(VISIBLE);
+                if (isShowExtraOpt) {
+                    tvExtraOptHint.setVisibility(VISIBLE);
+                }
                 break;
             case LoadFailure:
                 tvHintMsg.setText(loadFailureHintStr > 0 ? loadFailureHintStr : attachHintMsgResId);
@@ -260,10 +266,14 @@ public class SuperEmptyLoadingView extends LinearLayout {
                 else{
                     ivShowStateIconOrAnim.setImageResource(resetHintImageRes);
                 }
-                tvExtraOptHint.setVisibility(VISIBLE);
+                if (isShowExtraOpt) {
+                    tvExtraOptHint.setVisibility(VISIBLE);
+                }
                 break;
             case HintNoPic://加载后结果的提示，连图片提示也不需要
-                tvExtraOptHint.setVisibility(VISIBLE);
+                if (isShowExtraOpt) {
+                    tvExtraOptHint.setVisibility(VISIBLE);
+                }
                 ivShowStateIconOrAnim.setVisibility(GONE);
                 break;
             case HintNoExtraOpt:
@@ -405,6 +415,11 @@ public class SuperEmptyLoadingView extends LinearLayout {
     }
     public SuperEmptyLoadingView withNoNetWorkImage(@DrawableRes int noNetWorkImageRes) {
         this.noNetworkImageRes = noNetWorkImageRes;
+        return this;
+    }
+
+    public SuperEmptyLoadingView withShowExtraOpt(boolean needShowExtraOpt) {
+        this.isShowExtraOpt = needShowExtraOpt;
         return this;
     }
     /**

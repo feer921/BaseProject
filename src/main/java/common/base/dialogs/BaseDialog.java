@@ -51,15 +51,20 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     public int curDialogInCase;
 
     /**
-     * 初始化时，Dialog的Window是否使用内容布局的宽、高
+     * 初始化时，Dialog的Window是否使用内容布局的宽
      * def : false
      */
-    protected boolean isWindowUseContentViewWH = false;
+    protected boolean isWindowUseContentViewW = false;
+    protected boolean isWindowUseContentViewH = false;
     public BaseDialog(Context context) {
         this(context, android.R.style.Theme_Translucent_NoTitleBar);
     }
 
-
+    /**
+     * 该构造方法下调用了{@link #initViews(View)}
+     * @param context
+     * @param theme
+     */
     public BaseDialog(Context context, int theme) {
         super(context, theme);
         if (getDialogViewResID() > 0) {
@@ -68,8 +73,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         else{
             dialogView = getDialogView();
         }
-        initViews(dialogView);
         mContext = context;
+        initViews(dialogView);
     }
 
     @Override
@@ -86,7 +91,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             }
             else{
                 //lp.width = WindowManager.LayoutParams.MATCH_PARENT 会使得该Dialog的窗口的宽与手机屏幕的宽相同
-                if (dialogViewLp != null && isWindowUseContentViewWH) {
+                if (dialogViewLp != null && isWindowUseContentViewW) {
                     lp.width  = dialogViewLp.width;
                 }
             }
@@ -95,7 +100,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             }
             else{
 //                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
-                if (dialogViewLp != null && isWindowUseContentViewWH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
+                if (dialogViewLp != null && isWindowUseContentViewH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
                     lp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT
                 }
             }
@@ -113,9 +118,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 
     /**
      * 构造方法中完成调用
-     * @param containerView 子类所提供的内容视图
+     * @param dialogView 子类所提供的内容视图
      */
-    protected abstract void initViews(View containerView);
+    protected abstract void initViews(View dialogView);
 
     /**
      * 获取本Dialog的布局视图资源ID
@@ -379,6 +384,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         }
     }
 
+    public void showInCase(int curDialogInCase) {
+        this.curDialogInCase = curDialogInCase;
+        show();
+    }
     @Override
     public void dismiss() {
         super.dismiss();
@@ -393,5 +402,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     protected I self() {
         return (I) this;
+    }
+
+    protected <T extends View> T viewInDialogView(int viewId) {
+        if (dialogView == null || viewId <= 0) {
+            return null;
+        }
+        return (T) dialogView.findViewById(viewId);
     }
 }
