@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import common.base.R;
 
 /**
@@ -24,7 +25,7 @@ import common.base.R;
  */
 
 public class SuperEmptyLoadingView extends LinearLayout {
-    private LayoutStatus curStatus = LayoutStatus.Loading;
+    private LayoutStatus curStatus = null;
     /**
      * 提示文本，如：正在加载...
      */
@@ -176,7 +177,7 @@ public class SuperEmptyLoadingView extends LinearLayout {
 
     public SuperEmptyLoadingView showCase(LayoutStatus targetStatus) {
         //???
-        if (targetStatus == curStatus) {
+        if ( curStatus != null && targetStatus == curStatus) {
             return this;
         }
         curStatus = targetStatus;
