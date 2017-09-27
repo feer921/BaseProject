@@ -61,9 +61,9 @@
             <TextView
                 android:id="@+id/tv_hint_msg"
                 style="@style/common_tv_style"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="5dp"
                 android:singleLine="false"
-                android:text="正在加载..."
+                android:text="@string/loading"
                 />
 
             <TextView
@@ -71,7 +71,7 @@
                 style="@style/common_tv_style"
                 android:layout_marginTop="2dp"
                 android:singleLine="false"
-                android:text="点击重试"
+                android:text="@string/click_retry"
                 android:visibility="gone"
                 />
         </LinearLayout>
