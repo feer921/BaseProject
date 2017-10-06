@@ -410,4 +410,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         }
         return (T) dialogView.findViewById(viewId);
     }
+
+    public int[] screenWhInfos() {
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        return new int[]{
+          wm.getDefaultDisplay().getWidth(),
+                wm.getDefaultDisplay().getHeight()
+        };
+    }
 }

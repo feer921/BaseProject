@@ -27,6 +27,7 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
     protected TextView tvTitle;
     protected TextView tvTopConfirm;
     protected TextView tvTopCancel;
+
     protected TextView tvBottomCancel;
     protected TextView tvBottomConfirm;
 
@@ -64,9 +65,9 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         tvBottomCancel = viewInDialogView(R.id.tv_bottom_cancel);
         tvBottomConfirm = viewInDialogView(R.id.tv_bottom_confirm);
         recyclerView = viewInDialogView(R.id.recycleview);
+        bottomBtnsTopDivider = viewInDialogView(R.id.btns_top_divider);
         initRecyclerView(recyclerView);
         topTitleDivider = viewInDialogView(R.id.view_gray_divider);
-        bottomBtnsTopDivider = viewInDialogView(R.id.btns_top_divider);
         betweenBottomBtnsDivider = viewInDialogView(R.id.bottom_btns_divider);
         contentContainer = viewInDialogView(R.id.content_container);
         addViewsInContentContainer(contentContainer);
@@ -190,8 +191,25 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         return self();
     }
 
+    public I withTopConfimBtnVisiable(boolean visiable) {
+        if (tvTopConfirm != null) {
+            tvTopConfirm.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        }
+        return self();
+    }
+    public I withTopCancelBtnVisiable(boolean visiable) {
+        if (tvTopCancel != null) {
+            tvTopCancel.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        }
+        return self();
+    }
     public I withBottomBtnsVisiable(boolean visiable) {
         viewInDialogView(R.id.ll_bottom_btns).setVisibility(visiable ? View.VISIBLE : View.GONE);
+        bottomBtnsTopDivider.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        return self();
+    }
+
+    public I withBottomBtnsTopDividerVisiable(boolean visiable) {
         bottomBtnsTopDivider.setVisibility(visiable ? View.VISIBLE : View.GONE);
         return self();
     }
@@ -248,5 +266,8 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         if (dialogClickListener != null) {
             dialogClickListener.onClick(this,which);
         }
+    }
+    public TextView getTvBottomCancel() {
+        return tvBottomCancel;
     }
 }
