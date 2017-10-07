@@ -51,6 +51,7 @@ public class ImageUtil {
         if (errorDrawable != null) {
             loadRequest.error(errorDrawable);
         }
+        loadRequest.noFade();
         loadRequest.into(targetIv, callback);
     }
 

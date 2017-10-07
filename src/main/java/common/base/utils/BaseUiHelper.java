@@ -70,6 +70,10 @@ public class BaseUiHelper{
         }
     }
 
+    public static void hideInputMethod(Context context,View theViewRequest) {
+        InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputmanger.hideSoftInputFromWindow(theViewRequest.getWindowToken(), 0);
+    }
     /**
      * 跳转到系统设置界面
      * @param context
