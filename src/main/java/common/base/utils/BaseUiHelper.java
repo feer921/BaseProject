@@ -73,6 +73,18 @@ public class BaseUiHelper{
     public static void hideInputMethod(Context context,View theViewRequest) {
         InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputmanger.hideSoftInputFromWindow(theViewRequest.getWindowToken(), 0);
+        //added
+//        1、方法一(如果输入法在窗口上已经显示，则隐藏，反之则显示)
+//        inputmanger.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+//        2、方法二（view为接受软键盘输入的视图，SHOW_FORCED表示强制显示）
+//        inputmanger.showSoftInput(view,InputMethodManager.SHOW_FORCED);
+//        inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0); //强制隐藏键盘
+
+//        3、调用隐藏系统默认的输入法 ???
+//        inputmanger.hideSoftInputFromWindow(Activity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS); (Activity是当前的Activity)
+
+//        4、获取输入法打开的状态
+//        boolean isOpen=inputmanger.isActive();//isOpen若返回true，则表示输入法打开
     }
     /**
      * 跳转到系统设置界面
