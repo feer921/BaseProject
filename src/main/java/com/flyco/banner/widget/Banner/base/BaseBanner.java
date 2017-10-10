@@ -83,12 +83,18 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
     private static final int MSG_WHAT_PAUSE_SCROLL = 10;
     private static final int MSG_WHAT_LOOP_SCROLL = 11;
+    /**
+     * 是否经历了onDetachFromWindow
+     */
+    private boolean resumedOnDetachFromWindow;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             int msgWhat = msg.what;
             switch (msgWhat) {
                 case MSG_WHAT_PAUSE_SCROLL:
-                    mHandler.removeCallbacksAndMessages(null);
+                    if (mHandler != null) {
+                        mHandler.removeCallbacksAndMessages(null);
+                    }
                     break;
                 case MSG_WHAT_LOOP_SCROLL:
                     scrollToNextItem(mCurrentPositon);
@@ -169,7 +175,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
             }
             mItemHeight = (int) (mItemWidth * scale);
         }
-        Log.e("info", "  ----------------mItemHeight = ----- " + mItemHeight + " mItemWidth = " + mItemWidth);
+        Log.e("info", TAG + "  ----------------mItemHeight = ----- " + mItemHeight + " mItemWidth = " + mItemWidth);
         //create ViewPager
 //        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
         //added by fee 2017-04-29: 由于需要随时切换两种ViewPager，而分别构造出来
@@ -470,7 +476,9 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         }
         if (isLoopViewPager() && mIsAutoScrollEnable) {//
             pauseScroll();
-            mHandler.sendEmptyMessageDelayed(MSG_WHAT_LOOP_SCROLL,mDelay * 1000);
+            if (mHandler != null) {
+                mHandler.sendEmptyMessageDelayed(MSG_WHAT_LOOP_SCROLL,mDelay * 1000);
+            }
             mIsAutoScrolling = true;
             Log.i(TAG, "--->goOnScroll()");
         }
@@ -486,7 +494,9 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 //            scheduledTaskService = null;
 //        }
         Log.d(TAG,"--->pauseScroll()");
-        mHandler.removeCallbacksAndMessages(null);
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+        }
         mIsAutoScrolling = false;
     }
 
@@ -596,9 +606,29 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 
     @Override
     protected void onDetachedFromWindow() {
+        resumedOnDetachFromWindow = true;
         super.onDetachedFromWindow();
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler = null;
+        Log.e(TAG ,"--> onDetachedFromWindow()");
+//        if (mHandler != null) {
+//            mHandler.removeCallbacksAndMessages(null);
+//        }
+
+        //modified by fee 2017-10-10 如果把本控件放在RecyclerView的头部、脚部位置，当滑动列表时，本
+        //控件在离开可见区域时，会回调该方法，如果置空mHandler，其他使用到mHandler的地方会报NPE(空指针异常)
+        //在窗口中看不见了，则暂停自动滚动功能
+        //        mHandler = null;
+        pauseScroll();
+
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        Log.e(TAG ,"--> onAttachedToWindow()");
+        if (resumedOnDetachFromWindow) {
+            goOnScroll();
+        }
+        resumedOnDetachFromWindow = false;
     }
 
     /**
