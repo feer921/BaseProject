@@ -1,6 +1,8 @@
 package common.base.utils;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -84,5 +86,27 @@ public class IOUtil {
             Thread.sleep(timeMills);
         } catch (InterruptedException e) {
         }
+    }
+
+    public static String readFile2String(File theFile,String charset) {
+        String result = "";
+        if (theFile != null && theFile.exists() && theFile.length() > 0) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(theFile);
+                int avalidSize = fis.available();
+                byte[] contentBytes = readNeedLenByte(avalidSize, fis);
+                if (charset == null) {
+                    charset = "UTF-8";
+                }
+                result = new String(contentBytes, charset);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                safeCloseIO(fis);
+            }
+        }
+        return result;
     }
 }
