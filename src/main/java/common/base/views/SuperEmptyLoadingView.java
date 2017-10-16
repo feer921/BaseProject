@@ -382,6 +382,12 @@ public class SuperEmptyLoadingView extends LinearLayout {
         return this;
     }
 
+    /**
+     * 不对外提供调用，外部可使用
+     * {@link #andHintImagePic(int)}
+     * @param hintImageResId
+     * @return
+     */
     private SuperEmptyLoadingView withHintImage(@DrawableRes int hintImageResId){
 //        resetHintImageRes = hintImageResId;
         if (ivShowStateIconOrAnim != null) {
@@ -403,8 +409,9 @@ public class SuperEmptyLoadingView extends LinearLayout {
      */
     private int noDataImageRes;
     /**
-     * 用户可调用{@link #withHintImage(int)}动态随机配置的图片资源
+     * 用户可调用{@link #withHintImage(int)}动态配置提示性的图片资源
      */
+    @Deprecated
     private int resetHintImageRes;
     public SuperEmptyLoadingView withLoadFailureImage(@DrawableRes int loadFailureImageRes) {
         this.loadFailureImageRes = loadFailureImageRes;

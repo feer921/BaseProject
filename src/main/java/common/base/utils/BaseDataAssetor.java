@@ -70,14 +70,14 @@ public class BaseDataAssetor {
     /**
      * 存储一个可序列化的数据
      * @param data
-     * @param fileName 目标文件的全路径
+     * @param targetFilePath 目标文件的全路径
      * @return
      */
-    public static boolean saveAdataObject(Serializable data,String fileName){
+    public static boolean saveAdataObject(Serializable data,String targetFilePath){
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
         try {
-            fos = new FileOutputStream(fileName);
+            fos = new FileOutputStream(targetFilePath);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(data);
             fos.flush();
