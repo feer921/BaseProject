@@ -43,7 +43,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         LIST_SELECTIONS;
     }
     public CommonMdDialog(Context context) {
-        this(context,R.style.common_dialog);//changed by fee 2017-07-14: change the style
+        this(context,R.style.common_dialog_bg_dim);//changed by fee 2017-07-14: change the style ;changed again:common_dialog-->common_dialog_bg_dim style2017-10-201
     }
     public CommonMdDialog(Context context, int theme) {
         super(context, theme);

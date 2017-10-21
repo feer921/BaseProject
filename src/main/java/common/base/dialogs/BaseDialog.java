@@ -50,6 +50,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     public int curDialogInCase;
 
+
+
+    protected float dialogBgBehindAlpha = -1;
     /**
      * 初始化时，Dialog的Window是否使用内容布局的宽
      * def : false
@@ -109,6 +112,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             }
             if(dialogShowGravity != 0){
                 lp.gravity = dialogShowGravity;
+            }
+            //add 背景透明度调整 2017-10-21
+            if (dialogBgBehindAlpha != -1) {
+                lp.alpha = dialogBgBehindAlpha;
+                //若不显示设置FLAG_DIM_BEHIND参数在大多数手机上也能work，但是在某些手机如华为Mate7上不能正常work，显示设置之后能够适配更多机型。
+                w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
             lp.x = dialogOffsetX;
             lp.y = dialogOffsetY;
@@ -417,5 +426,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
           wm.getDefaultDisplay().getWidth(),
                 wm.getDefaultDisplay().getHeight()
         };
+    }
+
+    public I setDialogBgBehindAlpha(float dialogBgBehindAlpha) {
+        this.dialogBgBehindAlpha = dialogBgBehindAlpha;
+        return self();
     }
 }

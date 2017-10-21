@@ -18,10 +18,17 @@
         <!-- 背景是否暗淡 周围变暗 -->
         <item name="android:backgroundDimEnabled">false</item>
     </style>
-    <style name="BaseProject_Theme.Base" parent="Theme.AppCompat" >
+
+    <style name="common_dialog_bg_dim" parent="common_dialog">
+        <!-- 背景是否暗淡 周围变暗 -->
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="BaseProject_Theme.Base" parent="Theme.AppCompat">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+
     <style name="common_dialog_style" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
@@ -33,6 +40,7 @@
     <style name="login_dialog" parent="common_dialog_style">
         <item name="android:windowBackground">@drawable/rounded_white_shape</item>
     </style>
+
     <style name="style_4_popwindow_translate_y">
         <item name="@android:windowEnterAnimation">@anim/popwindow_y_translate_in</item>
         <item name="@android:windowExitAnimation">@anim/popwindow_y_translate_out</item>
@@ -53,6 +61,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:background">@null</item>
     </style>
+
     <style name="common_edittext_style_full_width" parent="common_edittext_style">
         <item name="android:layout_width">match_parent</item>
     </style>
@@ -61,12 +70,14 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+
     <style name="common_iv_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:scaleType">centerCrop</item>
         <item name="android:contentDescription">@string/app_name</item>
     </style>
+
     <style name="tv_fill_w_h_style" parent="common_tv_style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
@@ -78,7 +89,8 @@
     <!-- 加载进度条样式 -->
     <style name="circle_pb_loading_style">
         <item name="android:indeterminate">true</item>
-        <item name="android:indeterminateDrawable">@drawable/indeterminate_progressbar_drawable</item>
+        <item name="android:indeterminateDrawable">@drawable/indeterminate_progressbar_drawable
+        </item>
         <item name="android:indeterminateDuration">1000</item>
         <item name="android:indeterminateOnly">true</item>
     </style>

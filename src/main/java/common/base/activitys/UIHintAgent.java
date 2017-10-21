@@ -62,6 +62,12 @@ public class UIHintAgent {
      * 提示加载对话框是否可按back键取消 默认为不可取消
      */
     private boolean isLoadingDialogCancelable = false;
+
+    /**
+     * 设置提示性的Dialog的背景的透明度
+     * add by fee 2017-10-21
+     */
+    private float hintDialogBgAlpha = -1;
     //added by fee 2016-07-28
     private SweetAlertDialog sweetAlertDialog;
     private SweetAlertDialog sweetLoadingDialog;
@@ -76,6 +82,8 @@ public class UIHintAgent {
     private void initHintDialog() {
         if (hintDialog == null) {
             hintDialog = new CommonMdDialog(mContext);
+            //added
+            hintDialog.setDialogBgBehindAlpha(hintDialogBgAlpha);
             hintDialog.edtViewCanEdit(false);
             hintDialog.setCancelable(isHintDialogCancelable);
             hintDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
@@ -115,6 +123,9 @@ public class UIHintAgent {
         setUpHintDialogCancelListenerInfo();
     }
 
+    public void setHintDialogBgAlpha(float targetAlpha) {
+        this.hintDialogBgAlpha = targetAlpha;
+    }
     /**
      * 开关 : 提示用Dialog 是否可按back键取消
      * @param cancelable
