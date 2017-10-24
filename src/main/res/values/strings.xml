@@ -17,7 +17,7 @@
     <string name="load_failed">加载失败，请点我重试</string>
     <string name="load_end">没有更多数据</string>
 
-    <string name="load_failure">抱歉,加载失败!</string>
+    <string name="load_failure">抱歉,数据加载失败.</string>
     <string name="no_data">暂时没有任何数据</string>
     <string name="no_network">网络好像出问题了</string>
     <string name="click_retry">点击重试</string>

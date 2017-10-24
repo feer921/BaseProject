@@ -7,12 +7,14 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import common.base.R;
+import common.base.utils.Util;
 
 /**
  * ******************(^_^)***********************<br>
@@ -24,7 +26,7 @@ import common.base.R;
  * ******************(^_^)***********************
  */
 
-public class SuperEmptyLoadingView extends LinearLayout {
+public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickListener{
     private LayoutStatus curStatus = null;
     /**
      * 提示文本，如：正在加载...
@@ -85,6 +87,26 @@ public class SuperEmptyLoadingView extends LinearLayout {
     private boolean isShowExtraOpt = true;
     public LayoutStatus getCurStatus() {
         return curStatus;
+    }
+
+    /**
+     * Called when a view has been clicked.
+     *
+     * @param v The view that was clicked.
+     */
+    @Override
+    public void onClick(View v) {
+        if (!isWholeLayoutClickable) {
+            //不能点击操作的时候，则点击无效
+            return;
+        }
+        //回调出去
+        if (optListener != null) {
+            optListener.optCallback(SuperEmptyLoadingView.this,curStatus);
+        }
+        if (outSideClickListener != null) {
+            outSideClickListener.onClick(v);
+        }
     }
 
     public enum LayoutStatus{
@@ -149,6 +171,11 @@ public class SuperEmptyLoadingView extends LinearLayout {
         init(context);
     }
 
+    /**
+     * 外部监听本控件内部点击事件的监听者
+     * added by fee 2010-10-24
+     */
+    private OnClickListener outSideClickListener;
     private void init(Context context) {
         inflate(context, R.layout.super_empty_load_layout, this);
         tvHintMsg = (TextView) findViewById(R.id.tv_hint_msg);
@@ -156,21 +183,24 @@ public class SuperEmptyLoadingView extends LinearLayout {
         ivShowStateIconOrAnim = (ImageView) findViewById(R.id.iv_load_or_hint_image);
         ivHorizontalLoad = (ImageView) findViewById(R.id.iv_horizontal_load_anim);
         LinearLayout llHintAndLoad = (LinearLayout) findViewById(R.id.ll_load_and_hint);
-        View.OnClickListener onClickListener = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isWholeLayoutClickable) {
-                    //不能点击操作的时候，则点击无效
-                    return;
-                }
-                //回调出去
-                if (optListener != null) {
-                    optListener.optCallback(SuperEmptyLoadingView.this,curStatus);
-                }
-            }
-        };
-        llHintAndLoad.setOnClickListener(onClickListener);
-        tvExtraOptHint.setOnClickListener(onClickListener);
+//        View.OnClickListener onClickListener = new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!isWholeLayoutClickable) {
+//                    //不能点击操作的时候，则点击无效
+//                    return;
+//                }
+//                //回调出去
+//                if (optListener != null) {
+//                    optListener.optCallback(SuperEmptyLoadingView.this,curStatus);
+//                }
+//                if (outSideClickListener != null) {
+//                    outSideClickListener.onClick(v);
+//                }
+//            }
+//        };
+        llHintAndLoad.setOnClickListener(this);
+        tvExtraOptHint.setOnClickListener(this);
         pbDefLeftAnim = (ProgressBar) findViewById(R.id.def_left_load_anim);
         pbDefUpAnim = (ProgressBar) findViewById(R.id.def_up_load_anim);
     }
@@ -180,6 +210,12 @@ public class SuperEmptyLoadingView extends LinearLayout {
         if ( curStatus != null && targetStatus == curStatus) {
             return this;
         }
+        //add by fee 2017-10-24
+        if (customExtraHintView != null) {
+            customExtraHintView.setVisibility(GONE);
+        }
+        withWholeLayoutClickable(true);
+        //add end 2017-10-24
         curStatus = targetStatus;
         ivHorizontalLoad.setVisibility(GONE);//水平方向的默认为隐藏
         isWholeLayoutClickable = true;
@@ -467,6 +503,11 @@ public class SuperEmptyLoadingView extends LinearLayout {
         optListener = callback;
         return this;
     }
+
+    public SuperEmptyLoadingView withOutSideClickListener(OnClickListener outSideClickListener) {
+        this.outSideClickListener = outSideClickListener;
+        return this;
+    }
     /**
      * 获取显示 提示内容的控件 以便于设置字体、颜色等
      * @return
@@ -495,4 +536,43 @@ public class SuperEmptyLoadingView extends LinearLayout {
          */
         void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus);
     }
+    private TextView customExtraHintView;
+    public SuperEmptyLoadingView withCustomExtraHintView(TextView toAppendExtraHintView) {
+        if (toAppendExtraHintView != null && toAppendExtraHintView.getParent() == null) {
+            customExtraHintView = toAppendExtraHintView;
+            ViewGroup viewGroup = (ViewGroup) findViewById(R.id.ll_load_and_hint);
+            viewGroup.addView(toAppendExtraHintView);
+        }
+        return this;
+    }
+
+    public SuperEmptyLoadingView andCustomExtraHintViewHint(String hint) {
+        if (customExtraHintView != null) {
+            if (!Util.isEmpty(hint)) {
+                customExtraHintView.setText(hint);
+            }
+            customExtraHintView.setVisibility(VISIBLE);
+        }
+        return this;
+    }
+
+    /**
+     * 是否需要点击整个Layout
+     * @param wholeLayutClickable
+     * @return
+     */
+    public SuperEmptyLoadingView withWholeLayoutClickable(boolean wholeLayutClickable) {
+        findViewById(R.id.ll_load_and_hint).setOnClickListener(wholeLayutClickable ? this : null);
+        return this;
+    }
+    //test 是否有必要
+    private interface IoptCallbackOther {
+        /**
+         * 主要为本SuperEmptyLoadingView 在Loading之后的点击操作的回调，供外部作具体的处理
+         *
+         * @param curLayoutStatus 当前的布局状态参见{@link SuperEmptyLoadingView.LayoutStatus}
+         */
+        void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus, View clickView);
+    }
+
 }

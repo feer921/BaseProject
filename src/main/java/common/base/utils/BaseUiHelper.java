@@ -86,6 +86,11 @@ public class BaseUiHelper{
 //        4、获取输入法打开的状态
 //        boolean isOpen=inputmanger.isActive();//isOpen若返回true，则表示输入法打开
     }
+
+    public static void showInputMethod(Context context,View theViewRequest) {
+        InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputmanger.showSoftInput(theViewRequest, InputMethodManager.SHOW_IMPLICIT);
+    }
     /**
      * 跳转到系统设置界面
      * @param context

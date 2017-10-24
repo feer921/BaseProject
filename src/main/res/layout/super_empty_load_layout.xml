@@ -69,7 +69,7 @@
             <TextView
                 android:id="@+id/tv_extra_desc_or_click"
                 style="@style/common_tv_style"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="8dp"
                 android:singleLine="false"
                 android:text="@string/click_retry"
                 android:visibility="gone"
