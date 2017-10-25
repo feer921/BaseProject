@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+//import com.squareup.picasso.Picasso;
+
+import com.bumptech.glide.Glide;
 
 import common.base.R;
 
@@ -55,8 +57,8 @@ public class SimpleGuideBanner extends BaseGuideBanner<Integer>{
         ImageView ivGuidePic = (ImageView) curView.findViewById(R.id.iv_guide_pic);
 
         int guidePicResId = getItemData(curViewPosition);
-
-        Picasso.with(mContext.getApplicationContext()).load(guidePicResId).into(ivGuidePic);
+        Glide.with(mContext).load(guidePicResId).into(ivGuidePic);
+//        Picasso.with(mContext.getApplicationContext()).load(guidePicResId).into(ivGuidePic);
 
     }
     private OnClickListener outSideClickListener;

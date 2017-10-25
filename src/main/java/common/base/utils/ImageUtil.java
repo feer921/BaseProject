@@ -14,11 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
-
-import java.io.File;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 
 /**
  * ******************(^_^)***********************
@@ -30,68 +30,95 @@ import java.io.File;
  */
 
 public class ImageUtil {
-    public static void loadImage(Context context, String picUrl, int newWidth, int newHeight, Drawable holderDrawable,
-                                 Drawable errorDrawable, ImageView targetIv
-            , Callback callback) {
-        RequestCreator loadRequest = loadImageRequest(context, picUrl,null,0);
-
-        if (newWidth > 0 && newHeight > 0) {
-            loadRequest.resize(newWidth, newHeight);
-            loadRequest.centerCrop();
-        }
-        else{
-//            loadRequest.fit();
-        }
-        if (holderDrawable != null) {
-            loadRequest.placeholder(holderDrawable);
-        }
-        else{
-            loadRequest.noPlaceholder();
-        }
-        if (errorDrawable != null) {
-            loadRequest.error(errorDrawable);
-        }
-        loadRequest.noFade();
-        loadRequest.into(targetIv, callback);
+//    public static void loadImage(Context context, String picUrl, int newWidth, int newHeight, Drawable holderDrawable,
+//                                 Drawable errorDrawable, ImageView targetIv
+//            , Callback callback) {
+//        RequestCreator loadRequest = loadImageRequest(context, picUrl,null,0);
+//
+//        if (newWidth > 0 && newHeight > 0) {
+//            loadRequest.resize(newWidth, newHeight);
+//            loadRequest.centerCrop();
+//        }
+//        else{
+////            loadRequest.fit();
+//        }
+//        if (holderDrawable != null) {
+//            loadRequest.placeholder(holderDrawable);
+//        }
+//        else{
+//            loadRequest.noPlaceholder();
+//        }
+//        if (errorDrawable != null) {
+//            loadRequest.error(errorDrawable);
+//        }
+//        loadRequest.noFade();
+//        loadRequest.into(targetIv, callback);
+//    }
+public static void loadImage(Context context, String picUrl, int newWidth, int newHeight, Drawable holderDrawable,
+                             Drawable errorDrawable, ImageView targetIv
+        ,  RequestListener callback) {
+    RequestBuilder requestBuilder = loadImageRequest(context, picUrl);
+    RequestOptions options = new RequestOptions();
+    if (newWidth > 0 && newHeight > 0) {
+        options.override(newWidth,newHeight).centerCrop();
     }
-
+    else{
+        //            loadRequest.fit();
+    }
+    if (holderDrawable != null) {
+        options.placeholder(holderDrawable);
+    }
+    else{
+//        loadRequest.noPlaceholder();
+    }
+    if (errorDrawable != null) {
+        options.error(errorDrawable);
+    }
+    options.dontAnimate();
+    if (callback != null) {
+        requestBuilder.listener(callback);
+    }
+    requestBuilder.apply(options)
+            .into(targetIv);
+}
     private static void throwCannotException(String reason) {
         throw new IllegalArgumentException("no " + reason + ",can't loca image pic...");
     }
-    private static RequestCreator loadImageRequest(Context context, String picUrl, File localPicFile,int localPicResId) {
-        if (Util.isEmpty(picUrl) && null == localPicFile && localPicResId <= 0) {
-            throwCannotException("pic path ");
-        }
-        Picasso picasso = Picasso.with(context);
-        if (!Util.isEmpty(picUrl)) {
-            return picasso.load(picUrl);
-        }
-        if (localPicFile != null) {
-            return picasso.load(localPicFile);
-        }
-        return picasso.load(localPicResId);
-    }
-    public static RequestCreator loadImageRequest(Context context, String picUrlOrPath) {
-        if (Util.isEmpty(picUrlOrPath)) {
-            throwCannotException("picUrl");
-        }
-        return loadImageRequest(context, picUrlOrPath, null, 0);
-    }
-    public static RequestCreator loadImageRequest(Context context, File localPicFile) {
-        if (null == localPicFile) {
-            throwCannotException("pic file");
-        }
-        return loadImageRequest(context, null, localPicFile, 0);
-    }
-    public static RequestCreator loadImageRequest(Context context, int localPicResId) {
-        if (localPicResId <= 0) {
-            throwCannotException("valid local pic res id");
-        }
-        return loadImageRequest(context, null, null, localPicResId);
-    }
+//    private static RequestCreator loadImageRequest(Context context, String picUrl, File localPicFile,int localPicResId) {
+//        if (Util.isEmpty(picUrl) && null == localPicFile && localPicResId <= 0) {
+//            throwCannotException("pic path ");
+//        }
+//        Picasso picasso = Picasso.with(context);
+//        if (!Util.isEmpty(picUrl)) {
+//            return picasso.load(picUrl);
+//        }
+//        if (localPicFile != null) {
+//            return picasso.load(localPicFile);
+//        }
+//        return picasso.load(localPicResId);
+//    }
+
+//    public static RequestCreator loadImageRequest(Context context, String picUrlOrPath) {
+//        if (Util.isEmpty(picUrlOrPath)) {
+//            throwCannotException("picUrl");
+//        }
+//        return loadImageRequest(context, picUrlOrPath, null, 0);
+//    }
+//    public static RequestCreator loadImageRequest(Context context, File localPicFile) {
+//        if (null == localPicFile) {
+//            throwCannotException("pic file");
+//        }
+//        return loadImageRequest(context, null, localPicFile, 0);
+//    }
+//    public static RequestCreator loadImageRequest(Context context, int localPicResId) {
+//        if (localPicResId <= 0) {
+//            throwCannotException("valid local pic res id");
+//        }
+//        return loadImageRequest(context, null, null, localPicResId);
+//    }
     public static void loadImage(Context context, String picUrl, int newWidth, int newHeight, int holderDrawableResId,
                                  int errorDrawableResId, ImageView targetIv
-            , Callback callback){
+            , RequestListener callback){
         Resources res = context.getResources();
         Drawable holderPic = null;
         if (holderDrawableResId > 0) {
@@ -108,7 +135,7 @@ public class ImageUtil {
 
     public static void loadImage(Context context,String picUrl,int holderDrawableResId,
                                  int errorDrawableResId, ImageView targetIv
-            , Callback callback){
+            , RequestListener callback){
         loadImage(context,picUrl,0,0,holderDrawableResId,errorDrawableResId,targetIv,callback);
     }
 
@@ -117,7 +144,7 @@ public class ImageUtil {
         loadImage(context,picUrl,holderDrawableResId,errorDrawableResId,targetIv,null);
     }
 
-    public static void loadImage(Context context, String picUrl, ImageView targetIv, Callback callback) {
+    public static void loadImage(Context context, String picUrl, ImageView targetIv, RequestListener callback) {
         loadImage(context, picUrl, 0, 0, targetIv, callback);
     }
 
@@ -127,6 +154,22 @@ public class ImageUtil {
 
     public static void loadResizeImage(Context context, String picUrl, int resizeW, int resizeH, ImageView targetIv) {
         loadImage(context, picUrl, resizeW, resizeH, null, null, targetIv, null);
+    }
+
+    public static void loadImage(Context context, Object model) {
+        Glide.with(context).load(model);
+    }
+
+    public static RequestBuilder<Drawable> loadImageRequest(Context context, Object model) {
+        return Glide.with(context).load(model);
+    }
+
+    public static RequestBuilder<Bitmap> loadBitmapeRequest(Context context, Object model) {
+        return Glide.with(context).asBitmap().load(model);
+    }
+
+    public static void loadBitmap(Context context, Object model, Target target) {
+        Glide.with(context).asBitmap().load(model).into(target);
     }
     public static ColorDrawable createDefHolderColorDrawable(int theColor) {
         if (theColor <= 0) {
