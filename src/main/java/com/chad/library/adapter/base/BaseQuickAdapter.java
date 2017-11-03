@@ -2037,6 +2037,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
     /**
      * 清空数据
+     * //可能存在的隐患:调用该方法时，如果之前也没有设置emptyView，但是设置了footver或者headerView，则有可能会显示出来，导致UI 错误
      */
     public void clearData() {
         if (mData != null) {
@@ -2044,7 +2045,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             if (mRequestLoadMoreListener != null) {
                 mNextLoadEnable = true;
                 mLoading = false;
-                mFooterLayout = null;
+//                mFooterLayout = null; //???
             }
             mLastPosition = -1;
             notifyDataSetChanged();

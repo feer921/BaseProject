@@ -89,7 +89,9 @@ public class BaseUiHelper{
 
     public static void showInputMethod(Context context,View theViewRequest) {
         InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputmanger.showSoftInput(theViewRequest, InputMethodManager.SHOW_IMPLICIT);
+        if (inputmanger != null) {
+            inputmanger.showSoftInput(theViewRequest, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
     /**
      * 跳转到系统设置界面

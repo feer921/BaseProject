@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 
 import common.base.R;
 import common.base.netAbout.BaseServerResult;
@@ -200,7 +199,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * @param <T>
      * @return
      */
-    protected <T extends View> T findAviewInContainer(ViewGroup containerView, int childViewId) {
+    protected <T extends View> T findAviewInContainer(View containerView, int childViewId) {
         if (containerView == null || childViewId <= 0) {
             return null;
         }
@@ -432,6 +431,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             uiHintAgent.finishAgentFollowUi();
         }
         super.finish();
+        if(LIFE_CIRCLE_DEBUG){
+            CommonLog.i(TAG,"---> finish()");
+        }
     }
 
     @Override

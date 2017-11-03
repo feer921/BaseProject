@@ -281,9 +281,10 @@ public class Util {
         return (int) (dpValue * scale + 0.5f);
     }
 
-    public static int px2dip(Context context, float pxValue) {
+    public static float px2dip(Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (pxValue / scale + 0.5f);
+        float supplementValue = scale / 10;//如果是3，则0.3补充如果是N，则0.N补充
+        return (pxValue / scale + supplementValue);
     }
 
     public static int getDimenResPixelSize(Context context,@DimenRes int dimeResId) {

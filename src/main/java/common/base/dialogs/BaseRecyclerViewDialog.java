@@ -270,4 +270,10 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
     public TextView getTvBottomCancel() {
         return tvBottomCancel;
     }
+
+    public void listScrollToPosiont(int targetPos) {
+        if (recyclerView != null) {
+            recyclerView.scrollToPosition(targetPos);
+        }
+    }
 }
