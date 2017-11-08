@@ -52,6 +52,12 @@ public class ViewUtil{
         }
         return (T) curActivity.findViewById(toFindViewResId);
     }
+    public static <T> T findViewInView(View containerView, int toFindViewResId) {
+        if (toFindViewResId < 1 || containerView == null) {
+            return null;
+        }
+        return (T) containerView.findViewById(toFindViewResId);
+    }
     /**
      * Convert Dp to Pixel
      */

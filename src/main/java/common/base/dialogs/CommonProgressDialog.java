@@ -13,9 +13,11 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import common.base.R;
 import common.base.activitys.IProxyCallback;
+import common.base.utils.ViewUtil;
 
 /**
  * ******************(^_^)***********************<br>
@@ -35,13 +37,14 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
     private View contentView;
     private IProxyCallback callback;
     private int animResId;
+    ProgressBar pb;
     public CommonProgressDialog(Context context) {
         this(context, 0);
     }
 
     public CommonProgressDialog(Context context, int theme) {
         super(context, theme);
-        initView();
+//        initView();
     }
 
     public CommonProgressDialog withAnim(@DrawableRes int animResId) {
@@ -50,6 +53,9 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
                 mIvLoadingAnim.setBackgroundResource(animResId);
                 mAnimBgDrawable = (AnimationDrawable) mIvLoadingAnim.getBackground();
             }
+        }
+        if (pb != null) {
+            pb.setVisibility(View.GONE);
         }
         this.animResId = animResId;
         return this;
@@ -129,6 +135,7 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initView();
         setContentView(contentView);
     }
 
@@ -144,11 +151,25 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
             }
         }
     }
-    private void initView() {
-        contentView = getLayoutInflater().inflate(R.layout.common_progress_dialog_layout, null);
-        mTvLoadingHint = (TextView) contentView.findViewById(R.id.tv_dialog_load_hint);
-        mIvLoadingAnim = (ImageView) contentView.findViewById(R.id.iv_dialog_loading);
+
+    public CommonProgressDialog withContentView(View contentView) {
+        this.contentView = contentView;
+        initView();
+        return this;
     }
+    private void initView() {
+        if (contentView == null) {
+            contentView = getLayoutInflater().inflate(R.layout.common_progress_dialog_layout2, null);
+        }
+        mTvLoadingHint = ViewUtil.findViewInView(contentView, R.id.tv_dialog_load_hint);
+        mIvLoadingAnim = ViewUtil.findViewInView(contentView, R.id.iv_dialog_loading);
+        try {
+            pb = ViewUtil.findViewInView(contentView, R.id.loading_progress);
+        } catch (Exception ignore) {
+
+        }
+    }
+
 
     /**
      * This method will be invoked when the dialog is canceled.

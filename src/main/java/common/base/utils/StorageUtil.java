@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @author lifei
  */
 public final class StorageUtil {
-    private static final String TAG = StorageUtil.class.getSimpleName();
+    private static final String TAG = "StorageUtil";
 
     /**
      * 获取默认的外部存储目录
@@ -213,5 +213,26 @@ public final class StorageUtil {
             targetDirFile.mkdirs();
         }
         return targetDirFile;
+    }
+
+    /**
+     * 获取一个文件、或者一个文件夹下所有的文件所占用的内存大小
+     * @param pathFile
+     * @return
+     */
+    public static long getFileTotalSize(File pathFile) {
+        long totalFileSize = 0;
+        if (pathFile != null && pathFile.exists()) {
+            if (pathFile.isFile()) {
+                totalFileSize = pathFile.length();
+            }
+            else if(pathFile.isDirectory()){
+                File[] subFiles = pathFile.listFiles();
+                for (File theSubFile : subFiles) {
+                    totalFileSize += getFileTotalSize(theSubFile);
+                }
+            }
+        }
+        return totalFileSize;
     }
 }

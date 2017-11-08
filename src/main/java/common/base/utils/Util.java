@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -88,8 +89,8 @@ public class Util {
         return bmp;
     }
 
-    /* 输出线程ID，线程名，线程优先级等 */
-    public static void printCurrentThreadId(String functionName, String tag) {
+    /** 输出线程ID，线程名，线程优先级等 */
+    public static void printCurrentThreadInfo(String functionName, String tag) {
         CommonLog.d(tag, "In Function:" + functionName + "\nthread class = " + Thread.currentThread().getClass() + "\nthread name = "
                 + Thread.currentThread().getName() + "\nthread id = " + Thread.currentThread().getId() + "\nthread priority  = "
                 + Thread.currentThread().getPriority() + "\nthread state = " + Thread.currentThread().getState());
@@ -104,11 +105,11 @@ public class Util {
 
 
     @SuppressLint("NewApi")
-    public static void importSMS(Context mContext) {
+    public static void enableWriteSmsOpt(Context mContext) {
         if (Build.VERSION.SDK_INT >= 19) {
             // Android 4.4
             // 及以上才有以下功能，并且可直接设置程序有写短信权限，如果以下运行有异常，则表示可能系统为Android5.0
-            String PHONE_PACKAGE_NAME = "com.cx.huanji";
+            String PHONE_PACKAGE_NAME = mContext.getPackageName();
             PackageManager packageManager = mContext.getPackageManager();
             AppOpsManager appOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
             try {
@@ -120,43 +121,35 @@ public class Util {
 
             } catch (Exception ex) {
                 // 表明该系统可能为Android5.0，且需要将程序设置成默认的短信程序
-//                Util.saveBoolean(mContext, "_defaultSMS", true);
             }
         }
     }
 
+    /**
+     * 导航(指示)用户去选择默认的短信程序
+     * @param mContext
+     */
     @SuppressLint("NewApi")
-    public static void defaultSMS(Context mContext) {
-//        if (Util.readBoolean(mContext, "_defaultSMS", false)) {
-            String myPackageName = mContext.getPackageName();
-            if (!Telephony.Sms.getDefaultSmsPackage(mContext).equals(myPackageName)) {
-                Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
-                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, mContext.getPackageName());
-                mContext.startActivity(intent);
-            }
-//        }
+    public static void guide2ChooseDefSmsApp(Context mContext) {
+        String myPackageName = mContext.getPackageName();
+        if (!Telephony.Sms.getDefaultSmsPackage(mContext).equals(myPackageName)) {
+            Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+            intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, mContext.getPackageName());
+            mContext.startActivity(intent);
+        }
     }
-
-//    @SuppressLint("NewApi")
-//    public static boolean getDefaultSMS(Context mContext) {
-//        if (Util.readBoolean(mContext, "_defaultSMS", false)) {
-//            final String myPackageName = mContext.getPackageName();
-//            if (Telephony.Sms.getDefaultSmsPackage(mContext).equals(myPackageName))
-//                return true;
-//            return false;
-//        }
-//        else {
-//            return true;
-//        }
-//    }
-
+    @SuppressLint("NewApi")
+    public static boolean isTheDefSmsApp(Context context) {
+        String curPackage = context.getPackageName();
+        return Telephony.Sms.getDefaultSmsPackage(context).equals(curPackage);
+    }
     /**
      * 获取联系人数量
      *
      * @param mContext
      * @return
      */
-    public static int getContactVal(Context mContext) {
+    public static int getContactCount(Context mContext) {
         int val = 0;
         ContentResolver conResolver = mContext.getContentResolver();
         if (null == conResolver) {
@@ -185,7 +178,7 @@ public class Util {
      * @param mContext
      * @return
      */
-    public static int getSmsVal(Context mContext) {
+    public static int getSmsCount(Context mContext) {
         int val = 0;
         ContentResolver conResolver = mContext.getContentResolver();
         if (null == conResolver) {
@@ -221,7 +214,7 @@ public class Util {
      * @param mContext
      * @return
      */
-    public static int getImageVal(Context mContext) {
+    public static int getImageCount(Context mContext) {
         int val = 0;
         Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
@@ -250,10 +243,26 @@ public class Util {
             return false;
         }
         long realSize = getRealSizeOnSdCard();
-        return realSize <= 0;
+        return realSize >= 0;//????应该是>=0吧
     }
 
-    private static long getRealSizeOnSdCard() {
+    /**
+     * 查询文件系统是否相对于某个空余大小来说是有足够的存储空间的
+     * @param needEnoughSize 满足空余存储容量的阈值，如果参数为：200，表示是否文件系统还有200字节
+     * @return true:还有比参数大的空余容量；false:没有空余容量
+     */
+    public static boolean memoryCacheEnough(long needEnoughSize) {
+        if (!sdCardIsAvailable()) {
+            return false;
+        }
+        long realSize = getRealSizeOnSdCard();
+        return realSize >= needEnoughSize;
+    }
+    /**
+     * 获取存储卡中可用的余量空间
+     * @return
+     */
+    public static long getRealSizeOnSdCard() {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         StatFs statfs = new StatFs(file.getPath());
         long blockSize = statfs.getBlockSize();
@@ -268,14 +277,24 @@ public class Util {
      * @return true if str is null or zero length
      */
     public static boolean isEmpty(CharSequence str) {
-        if (str == null || str.toString() == null || str.toString().trim()
-                .length() == 0 || str.length() == 0 || "null".equalsIgnoreCase(str.toString())) {
-            return true;
-        } else {
-        }
-            return false;
+        return isEmpty(str, false);
     }
 
+    public static boolean isEmpty(CharSequence str, boolean careNullText) {
+        if (
+                str == null
+                ||
+                str.length() == 0
+                ||
+                str.toString().trim().length() == 0
+                ||
+                (careNullText && "null".equalsIgnoreCase(str.toString()))
+                )
+        {
+            return true;
+        }
+        return false;
+    }
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
@@ -286,7 +305,10 @@ public class Util {
         float supplementValue = scale / 10;//如果是3，则0.3补充如果是N，则0.N补充
         return (pxValue / scale + supplementValue);
     }
-
+    public static int sp2px(Context context, float spValue) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (spValue * fontScale + 0.5f);
+    }
     public static int getDimenResPixelSize(Context context,@DimenRes int dimeResId) {
         return context.getResources().getDimensionPixelSize(dimeResId);
     }
@@ -395,7 +417,7 @@ public class Util {
     }
 
     /**
-     * 调试追踪信息，记录到本地文件 注：正式发版时将变量CxConfig.ALLOW_DEBUG_TRACE 置为false;
+     * 调试追踪信息，记录到本地文件 注：正式发版时将变量CommonConfigs.DEBUG_TRACE_FLAG 置为false;
      * @param mContext
      * @param message
      */
@@ -406,7 +428,7 @@ public class Util {
         if (mContext == null) {
             mContext = NetHelper.getAppContext();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String oneDayAsFileName = dateFormat.format(new Date());
         File logFile = StorageUtil.getFileInCache(mContext, CommonConfigs.DEBUG_TRACE_DIR_NAME + mContext.getPackageName()
                 +
@@ -604,10 +626,115 @@ public class Util {
         }
         return frontStr + concatChars + behindStr;
     }
-
-    public static int sp2px(Context context, float spValue) {
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
-        return (int) (spValue * fontScale + 0.5f);
+    /**
+     * 在一个字符串中隐藏部分的字符串为指定的隐藏字符
+     * @param srcStr
+     * @param maskStartIndex 要隐藏的开始位置
+     * @param maskEndIndex 要隐藏的结束位置  如果想从开始位置隐藏2个字符，该参数应该为: maskStartIndex + 2;
+     * @param maskChar 所代替的隐藏的字符
+     * @return 加入隐藏字符后的字符串
+     */
+    public static String maskStr(String srcStr, int maskStartIndex, int maskEndIndex, char maskChar) {
+        if (!isEmpty(srcStr)) {
+            int totalStrLen = srcStr.length();
+            if (maskStartIndex < totalStrLen) {//等于大于时都截取不到需要mask的字符串
+                if (maskStartIndex < 0) {
+                    maskStartIndex = 0;
+                }
+                //如果maskStartIndex == maskEndIndex 也是截取不到的
+                if (maskStartIndex > maskEndIndex || maskEndIndex > totalStrLen) {
+                    maskEndIndex = totalStrLen;
+                }
+                String need2MaskStr = srcStr.substring(maskStartIndex, maskEndIndex);
+                if (!isEmpty(need2MaskStr)) {
+                    String retainPrefix = srcStr.substring(0, maskStartIndex);
+                    String retainSuffix = srcStr.substring(maskEndIndex, totalStrLen);
+                    String maskStr = "";
+                    for(int i= 0; i < need2MaskStr.length(); i++) {
+                        maskStr += maskChar;
+                    }
+                    return retainPrefix + maskStr + retainSuffix;
+                }
+            }
+        }
+        return srcStr;
     }
 
+    /**
+     * 格式化字节大小单位
+     * @param size size
+     * @return size
+     */
+    public static String formatByteSize(long size) {
+        double kiloByte = size / 1024;
+        if (kiloByte < 1) {
+            return size + "Byte";
+        }
+        double megaByte = kiloByte / 1024;
+        if (megaByte < 1) {
+            BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
+            return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
+        }
+
+        double gigaByte = megaByte / 1024;
+        if (gigaByte < 1) {
+            BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
+            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+        }
+
+        double teraBytes = gigaByte / 1024;
+        if (teraBytes < 1) {
+            BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
+            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+        }
+        BigDecimal result4 = new BigDecimal(teraBytes);
+        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
+    }
+
+    public static String formatByteSize2M(long size) {
+        double meg = size / (1024 * 1024);
+        BigDecimal result2 = new BigDecimal(Double.toString(meg));
+        return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+    }
+    /**
+     * 格式化字节大小单位
+     * @param size size
+     * @return size
+     */
+    public static String formatByteSize(long size,int sizeLevel) {
+        if (sizeLevel == 0) {
+            return size + "Byte";
+        }
+
+//        int divideValue = 1;
+//        for(int i = 0; i < sizeLevel; i++) {
+//            divideValue *= 1024;
+//        }
+        if (sizeLevel == 1) {//KB为基本单位
+//            double
+        }
+        double kiloByte = size / 1024;
+        if (kiloByte < 1) {
+            return size + "Byte";
+        }
+        double megaByte = kiloByte / 1024;
+        if (megaByte < 1) {
+            BigDecimal result1 = new BigDecimal(Double.toString(kiloByte));
+            return result1.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "KB";
+        }
+
+        double gigaByte = megaByte / 1024;
+        if (gigaByte < 1) {
+            BigDecimal result2 = new BigDecimal(Double.toString(megaByte));
+            return result2.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "MB";
+        }
+
+        double teraBytes = gigaByte / 1024;
+        if (teraBytes < 1) {
+            BigDecimal result3 = new BigDecimal(Double.toString(gigaByte));
+            return result3.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "GB";
+        }
+        BigDecimal result4 = new BigDecimal(teraBytes);
+        return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
+    }
 }
