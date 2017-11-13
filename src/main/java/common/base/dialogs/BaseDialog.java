@@ -432,4 +432,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         this.dialogBgBehindAlpha = dialogBgBehindAlpha;
         return self();
     }
+
+    public I useContentViewWidth(boolean isWindowUseContentViewW) {
+        this.isWindowUseContentViewW = isWindowUseContentViewW;
+        return self();
+    }
 }

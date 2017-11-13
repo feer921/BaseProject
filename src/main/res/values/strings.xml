@@ -4,8 +4,10 @@
     >
     <string name="app_name">BaseProject</string>
     <string name="confirmed">确认</string>
+    <string name="confirm_no_gap">确定</string>
     <string name="confirm">"确  定"</string>
     <string name="cancel">"取  消"</string>
+    <string name="cancel_no_gap">"取消"</string>
     <string name="hint">"提示"</string>
     <string name="loading">"正在加载,请稍候..."</string>
     <string name="xlistview_header_hint_normal">下拉刷新</string>

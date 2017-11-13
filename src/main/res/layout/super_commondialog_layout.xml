@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<LinearLayout-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:background="@color/white"-->
+<!--android:orientation="vertical"-->
+<!--android:id="@+id/common_md_dialog_content_layout"-->
+<!--&gt;-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+    <!-- 用上面这个根布局来解决Dialog弹出时距离屏幕左右的边距问题 -->
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/common_md_dialog_content_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="vertical"
+        >
+        <!-- 内容的头部 -->
+        <RelativeLayout
+            android:id="@+id/rl_content_header"
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            >
+            <TextView
+                android:id="@+id/tv_top_confirm"
+                style="@style/common_tv_style"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp"
+                android:text="@string/confirm_no_gap"
+                android:textColor="#ff8855"
+                android:textSize="16sp"
+                />
+
+            <TextView
+                android:id="@+id/tv_dialog_header_title"
+                style="@style/common_tv_style"
+                android:layout_centerInParent="true"
+                android:text="我是标题"
+                android:textColor="#111111"
+                android:textSize="18sp"
+                />
+
+            <TextView
+                android:id="@+id/tv_top_cancel"
+                style="@style/common_tv_style"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:paddingEnd="15dp"
+                android:paddingStart="15dp"
+                android:text="@string/cancel_no_gap"
+                android:textColor="#666666"
+                android:textSize="16sp"
+                />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/divider_below_top_title"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#ddd"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            style="@style/common_tv_style"
+            android:layout_width="match_parent"
+            android:paddingBottom="25dp"
+            android:paddingTop="25dp"
+            android:text="我才是标题"
+            android:textColor="#111"
+            android:textSize="18sp"
+            />
+
+        <View
+            android:id="@+id/divider_below_title"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#ddd"
+            />
+
+        <FrameLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/tv_4_dialog_msg"
+                style="@style/tv_fill_w_h_style"
+                android:layout_gravity="center_horizontal"
+                android:lineSpacingExtra="3dp"
+                android:paddingBottom="24dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:singleLine="false"
+                android:text="I am hint msg"
+                android:textSize="16sp"
+                />
+
+            <EditText
+                android:id="@+id/edt_as_dialog_msg_or_edit"
+                style="@style/common_edittext_style_full_width"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:background="@drawable/sel_4_rounded_stroke"
+                android:gravity="center"
+                android:hint="请输入"
+                android:minHeight="44dp"
+                android:textColorHint="#ddd"
+                android:textSize="15sp"
+                android:visibility="gone"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycleview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                />
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/btns_top_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#eee"
+            />
+
+        <LinearLayout
+            android:id="@+id/ll_bottom_btns"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/tv_bottom_cancel"
+                style="@style/common_tv_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/cancel_no_gap"
+                android:textColor="#111"
+                android:textSize="18sp"
+                />
+
+            <View
+                android:id="@+id/bottom_btns_divider"
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:background="#eee"
+                />
+
+            <TextView
+                android:id="@+id/tv_bottom_confirm"
+                style="@style/common_tv_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/confirm_no_gap"
+                android:textColor="#111"
+                android:textSize="18sp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
