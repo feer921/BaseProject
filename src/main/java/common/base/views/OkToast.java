@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import common.base.R;
-import common.base.utils.CommonLog;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
@@ -42,10 +41,10 @@ public class OkToast {
 
     public static OkToast with(Context appContext) {
         OkToast one = new OkToast();
-        one.with2(appContext);
+        one.innerWith(appContext);
         return one;
     }
-    private OkToast with2(Context appContext) {
+    private OkToast innerWith(Context appContext) {
         this.appContext = appContext.getApplicationContext();
         mLayoutInflater = LayoutInflater.from(this.appContext);
         llToastRootView = (LinearLayout) mLayoutInflater.inflate(R.layout.ok_toast, null);
@@ -132,6 +131,13 @@ public class OkToast {
     public void show(CharSequence toastText, int duration, int showGravity) {
         show(toastText, null, duration, showGravity, 0, 0, 0, 0);
     }
+
+    public void shortShow(CharSequence toastText, int showGravity, int xOffset, int yOffset) {
+        show(toastText, Toast.LENGTH_SHORT, showGravity, xOffset, yOffset);
+    }
+    public void show(CharSequence toastText, int duration, int showGravity, int xOffset, int yOffset) {
+        show(toastText,null,duration,showGravity,xOffset,yOffset,0,0);
+    }
     private int defToastGravity,defXOffset,defYOffset;
 
     private Toast newToast(View toastView) {
@@ -211,7 +217,7 @@ public class OkToast {
         if (y < 0) {
             y = defYOffset;
         }
-        CommonLog.e("info", "--》x= " + x + " y  = " + y);
+//        CommonLog.e("info", "--》x= " + x + " y  = " + y);
         mToast.setGravity(theGravity,x,y);
         mToast.setDuration(duration);
         mToast.show();

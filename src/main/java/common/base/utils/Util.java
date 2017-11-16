@@ -340,6 +340,19 @@ public class Util {
         return isValid;
     }
 
+    public static boolean isEmailValid(String mayEmailStr) {
+        if (mayEmailStr == null)
+            return false;
+        String regEx1 = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+        Pattern p;
+        Matcher m;
+        p = Pattern.compile(regEx1);
+        m = p.matcher(mayEmailStr);
+        if (m.matches())
+            return true;
+        else
+            return false;
+    }
     /**
      * 隐式启动对应action的Service 兼容Android5.0的不能显示通过action方式启动Service
      *
