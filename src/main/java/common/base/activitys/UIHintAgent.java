@@ -380,6 +380,9 @@ public class UIHintAgent {
         return hintDialogInWhichCase;
     }
 
+    public void compatSetHintDialogCase(int hintDialogInWhichCase) {
+        this.hintDialogInWhichCase = hintDialogInWhichCase;
+    }
     public Dialog getCommonHintDialog() {
         return this.hintDialog;
     }

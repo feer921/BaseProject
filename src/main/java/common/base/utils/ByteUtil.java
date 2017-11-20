@@ -303,6 +303,7 @@ public class ByteUtil {
                     byteStr = new String(byteDatas, charsetName);
                 }
             } catch (UnsupportedEncodingException e) {
+                CommonLog.e("ByteUtil","--> byteArray2Str() occur " + e);
             }
         }
         return byteStr;

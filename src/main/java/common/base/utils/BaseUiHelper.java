@@ -128,4 +128,26 @@ public class BaseUiHelper{
         Intent intent = new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS);
         context.startActivity(intent);
     }
+
+    /**
+     * Intent.ACTION_SENDTO 无附件的发送
+     Intent.ACTION_SEND 带附件的发送
+     Intent.ACTION_SEND_MULTIPLE 带有多附件的发送
+     * @param context
+     * @param targetEmail
+     * @param subject
+     * @param emailContent
+     * @return
+     */
+    public static boolean jumpToSendEmail(Context context, String targetEmail, String subject, String emailContent) {
+        Intent emailActionIntent = new Intent(Intent.ACTION_SENDTO);
+//        PackageManagerUtil.getPackageVersionName()
+        emailActionIntent.setData(Uri.parse("mailto:" + targetEmail));
+//        emailActionIntent.putExtra(Intent.EXTRA_EMAIL, targetEmail);
+        emailActionIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailActionIntent.putExtra(Intent.EXTRA_TEXT, emailContent);
+//        context.startActivity(emailActionIntent);//这样不会弹出选择框
+        context.startActivity(Intent.createChooser(emailActionIntent,"ddd"));//这样会弹出选择要使用的邮箱应用
+        return true;
+    }
 }

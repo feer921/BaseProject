@@ -219,7 +219,7 @@ public class PackageManagerUtil {
 
     /**
      * 获取手机内部安装的非系统应用 只有基本信息，不包含签名等特殊信息
-     * @param mContext
+     * @param context
      * @return
      */
     public static List<PackageInfo> getInstallApps(Context context) {

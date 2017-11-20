@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import common.base.R;
+import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
 /**
@@ -115,12 +116,15 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
         }
         return self();
     }
-    public SuperCommonMdDialog withConfirmBtnText(CharSequence cancelBtnText) {
+    public SuperCommonMdDialog withConfirmBtnText(CharSequence confirmBtnText) {
+        if (Util.isEmpty(confirmBtnText)) {
+            confirmBtnText = getStrFromResId(R.string.confirm_no_gap);
+        }
         if (tvBottomConfirm != null) {
-            tvBottomConfirm.setText(cancelBtnText);
+            tvBottomConfirm.setText(confirmBtnText);
         }
         if (tvTopConfirm != null) {
-            tvTopConfirm.setText(cancelBtnText);
+            tvTopConfirm.setText(confirmBtnText);
         }
         return self();
     }
@@ -153,6 +157,9 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
         return self();
     }
     public SuperCommonMdDialog withCancelBtnText(CharSequence cancelBtnText) {
+        if (Util.isEmpty(cancelBtnText)) {
+            cancelBtnText = getStrFromResId(R.string.cancel_no_gap);
+        }
         if (tvBottomCancel != null) {
             tvBottomCancel.setText(cancelBtnText);
         }
@@ -225,6 +232,9 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
     }
     public SuperCommonMdDialog withTitle(CharSequence title) {
         if (tvDialogTitle != null) {
+            if (Util.isEmpty(title)) {
+                title = getStrFromResId(R.string.hint);
+            }
             tvDialogTitle.setText(title);
         }
         return self();
