@@ -1,5 +1,6 @@
 package common.base.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +15,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  * 网络检测工具类
@@ -32,7 +38,7 @@ public class NetHelper {
     public static boolean isWifiNet(Context c) {
         boolean bRet = false;
         ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        @SuppressLint("MissingPermission") NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (null != wifiInfo && wifiInfo.isConnectedOrConnecting()) {
             bRet = true;
         }
@@ -293,7 +299,7 @@ public class NetHelper {
      */
     public static String getMacString(Context context) {
         String mac = null;
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         boolean bOpenWifi = false;
         int state = wifiManager.getWifiState();
         if (state != WifiManager.WIFI_STATE_ENABLED && state != WifiManager.WIFI_STATE_ENABLING) {
@@ -410,5 +416,89 @@ public class NetHelper {
             }
         }
         return pingResult;
+    }
+
+    public static String getIpAddressByWifi(Context context) {
+        String curIp = "";
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        if (wifiInfo != null) {
+            int ip = wifiInfo.getIpAddress();
+            curIp = intIp2StrIp(ip);
+        }
+//        if (isWifiConnected(context)) {
+//
+//        }
+        return curIp;
+    }
+
+    private static String intIp2StrIp(int intIP) {
+
+        return (intIP & 0xFF ) + "." +
+                ((intIP >> 8 ) & 0xFF) + "." +
+                ((intIP >> 16 ) & 0xFF) + "." +
+                ( intIP >> 24 & 0xFF) ;
+    }
+//
+//    public String getLocalIpAddress()
+//    {
+//        try
+//        {
+//            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();)
+//            {
+//                NetworkInterface intf = en.nextElement();
+//                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();)
+//                {
+//                    InetAddress inetAddress = enumIpAddr.nextElement();
+//                    if (!inetAddress.isLoopbackAddress())
+//                    {
+//                        return inetAddress.getHostAddress().toString();
+//                    }
+//                }
+//            }
+//        }
+//        catch (SocketException ex) {
+//        }
+//        return null;
+//    }
+    public static String getIPAddress(Context context) {
+        Context appContext = context.getApplicationContext();
+        ConnectivityManager connectivityManager = (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager == null) {
+            return "";
+        }
+        @SuppressLint("MissingPermission") NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if (info != null && info.isConnected()) {
+            if (info.getType() == ConnectivityManager.TYPE_MOBILE) {//当前使用2G/3G/4G网络
+                try {
+                    //Enumeration<NetworkInterface> en=NetworkInterface.getNetworkInterfaces();
+                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                        NetworkInterface intf = en.nextElement();
+                        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                            InetAddress inetAddress = enumIpAddr.nextElement();
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                return inetAddress.getHostAddress();
+                            }
+                        }
+                    }
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else if (info.getType() == ConnectivityManager.TYPE_WIFI) {//当前使用无线网络
+                WifiManager wifiManager = (WifiManager) appContext.getSystemService(Context.WIFI_SERVICE);
+                if (wifiManager == null) {
+                    return "";
+                }
+                @SuppressLint("MissingPermission") WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                String ipAddress = intIp2StrIp(wifiInfo.getIpAddress());//得到IPV4地址
+                return ipAddress;
+            }
+        }
+        else {
+            //当前无网络连接,请在设置中打开网络
+        }
+        return "";
     }
 }

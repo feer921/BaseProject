@@ -107,6 +107,20 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
         }
         return self();
     }
+
+    public SuperCommonMdDialog visiableBottomCancelBtn(boolean visiable) {
+        if (tvBottomCancel != null) {
+            tvBottomCancel.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        }
+        return visiableDividerBetweenBtns(visiable);
+    }
+
+    public SuperCommonMdDialog visiableBottomConfirmBtn(boolean visiable) {
+        if (tvBottomConfirm != null) {
+            tvBottomConfirm.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        }
+        return visiableDividerBetweenBtns(visiable);
+    }
     public SuperCommonMdDialog withConfirmBtnTextSize(float spSize) {
         if (tvBottomConfirm != null) {
             tvBottomConfirm.setTextSize(spSize);
