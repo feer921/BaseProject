@@ -29,14 +29,14 @@ public class BaseDataAssetor {
     /**
      * 普通的从文件中读取出序列化对象
      * @param context
-     * @param fileName 文件的全路径名称
+     * @param targetFilePath 文件的全路径名称
      * @return
      */
-    public static Serializable readDataObject(Context context, String fileName){
-        if (Util.isEmpty(fileName)) {
+    public static Serializable readDataObject(Context context, String targetFilePath){
+        if (Util.isEmpty(targetFilePath)) {
             return null;
         }
-        File dataFile = new File(fileName);
+        File dataFile = new File(targetFilePath);
         if(!dataFile.exists()) return null;
         FileInputStream fis = null;
         ObjectInputStream ois = null;
@@ -46,7 +46,7 @@ public class BaseDataAssetor {
             return (Serializable) ois.readObject();
         } catch (FileNotFoundException e) {
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             if(e instanceof InvalidClassException){
                 dataFile.delete();
             }

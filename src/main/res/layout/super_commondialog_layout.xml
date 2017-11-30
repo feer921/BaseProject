@@ -115,14 +115,12 @@
                 style="@style/common_edittext_style_full_width"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
+                android:layout_margin="19dp"
                 android:background="@drawable/sel_4_rounded_stroke"
                 android:gravity="center"
-                android:hint="请输入"
                 android:minHeight="44dp"
                 android:textColorHint="#ddd"
                 android:textSize="15sp"
-                android:visibility="gone"
                 />
 
             <android.support.v7.widget.RecyclerView

@@ -265,6 +265,20 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
         }
         return self();
     }
+
+    public SuperCommonMdDialog withTopTitleTextsize(float spSize) {
+        if (tvTopTitle != null) {
+            tvTopTitle.setTextSize(spSize);
+        }
+        return self();
+    }
+
+    public SuperCommonMdDialog withTopTitleTextColor(@ColorInt int textColor) {
+        if (tvTopTitle != null) {
+            tvTopTitle.setTextColor(textColor);
+        }
+        return self();
+    }
     public SuperCommonMdDialog visiableTopTitle(boolean visiable) {
         if (tvTopTitle != null) {
             tvTopTitle.setVisibility(visiable ? View.VISIBLE : View.INVISIBLE);
@@ -394,11 +408,11 @@ public class SuperCommonMdDialog extends BaseDialog<SuperCommonMdDialog> {
         } else if (viewId == R.id.tv_top_confirm || viewId == R.id.tv_bottom_confirm) {
             which = BUTTON_POSITIVE;
         }
-        if (which == BUTTON_NEGATIVE) {
-            dismiss();
-        }
         if (dialogClickListener != null) {
             dialogClickListener.onClick(this,which);
+        }
+        if (which == BUTTON_NEGATIVE) {
+            dismiss();
         }
     }
 
