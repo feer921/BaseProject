@@ -53,8 +53,11 @@ public class BaseServerResult {
     }
 
     public <T> T convertData2Bean(Class<T> beanClass) {
+        String dataStr = getDataStr();
         try {
-            return JsonUtil.jsonStr2Object(getDataStr(), beanClass);
+            if (!Util.isEmpty(dataStr)) {
+                return JsonUtil.jsonStr2Object(dataStr, beanClass);
+            }
         } catch (IOException e) {
             CommonLog.e("ServerResult","--> convertData2Bean() occur : " + e);
         }
@@ -68,8 +71,11 @@ public class BaseServerResult {
      * @return
      */
     public <T> List<T> convertData2List(Class<T> elementClass) {
+        String dataStr = getDataStr();
         try {
-            return JsonUtil.jsonArrayStr2ListObject(getDataStr(), elementClass);
+            if (!Util.isEmpty(dataStr)) {
+                return JsonUtil.jsonArrayStr2ListObject(dataStr, elementClass);
+            }
         } catch (Exception e) {
             CommonLog.e(TAG, "--> convertData2List() e: " + e);
         }

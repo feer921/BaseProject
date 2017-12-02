@@ -99,15 +99,15 @@
 
             <TextView
                 android:id="@+id/tv_4_dialog_msg"
-                style="@style/tv_fill_w_h_style"
+                style="@style/common_tv_style"
                 android:layout_gravity="center_horizontal"
                 android:lineSpacingExtra="3dp"
-                android:paddingBottom="24dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:singleLine="false"
                 android:text="I am hint msg"
                 android:textSize="16sp"
+                android:paddingBottom="24dp"
                 />
 
             <EditText
@@ -121,6 +121,7 @@
                 android:minHeight="44dp"
                 android:textColorHint="#ddd"
                 android:textSize="15sp"
+                android:visibility="gone"
                 />
 
             <android.support.v7.widget.RecyclerView
