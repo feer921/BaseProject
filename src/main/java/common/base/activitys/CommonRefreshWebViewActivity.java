@@ -8,6 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -40,8 +42,12 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         return 0;
     }
 
+    /**
+     * 本通用网页加载基类已指定了通用的UI布局，子类不提供
+     * @return Activity需要加载的UI布局
+     */
     @Override
-    protected View providedContentView() {
+    protected final View providedContentView() {
         LinearLayout contentView = (LinearLayout) getLayoutInflater().inflate(R.layout.common_refresh_webview_layout, null);
         View customHeaderView = getProvidedCustomHeaderView();
         if (customHeaderView != null) {
@@ -214,8 +220,37 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             handler.proceed();
         }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            super.onReceivedError(view, request, error);
+            i(null, "--> onReceivedError() request = " + request + "  error = " + error);
+        }
+
+        /**
+         * 注：如果遇到404错误，可能不会回调该方法，则需要在{@link #configReceivedTitle(WebView, String)}中处理,title会包含404
+         * @param view
+         * @param errorCode
+         * @param description
+         * @param failingUrl
+         */
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            super.onReceivedError(view, errorCode, description, failingUrl);
+            i(null, "--> onReceivedError() errorCode = " + errorCode + "  description = " + description + " failingUrl = " + failingUrl);
+            onLoadPageError(view, errorCode, description);
+        }
+
+//        @Override
+//        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+//            super.onReceivedHttpError(view, request, errorResponse);
+//            i(null, "--> onReceivedHttpError() request = " + request + "  errorResponse = " + errorResponse);
+//        }
     }
 
+    protected void onLoadPageError(WebView view, int errorCode, String errorDesc) {
+        // TODO: 2017/12/6 后续有时间完善自定义的加载网页失败
+    }
     protected void onLoadPageStarted(WebView webView, String url, Bitmap favicon) {
         pbLoadWeb.setProgress(0);
         if (!hasCustomLoadWebProgressView) {

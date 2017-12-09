@@ -1,12 +1,10 @@
 package common.base.utils;
 
-import android.content.Context;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -27,12 +25,11 @@ public class BaseDataAssetor {
         SD_CARD,DATA_CACHE
     }
     /**
-     * 普通的从文件中读取出序列化对象
-     * @param context
+     * 普通的从文件中读取出序列化对象(即反序列化出对象)
      * @param targetFilePath 文件的全路径名称
      * @return
      */
-    public static Serializable readDataObject(Context context, String targetFilePath){
+    public static <T extends Serializable> T readDataObject(String targetFilePath){
         if (Util.isEmpty(targetFilePath)) {
             return null;
         }
@@ -43,30 +40,74 @@ public class BaseDataAssetor {
         try {
             fis = new FileInputStream(dataFile);
             ois = new ObjectInputStream(fis);
-            return (Serializable) ois.readObject();
-        } catch (FileNotFoundException e) {
-        } catch (Exception e) {
-//            e.printStackTrace();
-            if(e instanceof InvalidClassException){
-                dataFile.delete();
+            Object result = ois.readObject();
+            if (result != null) {
+                return (T) result;
             }
+        } catch (FileNotFoundException ignore) {
+        } catch (Exception ignore) {
+            //            e.printStackTrace();
+//            if(e instanceof InvalidClassException){
+//                dataFile.delete();//???
+//            }
         }
         finally {
             if(ois != null){
                 try {
                     ois.close();
-                } catch (IOException e) {
+                } catch (IOException ignore) {
                 }
             }
             if(fis != null){
                 try {
                     fis.close();
-                } catch (IOException e) {
+                } catch (IOException ignore) {
                 }
             }
         }
         return null;
     }
+//    /**
+//     * 普通的从文件中读取出序列化对象
+//     * @param context
+//     * @param targetFilePath 文件的全路径名称
+//     * @return
+//     */
+//    public static Serializable readDataObject(Context context, String targetFilePath){
+//        if (Util.isEmpty(targetFilePath)) {
+//            return null;
+//        }
+//        File dataFile = new File(targetFilePath);
+//        if(!dataFile.exists()) return null;
+//        FileInputStream fis = null;
+//        ObjectInputStream ois = null;
+//        try {
+//            fis = new FileInputStream(dataFile);
+//            ois = new ObjectInputStream(fis);
+//            return (Serializable) ois.readObject();
+//        } catch (FileNotFoundException e) {
+//        } catch (Exception e) {
+////            e.printStackTrace();
+//            if(e instanceof InvalidClassException){
+//                dataFile.delete();
+//            }
+//        }
+//        finally {
+//            if(ois != null){
+//                try {
+//                    ois.close();
+//                } catch (IOException e) {
+//                }
+//            }
+//            if(fis != null){
+//                try {
+//                    fis.close();
+//                } catch (IOException e) {
+//                }
+//            }
+//        }
+//        return null;
+//    }
     /**
      * 存储一个可序列化的数据
      * @param data
@@ -90,13 +131,13 @@ public class BaseDataAssetor {
             if(oos != null){
                 try {
                     oos.close();
-                } catch (IOException e) {
+                } catch (IOException ignore) {
                 }
             }
             if(fos != null){
                 try {
                     fos.close();
-                } catch (IOException e) {
+                } catch (IOException ignore) {
                 }
             }
         }
