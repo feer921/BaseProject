@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Message;
+import android.support.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -11,6 +13,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import common.base.R;
+import common.base.activitys.WeakHandler;
 
 
 /**
@@ -23,6 +26,8 @@ public class HintPopuWindow extends PopupWindow{
     private TextView tvHintMsg;
     private View anchorView;
     private int x,y;
+    private WeakHandler<HintPopuWindow> mWeakHandler;
+    private long popShowingLastMillsTime = 3 * 1000;
     public HintPopuWindow(Context context) {
         super(context);
         View contentView = LayoutInflater.from(context).inflate(R.layout.hint_popuwindow_layout, null);
@@ -45,6 +50,23 @@ public class HintPopuWindow extends PopupWindow{
         }
         if(!isShowing()){
             if(anchorView != null){
+                if (popShowingLastMillsTime > 0) {
+                    if (mWeakHandler != null) {
+                        mWeakHandler.removeCallbacksAndMessages(null);
+                    }
+                    else{
+                        mWeakHandler = new WeakHandler<HintPopuWindow>(this){
+                            @Override
+                            public void handleMessage(Message msg) {
+                                if (getOwner() != null) {
+                                    dismiss();
+                                    super.handleMessage(msg);
+                                }
+                            }
+                        };
+                    }
+                    mWeakHandler.sendEmptyMessageDelayed(0, popShowingLastMillsTime);
+                }
                 showAsDropDown(anchorView, x, y);
             }
         }
@@ -55,5 +77,34 @@ public class HintPopuWindow extends PopupWindow{
     public void changeTheBackgroundDrawable(int colorHexValue){
         ColorDrawable colorDrawable = new ColorDrawable(colorHexValue);
         changeTheBackgroundDrawable(colorDrawable);
+    }
+
+    public void popHint(@StringRes int hintMsgResId) {
+        if (tvHintMsg != null) {
+            hintMsg(tvHintMsg.getContext().getString(hintMsgResId));
+        }
+    }
+
+    /**
+     * Disposes of the popup window. This method can be invoked only after
+     * {@link #showAsDropDown(View)} has been executed. Failing
+     * that, calling this method will have no effect.
+     *
+     * @see #showAsDropDown(View)
+     */
+    @Override
+    public void dismiss() {
+        if (mWeakHandler != null) {
+            mWeakHandler.removeCallbacksAndMessages(null);
+        }
+        super.dismiss();
+    }
+
+    public void setShowLastMillsTime(long millsTime) {
+        this.popShowingLastMillsTime = millsTime;
+    }
+
+    public TextView getTvHintMsg() {
+        return tvHintMsg;
     }
 }

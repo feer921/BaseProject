@@ -21,11 +21,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/loading_progress"
         android:layout_gravity="center_vertical"
-        style="@style/Base.Widget.AppCompat.ProgressBar"
+        style="?android:attr/progressBarStyleSmall"
         />
     <TextView
         style="@style/common_tv_style"
         android:text="@string/loading"
+        android:gravity="center_vertical"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:layout_gravity="center"

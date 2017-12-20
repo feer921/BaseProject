@@ -114,16 +114,17 @@ public final class StorageUtil {
      */
     public static File getFileInCache(Context context, final String fileName) {
         File file = new File(getCacheParent(context), fileName);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                CommonLog.e(TAG, "", e);
-            }
-        }
+//        if (!file.getParentFile().exists()) {
+//            file.getParentFile().mkdirs();
+//        }
+//        if (!file.exists()) {
+//            try {
+//                file.createNewFile();
+//            } catch (IOException e) {
+//                CommonLog.e(TAG, "", e);
+//            }
+//        }
+        createFileIfNotExisted(file);
         return file;
     }
 
@@ -139,16 +140,17 @@ public final class StorageUtil {
     public static File getFileInAppBaseDir(Context mContext,String fileName){
                             // mnt/sdcard/appbasedir/, fileName)
         File file = new File(getAppCacheRoot(mContext),fileName);
-        if(!file.getParentFile().exists()){
-            file.getParentFile().mkdirs();
-        }
-        if(!file.exists()){
-            try {
-                file.createNewFile();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
+//        if(!file.getParentFile().exists()){
+//            file.getParentFile().mkdirs();
+//        }
+//        if(!file.exists()){
+//            try {
+//                file.createNewFile();
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+        createFileIfNotExisted(file);
         return file;
     }
     /**
@@ -193,17 +195,18 @@ public final class StorageUtil {
 
     public static File getFileInExternalCacheDir(Context context, String fileName) {
         File targetFile = new File(getAppCacheRootDirWithOutPermission(context), fileName);
-        File targetFileParentDir = targetFile.getParentFile();
-        if (!targetFileParentDir.exists()) {
-            targetFileParentDir.mkdirs();
-        }
-        if (!targetFile.exists()) {
-            try {
-                targetFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        File targetFileParentDir = targetFile.getParentFile();
+//        if (!targetFileParentDir.exists()) {
+//            targetFileParentDir.mkdirs();
+//        }
+//        if (!targetFile.exists()) {
+//            try {
+//                targetFile.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        createFileIfNotExisted(targetFile);
         return targetFile;
     }
 
@@ -235,4 +238,94 @@ public final class StorageUtil {
         }
         return totalFileSize;
     }
+    public static File createFileIfNotExisted(File mayNeedCreatedFile) {
+        if (mayNeedCreatedFile != null) {
+            if (!mayNeedCreatedFile.getParentFile().exists()) {
+                mayNeedCreatedFile.getParentFile().mkdirs();
+            }
+            if (!mayNeedCreatedFile.exists()) {
+                try {
+                    boolean isOptSuc = mayNeedCreatedFile.createNewFile();
+                } catch (IOException e) {
+                    CommonLog.e(TAG, "-->createFileIfNotExisted() " + mayNeedCreatedFile + "create occur " + e);
+                }
+            }
+        }
+        return mayNeedCreatedFile;
+    }
+
+//    //**************************** 添加只对APP内部缓存区(APK安装后在系统内的缓存区：data/data/com.xx.xx/))下的缓存管理,如果APK被卸载，则该缓存区被删除 *************//
+//
+//    /**
+//     * 获取APP内部cache文件夹file
+//     * 注：该文件夹会在系统内存紧张的时候自动删除里面的缓存文件
+//     * @param context
+//     * @return File("data/data/com.xx.xx/cache/");
+//     */
+//    public static File appCacheDir(Context context) {
+//        return context.getCacheDir();
+//    }
+//
+//    public static File getFileInAppCacheDir(Context context, String fileName) {
+//        File file = new File(appCacheDir(context), fileName);
+//        createFileIfNotExisted(file);
+//        return file;
+//    }
+//
+//    public static File getDirInAppCacheDir(Context context, String dirName) {
+//        File dirFile = new File(appCacheDir(context), dirName);
+//        if (!dirFile.exists()) {
+//            dirFile.mkdirs();
+//        }
+//        return dirFile;
+//    }
+//    private static File createFileIfNotExisted(File mayNeedCreatedFile) {
+//        if (mayNeedCreatedFile != null) {
+//            if (!mayNeedCreatedFile.getParentFile().exists()) {
+//                mayNeedCreatedFile.getParentFile().mkdirs();
+//            }
+//            if (!mayNeedCreatedFile.exists()) {
+//                try {
+//                    boolean isOptSuc = mayNeedCreatedFile.createNewFile();
+//                } catch (IOException e) {
+//                    CommonLog.e(TAG, "-->createFileIfNotExisted() " + mayNeedCreatedFile + "create occur " + e);
+//                }
+//            }
+//        }
+//        return mayNeedCreatedFile;
+//    }
+//    /**
+//     * 获取APP内部存储文件的根目录file
+//     * @param context
+//     * @return File("data/data/com.xx.xx/");
+//     */
+//    @SuppressLint("NewApi")
+//    public static File appDataRootDir(Context context) {
+//        if (Util.isCompateApi(24)) {
+//            return context.getDataDir();
+//        }
+//        return appCacheDir(context).getParentFile();
+//    }
+//
+//    /**
+//     * 获取APP内部存储目录下的files文件夹file
+//     * @param context
+//     * @return File("data/data/com.xx.xx/files/");
+//     */
+//    public static File appFilesDir(Context context) {
+//        return context.getFilesDir();
+//    }
+//
+//    /**
+//     * 获取APP内部存储目录下的所填参数文件夹名的文件夹
+//     * 注：系统会自动在所传的参数前面加上"app_"前缀
+//     * @param context 上下文
+//     * @param dirName 要获取或者创建的文件夹名称
+//     * @return File("data/data/com.xx.xx/app_dirName");
+//     */
+//    public static File getDirInAppDataRootDir(Context context, String dirName) {
+//        return context.getDir(dirName, Context.MODE_PRIVATE);
+//    }
+
+
 }

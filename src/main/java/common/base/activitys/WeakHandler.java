@@ -18,7 +18,7 @@ public class WeakHandler<T> extends Handler{
      * @param owner 被 弱引用对象
      */
     public WeakHandler(T owner) {
-        mOwner = new WeakReference<T>(owner);
+        mOwner = new WeakReference<>(owner);
     }
 
     public T getOwner() {
