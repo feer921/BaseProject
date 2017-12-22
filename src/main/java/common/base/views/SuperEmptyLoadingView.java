@@ -206,14 +206,18 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     }
 
     public SuperEmptyLoadingView showCase(LayoutStatus targetStatus) {
+        //move to here by fee 2017-12-21
+        if (customExtraHintView != null) {
+            customExtraHintView.setVisibility(GONE);
+        }
         //???
         if ( curStatus != null && targetStatus == curStatus) {
             return this;
         }
-        //add by fee 2017-10-24
-        if (customExtraHintView != null) {
-            customExtraHintView.setVisibility(GONE);
-        }
+//        //add by fee 2017-10-24
+//        if (customExtraHintView != null) {
+//            customExtraHintView.setVisibility(GONE);
+//        }
         withWholeLayoutClickable(true);
         //add end 2017-10-24
         curStatus = targetStatus;
@@ -536,8 +540,8 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
          */
         void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus);
     }
-    private TextView customExtraHintView;
-    public SuperEmptyLoadingView withCustomExtraHintView(TextView toAppendExtraHintView) {
+    private View customExtraHintView;
+    public SuperEmptyLoadingView withCustomExtraHintView(View toAppendExtraHintView) {
         if (toAppendExtraHintView != null && toAppendExtraHintView.getParent() == null) {
             customExtraHintView = toAppendExtraHintView;
             ViewGroup viewGroup = (ViewGroup) findViewById(R.id.ll_load_and_hint);
@@ -546,10 +550,24 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         return this;
     }
 
-    public SuperEmptyLoadingView andCustomExtraHintViewHint(String hint) {
+    /**
+     * 用来在showCase()后显示所传入的自定义的提示性布局
+     * @param hintMsg 提示的内容
+     * @return
+     */
+    public SuperEmptyLoadingView andCustomExtraHintViewHint(String hintMsg) {
         if (customExtraHintView != null) {
-            if (!Util.isEmpty(hint)) {
-                customExtraHintView.setText(hint);
+            if (!Util.isEmpty(hintMsg)) {
+                TextView tvCanShowHint;
+                if (customExtraHintView instanceof TextView) {
+                    tvCanShowHint = (TextView) customExtraHintView;
+                }
+                else{
+                    tvCanShowHint = (TextView) customExtraHintView.findViewById(R.id.tv_custom_extra_himt);
+                }
+                if (tvCanShowHint != null) {
+                    tvCanShowHint.setText(hintMsg);
+                }
             }
             customExtraHintView.setVisibility(VISIBLE);
         }
