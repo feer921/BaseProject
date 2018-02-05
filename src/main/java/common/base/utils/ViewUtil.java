@@ -14,6 +14,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -385,5 +387,49 @@ public class ViewUtil{
         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(res, BitmapFactory.decodeResource(res, imageResId));
         roundedBitmapDrawable.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, roundedRadius, res.getDisplayMetrics()));
         iv.setImageDrawable(roundedBitmapDrawable);
+    }
+
+    /**
+     * 改变TabLayout中item的左右margin来改变indicator的长度的方案
+     * @param context
+     * @param tabs
+     * @param leftMarginDpValue 左边距
+     * @param rightMarginDpValue 右边距
+     */
+    public static void setTabLayoutIndicatorW(Context context, TabLayout tabs, int leftMarginDpValue, int rightMarginDpValue) {
+        Class<?> tabLayout = tabs.getClass();
+        Field tabStrip = null;
+        try {
+            tabStrip = tabLayout.getDeclaredField("mTabStrip");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        if (tabStrip == null) {
+            return;
+        }
+
+        tabStrip.setAccessible(true);
+        LinearLayout ll_tab = null;
+        try {
+            ll_tab = (LinearLayout) tabStrip.get(tabs);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        if (ll_tab == null) {
+            return;
+        }
+        int left = dpToPx(leftMarginDpValue, context.getResources());
+        int right = dpToPx(rightMarginDpValue, context.getResources());
+        for (int i = 0; i < ll_tab.getChildCount(); i++) {
+            View child = ll_tab.getChildAt(i);
+            child.setPadding(0, 0, 0, 0);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT
+                    , 1
+            );
+            params.leftMargin = left;
+            params.rightMargin = right;
+            child.setLayoutParams(params);
+            child.invalidate();
+        }
     }
 }
