@@ -76,7 +76,15 @@ public final class JsonUtil {
     public static <T> T jsonStr2Object(String jsonStr, Class<T> javaObjClass) throws IOException {
         return mapper.readValue(jsonStr, javaObjClass);
     }
-
+    public static <T> T jsonStr2Obj(String jsonStr, Class<T> javaObjClass) {
+        T javaObj = null;
+        try {
+            javaObj = mapper.readValue(jsonStr, javaObjClass);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return javaObj;
+    }
     /**
      * json 数组字符串 转换成List集合
      * @param jsonArrayStr
