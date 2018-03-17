@@ -16,6 +16,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -170,6 +173,27 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
 
     public static void loadBitmap(Context context, Object model, Target target) {
         Glide.with(context).asBitmap().load(model).into(target);
+    }
+
+    public static void loadGif(Context context, int gifDrawableResId, ImageView ivTarget, final int needPlayTime) {
+        RequestListener<GifDrawable> loadGifDrawableListener = null;
+        RequestBuilder<GifDrawable> requestBuilder = Glide.with(context).asGif().load(gifDrawableResId);
+        if (needPlayTime >= 1) {
+            loadGifDrawableListener = new RequestListener<GifDrawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<GifDrawable> target, boolean isFirstResource) {
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target, DataSource dataSource, boolean isFirstResource) {
+                    resource.setLoopCount(needPlayTime);
+                    return false;
+                }
+            };
+            requestBuilder.listener(loadGifDrawableListener);
+        }
+        requestBuilder.into(ivTarget);
     }
     public static ColorDrawable createDefHolderColorDrawable(int theColor) {
         if (theColor <= 0) {
