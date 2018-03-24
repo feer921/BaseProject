@@ -32,10 +32,18 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
     protected TextView tvBottomConfirm;
 
     protected RecyclerView recyclerView;
-
-    protected View topTitleDivider;
-    protected View bottomBtnsTopDivider;
-    protected View betweenBottomBtnsDivider;
+    /**
+     * 在上部的标题下的分隔线View
+     */
+    protected View dividerBelowOfTopTitle;
+    /**
+     * 在底部按钮栏上面的分隔View
+     */
+    protected View dividerTopOfBottomBtns;
+    /**
+     * 在底部两按钮之间的分隔View
+     */
+    protected View dividerBetweenBottomBtns;
 
     protected FrameLayout contentContainer;
 
@@ -65,10 +73,10 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         tvBottomCancel = viewInDialogView(R.id.tv_bottom_cancel);
         tvBottomConfirm = viewInDialogView(R.id.tv_bottom_confirm);
         recyclerView = viewInDialogView(R.id.recycleview);
-        bottomBtnsTopDivider = viewInDialogView(R.id.btns_top_divider);
+        dividerTopOfBottomBtns = viewInDialogView(R.id.btns_top_divider);
         initRecyclerView(recyclerView);
-        topTitleDivider = viewInDialogView(R.id.view_gray_divider);
-        betweenBottomBtnsDivider = viewInDialogView(R.id.bottom_btns_divider);
+        dividerBelowOfTopTitle = viewInDialogView(R.id.view_gray_divider);
+        dividerBetweenBottomBtns = viewInDialogView(R.id.bottom_btns_divider);
         contentContainer = viewInDialogView(R.id.content_container);
         addViewsInContentContainer(contentContainer);
         tvTopCancel.setOnClickListener(this);
@@ -122,8 +130,8 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
     }
 
     public I dividerBetweenBtnsVisiable(boolean visiable) {
-        if (betweenBottomBtnsDivider != null) {
-            betweenBottomBtnsDivider.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        if (dividerBetweenBottomBtns != null) {
+            dividerBetweenBottomBtns.setVisibility(visiable ? View.VISIBLE : View.GONE);
         }
         return self();
     }
@@ -157,7 +165,7 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
      */
     public I withNoTitle() {
         viewInDialogView(R.id.rl_content_header).setVisibility(View.GONE);
-        topTitleDivider.setVisibility(View.GONE);
+        dividerBelowOfTopTitle.setVisibility(View.GONE);
         return self();
     }
 
@@ -166,7 +174,7 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
           return withNoTitle();
         }
         viewInDialogView(R.id.rl_content_header).setVisibility(View.VISIBLE);
-        topTitleDivider.setVisibility(View.VISIBLE);
+        dividerBelowOfTopTitle.setVisibility(View.VISIBLE);
         return self();
     }
 
@@ -177,12 +185,7 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         return self();
     }
 
-    public I withCancelBtnVisiable(boolean visiable) {
-        if (tvBottomCancel != null) {
-            tvBottomCancel.setVisibility(visiable ? View.VISIBLE : View.GONE);
-        }
-        return self();
-    }
+
 
     public I withConfimBtnVisiable(boolean visiable) {
         if (tvBottomConfirm != null) {
@@ -205,12 +208,12 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
     }
     public I withBottomBtnsVisiable(boolean visiable) {
         viewInDialogView(R.id.ll_bottom_btns).setVisibility(visiable ? View.VISIBLE : View.GONE);
-        bottomBtnsTopDivider.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        dividerTopOfBottomBtns.setVisibility(visiable ? View.VISIBLE : View.GONE);
         return self();
     }
 
     public I withBottomBtnsTopDividerVisiable(boolean visiable) {
-        bottomBtnsTopDivider.setVisibility(visiable ? View.VISIBLE : View.GONE);
+        dividerTopOfBottomBtns.setVisibility(visiable ? View.VISIBLE : View.GONE);
         return self();
     }
     public I withCancelText(CharSequence cancelText) {
@@ -247,9 +250,6 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         return withConfirmText(commitBtnName);
     }
 
-    public I self() {
-        return (I) this;
-    }
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -271,9 +271,68 @@ public class BaseRecyclerViewDialog<I extends BaseRecyclerViewDialog<I>> extends
         return tvBottomCancel;
     }
 
+    @Override
+    public View getDialogTitleView() {
+        return tvTitle;
+    }
+
     public void listScrollToPosiont(int targetPos) {
         if (recyclerView != null) {
             recyclerView.scrollToPosition(targetPos);
         }
+    }
+
+    //-------------------- new added -----------------2018-03-23
+    public I visibleBottomCancelBtn(boolean isVisible) {
+        tvBottomCancel.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        if (!isVisible) {
+            dividerBetweenBtnsVisiable(isVisible);
+        }
+        return self();
+    }
+
+    public I visibleBottomConfirmBtn(boolean isVisible) {
+        tvBottomConfirm.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        if (!isVisible) {
+            dividerBetweenBtnsVisiable(isVisible);
+        }
+        return self();
+    }
+    public I withTopCancelText(CharSequence text) {
+        if (tvTopCancel != null) {
+            tvTopCancel.setText(text);
+        }
+        return self();
+    }
+    public TextView getTvTitle() {
+        return tvTitle;
+    }
+
+    public TextView getTvTopConfirm() {
+        return tvTopConfirm;
+    }
+
+    public TextView getTvTopCancel() {
+        return tvTopCancel;
+    }
+
+    public TextView getTvBottomConfirm() {
+        return tvBottomConfirm;
+    }
+
+    public RecyclerView getRecyclerView() {
+        return recyclerView;
+    }
+
+    public View getDividerBelowOfTopTitle() {
+        return dividerBelowOfTopTitle;
+    }
+
+    public View getDividerTopOfBottomBtns() {
+        return dividerTopOfBottomBtns;
+    }
+
+    public View getDividerBetweenBottomBtns() {
+        return dividerBetweenBottomBtns;
     }
 }

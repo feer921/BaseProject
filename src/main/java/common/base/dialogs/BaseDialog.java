@@ -88,6 +88,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
             WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2)
+//            CommonLog.e("info",TAG+"--> onCreate() lp "+ lp.height +"  lp.width = " + lp.width);
             ViewGroup.LayoutParams dialogViewLp =  dialogView.getLayoutParams();
             if(dialogWidth > 0 ){
                 lp.width = dialogWidth;
@@ -104,7 +105,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             else{
 //                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
                 if (dialogViewLp != null && isWindowUseContentViewH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
-                    lp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT
+                    lp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT,为什么内容布局里是wrap_content 也是Match_parent
+
                 }
             }
             if(dialogAnimStyle != 0){
@@ -121,6 +123,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             }
             lp.x = dialogOffsetX;
             lp.y = dialogOffsetY;
+//            CommonLog.e("info",TAG+"--> onCreate() lp.height = "+ lp.height +" lp.width = " + lp.width);
             w.setAttributes(lp);
         }
     }
@@ -343,8 +346,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         if (dialogView == null) {
             return null;
         }
-        ViewGroup viewGroup = (ViewGroup) dialogView;
-        return (T) viewGroup.findViewById(viewId);
+//        ViewGroup viewGroup = (ViewGroup) dialogView;
+        return (T) dialogView.findViewById(viewId);
     }
 
     protected Handler mHandler;
