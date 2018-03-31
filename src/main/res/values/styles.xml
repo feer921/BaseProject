@@ -11,12 +11,15 @@
         <item name="android:windowIsTranslucent">true</item>
         <!-- 无标题 -->
         <item name="android:windowNoTitle">true</item>
-
+        <!-- 设置dialog的背景 -->
         <!--<item name="android:background">@null</item>-->
         <!-- 背景:透明,如果是@null，则没有了背景(应该是黑的??) -->
+        <!--显示区域背景是否透明 -->
         <item name="android:windowBackground">@android:color/transparent</item>
         <!-- 背景是否暗淡 周围变暗 -->
         <item name="android:backgroundDimEnabled">false</item>
+        //就是用来控制灰度的值，当为1时，界面除了我们的dialog内容是高亮显示的，dialog以外的区域是黑色的，完全看不到其他内容，系统的默认值是0.5
+        <!--<item name="android:backgroundDimAmount">0.5</item>-->
     </style>
 
     <style name="common_dialog_bg_dim" parent="common_dialog">

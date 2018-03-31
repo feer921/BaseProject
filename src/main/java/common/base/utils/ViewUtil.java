@@ -41,6 +41,14 @@ import common.base.R;
  * DESC:
  */
 public class ViewUtil{
+    /**
+     * 使用{@link #findViewInView(View, int)}即可
+     * @deprecated
+     * @param containerView
+     * @param toFindViewResId
+     * @param <T>
+     * @return
+     */
     public static <T> T findViewInContainer(ViewGroup containerView, int toFindViewResId) {
         if (toFindViewResId < 1 || containerView == null) {
             return null;
@@ -281,11 +289,24 @@ public class ViewUtil{
      * @return 可能通过
      */
     public static FrameLayout getContentContainerView(Activity curActivity) {
-        FrameLayout contentLayout = null;
         if (curActivity != null) {
             return (FrameLayout) curActivity.getWindow().getDecorView().findViewById(android.R.id.content);
         }
-        return contentLayout;
+        return null;
+    }
+
+    /**
+     * 往一个Activity的窗口布局里增加一个View
+     * @param toAddView 要添加的任意view
+     * @param curActivity 当前Activity界面
+     * @return FrameLayout.LayoutParams 便于能继续设置其他布局参数
+     */
+    public static FrameLayout.LayoutParams addView2ContainerView(View toAddView, Activity curActivity) {
+        FrameLayout containerView = getContentContainerView(curActivity);
+        if (containerView != null) {
+            containerView.addView(toAddView);
+        }
+        return (FrameLayout.LayoutParams) toAddView.getLayoutParams();
     }
     private static final int INVALID_COLOR_VALUE = -1;
     private static final int COLOR_DEFAULT = Color.parseColor("#20000000");

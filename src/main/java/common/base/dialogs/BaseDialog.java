@@ -2,10 +2,14 @@ package common.base.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
@@ -14,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import common.base.utils.CommonLog;
 import common.base.utils.Util;
 
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
@@ -59,6 +64,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     protected boolean isWindowUseContentViewW = false;
     protected boolean isWindowUseContentViewH = false;
+    @ColorInt
+    protected int dialogWindowBgColor = -1;
     public BaseDialog(Context context) {
         this(context, android.R.style.Theme_Translucent_NoTitleBar);
     }
@@ -80,6 +87,26 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         initViews(dialogView);
     }
 
+    public void setDialogWindowBgColor(@ColorInt int dialogWindowBgColor) {
+        this.dialogWindowBgColor = dialogWindowBgColor;
+    }
+
+    public void setDialogWindowBg(Drawable windowBgDrawable) {
+        if (windowBgDrawable == null) {
+            return;
+        }
+        Window dialogWindow = getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawable(windowBgDrawable);
+        }
+    }
+
+    public void setDialogWindowBgRes(@DrawableRes int bgResId) {
+        Window dialogWindow = getWindow();
+        if (dialogWindow != null) {
+            dialogWindow.setBackgroundDrawableResource(bgResId);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -123,7 +150,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             }
             lp.x = dialogOffsetX;
             lp.y = dialogOffsetY;
-//            CommonLog.e("info",TAG+"--> onCreate() lp.height = "+ lp.height +" lp.width = " + lp.width);
+            if (dialogWindowBgColor != -1) {
+                w.setBackgroundDrawable(new ColorDrawable(dialogWindowBgColor));
+            }
+            CommonLog.e("info", TAG + "--> onCreate() lp.height = " + lp.height + " lp.width = " + lp.width
+                    + " dialogWindowBgColor= " + dialogWindowBgColor
+
+            );
             w.setAttributes(lp);
         }
     }
@@ -176,7 +209,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
     public I changeDialogAnimStyle(@StyleRes int dialogAnimStyle) {
-        if (dialogAnimStyle > 0 && this.dialogAnimStyle != dialogAnimStyle) {
+        if (this.dialogAnimStyle != dialogAnimStyle) {
             this.dialogAnimStyle = dialogAnimStyle;
             Window dialogWindow = getWindow();
             if (dialogWindow != null) {
