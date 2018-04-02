@@ -82,6 +82,10 @@ public class OkToast {
         return this;
     }
 
+    public LinearLayout.LayoutParams withExtraViewBackLLP(View extraView, int viewPos) {
+        withExtraView(extraView, viewPos);
+        return (LinearLayout.LayoutParams) extraView.getLayoutParams();
+    }
     public OkToast clearAllExtraViews() {
         if (llToastRootView != null && extraViews != null && extraViews.size() > 0) {
             for(int i = 0; i < extraViews.size(); i++) {
