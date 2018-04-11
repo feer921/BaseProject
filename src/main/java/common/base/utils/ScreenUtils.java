@@ -1,6 +1,7 @@
 package common.base.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -13,6 +14,8 @@ public class ScreenUtils {
     private static int windowWidth;
     private static int windowHeight;
     private static float density;
+    private static int statusBarHeight = 10;
+    private static int navigationBarHeight = 10;
     public static void init(Context context) {
         sContext = context.getApplicationContext();
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -38,13 +41,38 @@ public class ScreenUtils {
     /**
      * 获取状态栏高度
      */
-    public static int getSystemBarHeight() {
-        int result = 0;
-        int resourceId = sContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = sContext.getResources().getDimensionPixelSize(resourceId);
+    public static int getStatusBarHeight() {
+        if (statusBarHeight == 10) {
+            int result = 0;
+            Resources res = sContext.getResources();
+            int resourceId = res.getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                result = res.getDimensionPixelSize(resourceId);
+            }
+            if (result > 0) {
+                statusBarHeight = result;
+            }
         }
-        return result;
+        return statusBarHeight;
+    }
+
+    /**
+     * 获取系统导航栏(如底部的虚拟导航栏)
+     * @return 导航栏高度
+     */
+    public static int getNavigationBarHeight(){
+        if (navigationBarHeight == 10) {
+            int result = 0;
+            Resources res = sContext.getResources();
+            int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                result = res.getDimensionPixelSize(resourceId);
+            }
+            if (result > 0) {
+                navigationBarHeight = result;
+            }
+        }
+        return navigationBarHeight;
     }
 
     public static int dp2px(float dpValue) {

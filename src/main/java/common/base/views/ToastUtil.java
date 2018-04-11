@@ -11,6 +11,8 @@ import common.base.R;
 
 /**
  * 让Toast加载自定义布局并显示消息的工具
+ * @deprecated 请使用 {@link OkToast}
+ *
  */
 public class ToastUtil {
 	static LayoutInflater layoutInflater = null;
