@@ -43,7 +43,7 @@ public final class StorageUtil {
     /**
      * 获取SD卡根目录或者cache目录 File
      * 获取一个程序的缓存根目录的父文件夹File
-     * @param context
+     * @param context Context
      * @return File("/mnt/storage0/") if the phone has SD card,else return
      *         File("data/data/[包名]/cache/")
      */
@@ -62,7 +62,7 @@ public final class StorageUtil {
     /**
      * 获取一个程序缓存的根目录[该目录为程序全局自定义配置类配置],此处说明指示为approot
      * approot @see {@link CommonConfigs#APP_BASE_PATH}}
-     * @param context
+     * @param context Context
      * @return 有SD卡： File("/mnt/storage0/approot_dir/");
      *         无SD卡 ：File("/data/data/[包名]/cache/approot_dir/");
      */
@@ -72,7 +72,7 @@ public final class StorageUtil {
 
     /**
      * 获取一个程序缓存根目录的路径String,注意该路径已带"/"
-     * @param context
+     * @param context Context
      * @return eg. "/mnt/sdcard0/approotdir/"; 
      *              or:"/data/data/[包名]/cache/自定义缓存根目录/";
      */
@@ -88,7 +88,7 @@ public final class StorageUtil {
      * 1：如果没有SD卡，获取的是data/data/[包名]/cache/文件夹下的各文件夹文件
      * 2：如果有SD卡，则获取的是eg.: /mnt/storage0/ 即SD卡根目录下任何文件夹 
      * 3：注：只能获取文件夹文件File对象，不能传入具体文件名eg.: a.text,传入文件名，仍会被创建成文件夹
-     * @param context
+     * @param context Context
      * @param dirName 任何"文件夹"名字
      * @return 无SD卡：eg.: File("/data/data/[包名]/cache/[参数：dirName]/");
      *         有SD卡：eg.: File("/mnt/storage0/[参数：dirName]/");
@@ -105,25 +105,14 @@ public final class StorageUtil {
      * 1:如果没有外置SD卡，则获取的是各程序缓存根目录下的各文件
      * 此时返回的是：File("/data/data/[包名]/cache/xx.txt")
      * 2:如果有外置SD卡，则获取的是外置SD卡根目录下任何的文件
-     * @param context
-     * @param fileName
-     *            相对于存储根路径的目录下的"文件名"
+     * @param context Context
+     * @param fileName 相对于存储根路径的目录下的"文件名"
      * @return 如果没有外置SD卡 eg.: File("/data/data/com.cx/xx/cache/[参数：fileName] ");
      *         如果有SD卡 eg.: File("/mnt/storage0/[参数：fileName]"),but the file
      *         maybe created fail possibly;
      */
     public static File getFileInCache(Context context, final String fileName) {
         File file = new File(getCacheParent(context), fileName);
-//        if (!file.getParentFile().exists()) {
-//            file.getParentFile().mkdirs();
-//        }
-//        if (!file.exists()) {
-//            try {
-//                file.createNewFile();
-//            } catch (IOException e) {
-//                CommonLog.e(TAG, "", e);
-//            }
-//        }
         createFileIfNotExisted(file);
         return file;
     }
@@ -140,16 +129,6 @@ public final class StorageUtil {
     public static File getFileInAppBaseDir(Context mContext,String fileName){
                             // mnt/sdcard/appbasedir/, fileName)
         File file = new File(getAppCacheRoot(mContext),fileName);
-//        if(!file.getParentFile().exists()){
-//            file.getParentFile().mkdirs();
-//        }
-//        if(!file.exists()){
-//            try {
-//                file.createNewFile();
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
         createFileIfNotExisted(file);
         return file;
     }
@@ -175,6 +154,10 @@ public final class StorageUtil {
         });
     }
 
+    /**
+     * @deprecated 声明过期，因为不同的系统可能路径不同
+     * @return 本意为获取存储拍照图片的缩略图的文件夹路径
+     */
     public static String getThumbnailsDir() {
         return Environment.getExternalStorageDirectory() + "/DCIM/.thumbnails";
     }
@@ -182,8 +165,8 @@ public final class StorageUtil {
     /**
      * 有SD卡情况下：File("/storage/emulated/0/Android/data/应用包名/cache/")
      * 没有SD卡情况下：File("/data/data/应用包名/files")
-     * @param context
-     * @return
+     * @param context 上、下文
+     * @return 无需申请存储权限的公共缓存路径；或者 app内部的files路径
      */
     public static File getAppCacheRootDirWithOutPermission(Context context) {
         if (getExternalStorageDirectory() == null) {
@@ -195,21 +178,17 @@ public final class StorageUtil {
 
     public static File getFileInExternalCacheDir(Context context, String fileName) {
         File targetFile = new File(getAppCacheRootDirWithOutPermission(context), fileName);
-//        File targetFileParentDir = targetFile.getParentFile();
-//        if (!targetFileParentDir.exists()) {
-//            targetFileParentDir.mkdirs();
-//        }
-//        if (!targetFile.exists()) {
-//            try {
-//                targetFile.createNewFile();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
         createFileIfNotExisted(targetFile);
         return targetFile;
     }
 
+    /**
+     * 获取系统外部存储模块的公用cache目录下 任何的文件夹File
+     * @param context context
+     * @param dirName 要创建的文件夹名
+     * @return  有SD卡情况下：File("/storage/emulated/0/Android/data/应用包名/cache/dirName")
+     * 没有SD卡情况下：File("/data/data/应用包名/files/dirName")
+     */
     public static File getDirInExternalCacheDir(Context context, String dirName) {
         File targetDirFile = new File(getAppCacheRootDirWithOutPermission(context), dirName);
         if (!targetDirFile.exists()) {
@@ -220,8 +199,8 @@ public final class StorageUtil {
 
     /**
      * 获取一个文件、或者一个文件夹下所有的文件所占用的内存大小
-     * @param pathFile
-     * @return
+     * @param pathFile 某个文件或者文件夹
+     * @return 参数pathFile 字节大小或者该文件夹下所有文件的占用字节大小
      */
     public static long getFileTotalSize(File pathFile) {
         long totalFileSize = 0;
@@ -238,6 +217,12 @@ public final class StorageUtil {
         }
         return totalFileSize;
     }
+
+    /**
+     * 如果一个文件不存在，创建该文件
+     * @param mayNeedCreatedFile 可能需要创建的文件
+     * @return 传入的参数自身
+     */
     public static File createFileIfNotExisted(File mayNeedCreatedFile) {
         if (mayNeedCreatedFile != null) {
             if (!mayNeedCreatedFile.getParentFile().exists()) {
@@ -247,13 +232,27 @@ public final class StorageUtil {
                 try {
                     boolean isOptSuc = mayNeedCreatedFile.createNewFile();
                 } catch (IOException e) {
-                    CommonLog.e(TAG, "-->createFileIfNotExisted() " + mayNeedCreatedFile + "create occur " + e);
+                    CommonLog.e(TAG, "-->createFileIfNotExisted() " + mayNeedCreatedFile + "create occur: " + e);
                 }
             }
         }
         return mayNeedCreatedFile;
     }
 
+    /**
+     * 追加文件夹文件的路径"/"目录符号
+     * @param dirFile 可以是目录File也可以是文件File
+     * @return 如果参数是文件夹："xxx/xxx/xx/"; 如果参数是文件:"xxx/xx/xx.txt"
+     */
+    public static String appendDirSeparator(File dirFile) {
+        String filePathStr = dirFile.getAbsolutePath();
+        if (dirFile.isDirectory()) {
+            if (!filePathStr.endsWith(File.separator)) {
+                filePathStr += File.separator;
+            }
+        }
+        return filePathStr;
+    }
 //    //**************************** 添加只对APP内部缓存区(APK安装后在系统内的缓存区：data/data/com.xx.xx/))下的缓存管理,如果APK被卸载，则该缓存区被删除 *************//
 //
 //    /**

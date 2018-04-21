@@ -97,6 +97,9 @@ public class BaseNetCallService<T> extends BaseService implements INetEvent<T> {
     }
     @Override
     public final void onErrorResponse(int requestDataType, String errorInfo) {
+        if (LIFE_CIRCLE_DEBUG) {
+            e( "--> onErrorResponse() requestDataType = " + requestDataType + " errorInfo = " + errorInfo);
+        }
         if (curRequestCanceled(requestDataType)) {
             return;
         }
@@ -115,6 +118,9 @@ public class BaseNetCallService<T> extends BaseService implements INetEvent<T> {
 
     @Override
     public final void onResponse(int requestDataType, T result) {
+        if (LIFE_CIRCLE_DEBUG) {
+            i( "--> onResponse() requestDataType = " + requestDataType + " result = " + result);
+        }
         if (curRequestCanceled(requestDataType)) {
             return;
         }
