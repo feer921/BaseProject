@@ -52,7 +52,9 @@ public class BaseApplication<E extends BaseApplication> extends Application{
      * @param curActivity
      */
     public E kickOutActivity(Activity curActivity) {
-        AppManager.getMe().finishActivity(curActivity);
+//        AppManager.getMe().finishActivity(curActivity);
+        //changed by fee 2018-04-26: 更改为从栈中移出当前关闭的Activity
+        AppManager.getMe().removeStackedActivity(curActivity);
         return (E) this;
     }
 

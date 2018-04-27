@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -141,7 +143,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         webSettings.setSupportZoom(true);
         webSettings.setUseWideViewPort(true);//设置此属性，可任意比例缩放
         webSettings.setLoadWithOverviewMode(true);
-//        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
     }
 
@@ -189,7 +191,9 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
          */
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            i(null,"--> onPageStarted() url = " + url);
+            if (LIFE_CIRCLE_DEBUG) {
+                i(null,"--> onPageStarted() url = " + url);
+            }
             super.onPageStarted(view, url, favicon);
             onLoadPageStarted(view, url, favicon);
         }
@@ -205,7 +209,9 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
          */
         @Override
         public void onPageFinished(WebView view, String url) {
-            i(null,"--> onPageFinished() url = " + url);
+            if (LIFE_CIRCLE_DEBUG) {
+                i(null,"--> onPageFinished() url = " + url);
+            }
             super.onPageFinished(view, url);
             onLoadPageFinished(view,url);
         }
@@ -219,12 +225,13 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
             handler.proceed();
+            e(null, "-->onReceivedSslError() error: " + error);
         }
 
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
-            i(null, "--> onReceivedError() request = " + request + "  error = " + error);
+            e(null, "--> onReceivedError() request = " + request + "  error = " + error);
         }
 
         /**
@@ -237,15 +244,22 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            i(null, "--> onReceivedError() errorCode = " + errorCode + "  description = " + description + " failingUrl = " + failingUrl);
+            e(null, "--> onReceivedError() errorCode = " + errorCode + "  description = " + description + " failingUrl = " + failingUrl);
             onLoadPageError(view, errorCode, description);
         }
 
-//        @Override
-//        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-//            super.onReceivedHttpError(view, request, errorResponse);
-//            i(null, "--> onReceivedHttpError() request = " + request + "  errorResponse = " + errorResponse);
-//        }
+        @SuppressLint("NewApi")
+        @Override
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            super.onReceivedHttpError(view, request, errorResponse);
+            String errRespStr = "";
+            if (errorResponse != null) {
+                if (Util.isCompateApi(21)) {
+                    errRespStr += "status code =" + errorResponse.getStatusCode() + " | reason : " + errorResponse.getReasonPhrase();
+                }
+            }
+            e(null, "--> onReceivedHttpError() request url = " + request.getUrl() + "  errRespStr = " + errRespStr);
+        }
     }
 
     protected void onLoadPageError(WebView view, int errorCode, String errorDesc) {
@@ -264,6 +278,13 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         }
         swipeRefreshLayout.setRefreshing(false);
     }
+
+    /**
+     * 子类可以在这个方法中按自己需要处理
+     * @param view
+     * @param url
+     * @return
+     */
     protected boolean shouldOverrideUrlLoading(WebView view, String url) {
         i(null,"-->shouldOverrideUrlLoading() url =  " + url);
         if (!Util.isEmpty(url)) {
@@ -291,7 +312,9 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
          */
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
-            i(null,"--> onProgressChanged() newProgress = " + newProgress);
+            if (LIFE_CIRCLE_DEBUG) {
+                i(null,"--> onProgressChanged() newProgress = " + newProgress);
+            }
             super.onProgressChanged(view, newProgress);
             onLoadWebProgressChanged(view,newProgress);
         }
@@ -307,6 +330,20 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
             i(null,"--> onReceivedTitle() title = " + title);
             super.onReceivedTitle(view, title);
             configReceivedTitle(view, title);
+        }
+
+        /**
+         * 默认情况下，不能弹 js 框，需要重写 WebChromeClient 的 onJsAlert
+         * 重写部分也不需要特殊处理，直接返回 super.onJsAlert(view, url, message, result);
+         * @param view
+         * @param url
+         * @param message
+         * @param result
+         * @return
+         */
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            return super.onJsAlert(view, url, message, result);
         }
     }
 
@@ -368,7 +405,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
     }
     @Override
     public void finish() {
-        super.finish();
         webView.safeRelease(true);
+        super.finish();
     }
 }
