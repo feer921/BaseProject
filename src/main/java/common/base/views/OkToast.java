@@ -22,6 +22,8 @@ import common.base.utils.ViewUtil;
  * Date: 2017/11/14<br>
  * Time: 10:33<br>
  * <P>DESC:
+ * Toast的通用类，链式调用的方式可以非常方便的自定义各种布局的Toast
+ * 本类中默认的Toast布局为左图标(默认不显示)右Toast文本的方式，如果再要扩展自定义，则通过{@link #withExtraView(View, int)}的方式扩展
  * </p>
  * ******************(^_^)***********************
  */
@@ -82,7 +84,7 @@ public class OkToast {
         return this;
     }
 
-    public LinearLayout.LayoutParams withExtraViewBackLLP(View extraView, int viewPos) {
+    public LinearLayout.LayoutParams withExtraViewResultLLP(View extraView, int viewPos) {
         withExtraView(extraView, viewPos);
         return (LinearLayout.LayoutParams) extraView.getLayoutParams();
     }

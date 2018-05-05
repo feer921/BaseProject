@@ -34,6 +34,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
     protected ProgressBar pbLoadWeb;
     protected boolean hasCustomHeaderView,hasCustomLoadWebProgressView;
     protected String baseWebUrl;
+    protected boolean isNeedGoneDefProgressBar = false;
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
      *
@@ -274,7 +275,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
     protected void onLoadPageFinished(WebView webView, String url) {
         pbLoadWeb.setProgress(100);
         if (!hasCustomLoadWebProgressView) {
-            pbLoadWeb.setVisibility(View.INVISIBLE);
+            pbLoadWeb.setVisibility(isNeedGoneDefProgressBar ? View.GONE : View.INVISIBLE);
         }
         swipeRefreshLayout.setRefreshing(false);
     }
@@ -350,9 +351,9 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
     protected void onLoadWebProgressChanged(WebView webView, int newProgress) {
         if (!hasCustomLoadWebProgressView) {
             boolean isProgressEnd = 100 == newProgress;
-            pbLoadWeb.setVisibility(isProgressEnd ? View.INVISIBLE : View.VISIBLE);
             pbLoadWeb.setProgress(newProgress);
-            if (100 == newProgress) {
+            pbLoadWeb.setVisibility(isProgressEnd ? isNeedGoneDefProgressBar ? View.GONE : View.INVISIBLE : View.VISIBLE);
+            if (isProgressEnd) {
                 swipeRefreshLayout.setRefreshing(false);
             }
         }

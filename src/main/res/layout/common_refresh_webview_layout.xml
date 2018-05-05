@@ -11,8 +11,10 @@
     <ProgressBar
         android:id="@+id/pb_load_web"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_height="wrap_content"
+        android:maxHeight="2dp"
+        android:minHeight="2dp"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:progressDrawable="@drawable/progressbar_style_light_green_progress"
         android:max="100"
         />
