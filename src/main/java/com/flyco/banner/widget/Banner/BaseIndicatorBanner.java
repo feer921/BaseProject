@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -23,19 +24,48 @@ import common.base.R;
  * @param <T>
  */
 public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>> extends BaseBanner<E, T> {
+    /**
+     * 填充在指示器ImageView上的样式为资源
+     */
     public static final int STYLE_DRAWABLE_RESOURCE = 0;
+    /**
+     * 填充在指示器ImageView上的样式为圆角矩形(其实相当于Shape资源)
+     */
     public static final int STYLE_CORNER_RECTANGLE = 1;
 
     private ArrayList<ImageView> mIndicatorViews = new ArrayList<>();
+    /**
+     * Banner翻页时的指示器样式
+     * {@link #STYLE_DRAWABLE_RESOURCE} 图形资源<br>
+     * {@link #STYLE_CORNER_RECTANGLE} 圆角矩形
+     */
     private int mIndicatorStyle;
+    /**
+     * 单个的指示器的宽度，默认为：dp2px(6)
+     */
     private int mIndicatorWidth;
+    /**
+     * 单个的指示器的调试，默认为：dp2px(6)
+     */
     private int mIndicatorHeight;
+    /**
+     * 指示器之间的间隔
+     */
     private int mIndicatorGap;
+    /**
+     * 当指示器为圆角矩形样式时：其圆角半径
+     */
     private int mIndicatorCornerRadius;
 
     private Drawable mSelectDrawable;
     private Drawable mUnSelectDrawable;
+    /**
+     * 当指示器为圆角矩形样式时，当前页面选中时的颜色
+     */
     private int mSelectColor;
+    /**
+     * 当指示器为圆角矩形样式时，页面未选中时的颜色
+     */
     private int mUnselectColor;
 
     private Class<? extends BaseAnimator> mSelectAnimClass;
@@ -55,6 +85,7 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
         super(context, attrs, defStyle);
 
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.BaseIndicatorBanner);
+        //如果样式中没有指定，则默认为圆角矩形样式
         mIndicatorStyle = ta.getInt(R.styleable.BaseIndicatorBanner_bb_indicatorStyle, STYLE_CORNER_RECTANGLE);
         mIndicatorWidth = ta.getDimensionPixelSize(R.styleable.BaseIndicatorBanner_bb_indicatorWidth, dp2px(6));
         mIndicatorHeight = ta.getDimensionPixelSize(R.styleable.BaseIndicatorBanner_bb_indicatorHeight, dp2px(6));
@@ -166,7 +197,7 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
     }
 
     /** 设置显示器选中以及未选中资源(for STYLE_DRAWABLE_RESOURCE) */
-    public T setIndicatorSelectorRes(int unselectRes, int selectRes) {
+    public T setIndicatorSelectorRes(@DrawableRes int unselectRes, @DrawableRes int selectRes) {
         try {
             if (mIndicatorStyle == STYLE_DRAWABLE_RESOURCE) {
                 if (selectRes != 0) {
