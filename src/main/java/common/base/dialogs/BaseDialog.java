@@ -109,6 +109,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //added by fee 2018-05-26
+        if (mOnDialogPreCreateListener != null) {
+            mOnDialogPreCreateListener.onDialogViewCreated(this);
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(cancelableOutSide);
         setContentView(dialogView);
@@ -472,5 +476,18 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     public I useContentViewWidth(boolean isWindowUseContentViewW) {
         this.isWindowUseContentViewW = isWindowUseContentViewW;
         return self();
+    }
+    private OnDialogPreCreateListener mOnDialogPreCreateListener;
+    public I withOnDialogPreCreateListener(OnDialogPreCreateListener listener) {
+        this.mOnDialogPreCreateListener = listener;
+        return self();
+    }
+    interface OnDialogPreCreateListener{
+        /**
+         * 在Dialog的onCreate()方法中回调出来，可以让监听者再初始化一下视图等
+         * 目前添加为测试
+         * @param theDialog
+         */
+        void onDialogViewCreated(BaseDialog theDialog);
     }
 }
