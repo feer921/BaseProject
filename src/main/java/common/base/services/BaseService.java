@@ -7,8 +7,7 @@ import android.content.res.Configuration;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-
-import common.base.activitys.WeakHandler;
+import common.base.WeakHandler;
 import common.base.utils.CommonLog;
 
 /**
@@ -17,7 +16,7 @@ import common.base.utils.CommonLog;
  * Time: 20:03
  * DESC:
  */
-public class BaseService extends Service{
+public class BaseService extends Service implements WeakHandler.Handleable{
     protected final String TAG = getClass().getSimpleName();
     protected boolean LIFE_CIRCLE_DEBUG = false;
     protected Context appContext;
@@ -99,32 +98,33 @@ public class BaseService extends Service{
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "--> onDestroy() ");
         }
         if (weakHandler != null) {
             weakHandler.removeCallbacksAndMessages(null);
         }
+        super.onDestroy();
     }
 
-    protected WeakHandler<Service> weakHandler ;
+    protected WeakHandler weakHandler ;
     protected void initHandler() {
         if (weakHandler == null) {
-            weakHandler = new WeakHandler<Service>(this){
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    if (getOwner() != null) {
-                        handlerMsg(msg);
-                    }
-                }
-            };
+//            weakHandler = new WeakHandler<>(this){
+//                @Override
+//                public void handleMessage(Message msg) {
+//                    super.handleMessage(msg);
+//                    if (getOwner() != null) {
+//                        handlerMsg(msg);
+//                    }
+//                }
+//            };
+            weakHandler = new WeakHandler<>(this);
         }
     }
-    protected void handlerMsg(Message msg) {
-
-    }
+//    protected void handlerMsg(Message msg) {
+//
+//    }
 
     protected void e(Object... logBody) {
         CommonLog.e(TAG,logBody);
@@ -132,5 +132,14 @@ public class BaseService extends Service{
 
     protected void i(Object... logBody) {
         CommonLog.i(TAG,logBody);
+    }
+
+    /**
+     * 子类可以重写该方法来处理消息
+     * @param msg 要处理的消息
+     */
+    @Override
+    public void handleMessage(Message msg) {
+
     }
 }

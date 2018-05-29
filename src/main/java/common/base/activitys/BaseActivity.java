@@ -1,6 +1,5 @@
 package common.base.activitys;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import common.base.R;
+import common.base.WeakHandler;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
 import common.base.utils.CommonLog;
@@ -25,7 +25,8 @@ import common.base.views.ToastUtil;
 public abstract class BaseActivity extends AppCompatActivity implements
                                                              View.OnClickListener,
                                                              IProxyCallback,
-                                                             DialogInterface.OnClickListener{
+                                                             DialogInterface.OnClickListener,
+                                        WeakHandler.Handleable{
     protected final String TAG = getClass().getSimpleName();
     protected boolean LIFE_CIRCLE_DEBUG = false;
     /**
@@ -92,37 +93,45 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void initData() {
 
     }
-    protected StaticHandler mHandler;
-
+//    protected StaticHandler mHandler;
+    protected WeakHandler mHandler;
     /**
      * 各子类按需决定是否需要Handler
      */
     protected void initHandler() {
         if (mHandler == null) {
-            mHandler = new StaticHandler(this);
+            mHandler = new WeakHandler<>(this);
         }
     }
 
-    /**
-     * 避免内存泄漏的Handler以供各子类需要使用Handler时调用initHandler()方法进行初始化并重载handlerMessage()方法对发送的消息进行处理
-     */
-    protected static class StaticHandler extends WeakHandler{
-        public StaticHandler(Activity owner) {
-            super(owner);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            BaseActivity activity = (BaseActivity) getOwner();
-            if (activity != null) {
-                activity.handlerMessage(msg);
-            }
-        }
+    @Override
+    public void handleMessage(Message msg) {
+        handlerMessage(msg);
     }
+
+    //    /**
+//     * 避免内存泄漏的Handler以供各子类需要使用Handler时调用initHandler()方法进行初始化并重载handlerMessage()方法对发送的消息进行处理
+//     */
+//    protected static class StaticHandler extends WeakHandler{
+//        public StaticHandler(Activity owner) {
+//            super(owner);
+//        }
+//
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            BaseActivity activity = (BaseActivity) getOwner();
+//            if (activity != null) {
+//                activity.handlerMessage(msg);
+//            }
+//        }
+//    }
     /**
      * 鉴于可能许多Activity中需要处理Handler发送的消息，则可使用{@link #mHandler}来发送
      * 在发送之前先调用initHandler()方法进行初始化
+     * @deprecated
+     * 请使用
+     * {@link #handleMessage(Message)}
      * @param msg
      */
     protected void handlerMessage(Message msg) {

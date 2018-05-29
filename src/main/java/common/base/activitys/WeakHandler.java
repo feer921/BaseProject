@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
  * Time: 17:51
  * DESC: 将宿主弱引用的Handler
  */
+@Deprecated
 public class WeakHandler<T> extends Handler{
 
     private WeakReference<T> mOwner;

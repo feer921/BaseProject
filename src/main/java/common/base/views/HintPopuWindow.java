@@ -11,9 +11,8 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import common.base.R;
-import common.base.activitys.WeakHandler;
+import common.base.WeakHandler;
 
 
 /**
@@ -22,11 +21,12 @@ import common.base.activitys.WeakHandler;
  * 2015年8月17日-下午9:57:32
  * @author lifei
  */
-public class HintPopuWindow extends PopupWindow{
+public class HintPopuWindow extends PopupWindow implements WeakHandler.Handleable{
     private TextView tvHintMsg;
     private View anchorView;
     private int x,y;
-    private WeakHandler<HintPopuWindow> mWeakHandler;
+//    private WeakHandler<HintPopuWindow> mWeakHandler;
+    private WeakHandler mWeakHandler;
     private long popShowingLastMillsTime = 3 * 1000;
     public HintPopuWindow(Context context) {
         super(context);
@@ -55,15 +55,7 @@ public class HintPopuWindow extends PopupWindow{
                         mWeakHandler.removeCallbacksAndMessages(null);
                     }
                     else{
-                        mWeakHandler = new WeakHandler<HintPopuWindow>(this){
-                            @Override
-                            public void handleMessage(Message msg) {
-                                if (getOwner() != null) {
-                                    dismiss();
-                                    super.handleMessage(msg);
-                                }
-                            }
-                        };
+                        mWeakHandler = new WeakHandler<>(this);
                     }
                     mWeakHandler.sendEmptyMessageDelayed(0, popShowingLastMillsTime);
                 }
@@ -106,5 +98,10 @@ public class HintPopuWindow extends PopupWindow{
 
     public TextView getTvHintMsg() {
         return tvHintMsg;
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        dismiss();
     }
 }
