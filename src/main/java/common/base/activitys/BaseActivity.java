@@ -1,5 +1,6 @@
 package common.base.activitys;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -126,6 +127,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
 //            }
 //        }
 //    }
+
+    /**
+     * 获取项目内Application级别的上下文
+     * @param <APP> 各项目自己的继承自Application的实例
+     * @return 各项目自己的继承自Application的实例
+     */
+    protected <APP extends Application> APP getAppInstance() {
+        return (APP) getApplication();
+    }
     /**
      * 鉴于可能许多Activity中需要处理Handler发送的消息，则可使用{@link #mHandler}来发送
      * 在发送之前先调用initHandler()方法进行初始化

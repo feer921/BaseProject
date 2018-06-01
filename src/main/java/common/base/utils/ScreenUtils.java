@@ -26,7 +26,7 @@ public class ScreenUtils {
         windowHeight = displayMetrics.heightPixels;
         density = displayMetrics.density;
         int swdp = context.getResources().getConfiguration().smallestScreenWidthDp;
-        CommonLog.sysErr("ScreenUtils:    " + displayMetrics + "  display width :" + defDisplay.getHeight()
+        CommonLog.sysErr("ScreenUtils:    " + displayMetrics + "  display width :" + defDisplay.getWidth()
                 + "  swdp = " + swdp
         );
     }
