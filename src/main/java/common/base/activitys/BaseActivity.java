@@ -527,4 +527,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void i(String logTag,Object... logBody) {
         CommonLog.i(null == logTag ? TAG : logTag,logBody);
     }
+
+    protected void w(String logTag, Object... logBody) {
+        CommonLog.w(null == logTag ? TAG : logTag, logBody);
+    }
 }
