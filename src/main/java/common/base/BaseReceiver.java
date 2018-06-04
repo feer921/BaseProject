@@ -16,7 +16,10 @@ import android.text.TextUtils;
  * ******************(^_^)***********************
  */
 public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastReceiver {
-
+    protected final String TAG = getClass().getSimpleName();
+    /**
+     * 本广播接收者基类，只有一个IntentFilter，但广播接收者是可以有多个IntentFilter的
+     */
     protected IntentFilter mIntentFilter;
 
     public I withAction(String action,String dataType) {
@@ -36,6 +39,9 @@ public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastR
         return self();
     }
 
+    public I withAction(String action) {
+        return withAction(action, null);
+    }
     public I withActions(String... actions) {
         if (actions != null && actions.length > 0) {
             for (String theAction : actions) {
@@ -51,7 +57,12 @@ public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastR
     public void unRegister(Context context) {
         context.unregisterReceiver(this);
     }
-    protected I self() {
+
+    public IntentFilter getInnerIntentFilter() {
+        return mIntentFilter;
+    }
+
+    protected final I self() {
         return (I) this;
     }
 
