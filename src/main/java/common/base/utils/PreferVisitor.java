@@ -175,9 +175,9 @@ public class PreferVisitor {
      * @param value
      */
     @SuppressLint("NewApi")
-    public void saveValue(String preferFileName, String key, Object value) {
+    public boolean saveValue(String preferFileName, String key, Object value) {
         if (Util.isEmpty(preferFileName)) {
-            return;
+            return false;
         }
         Editor mEditor = getSpByName(preferFileName).edit();
         if (value == null) {
@@ -201,7 +201,7 @@ public class PreferVisitor {
                 }
             }
         }
-        mEditor.commit();
+        return mEditor.commit();
     }
 
     /**
@@ -213,17 +213,17 @@ public class PreferVisitor {
      */
     @Deprecated
     @SuppressLint("NewApi")
-    public void saveValue(String preferFileName, String[] keys, byte[] vTypes, Object... values) {
+    public boolean saveValue(String preferFileName, String[] keys, byte[] vTypes, Object... values) {
         if (keys == null || vTypes == null || values == null) {
-            return;
+            return false;
         }
         int keysLen = keys.length;
         if (keysLen == 0)
-            return;
+            return false;
         int vTypesLen = vTypes.length;
         int valuesLen = values.length;
         if (vTypesLen == 0 || valuesLen == 0) {
-            return;
+            return false;
         }
         //三者长度取最小的,以保证任何一个数组中不出现异常
         int canOptLen = Math.min(keysLen, Math.min(vTypesLen,valuesLen));
@@ -255,7 +255,7 @@ public class PreferVisitor {
                     break;
             }
         }
-        mEditor.commit();
+        return mEditor.commit();
     }
 
     /**
@@ -264,15 +264,15 @@ public class PreferVisitor {
      * @param keys
      * @param values
      */
-    public void batchSaveValues(String spFileName, String[] keys, Object... values) {
+    public boolean batchSaveValues(String spFileName, String[] keys, Object... values) {
         if (Util.isEmpty(spFileName) || keys == null || values == null) {
-            return;
+            return false;
         }
         int keysLen = keys.length;
         int valuesLen = values.length;
         int canOptLen = Math.min(keysLen, valuesLen);
         if (canOptLen == 0) {
-            return;
+            return false;
         }
         Editor editor = getSpByName(spFileName).edit();
         for(int i = 0; i < canOptLen ; i++) {
@@ -282,7 +282,7 @@ public class PreferVisitor {
             }
             editorPutValues(editor,key,values[i]);
         }
-        editor.commit();
+        return editor.commit();
     }
 
     @SuppressLint("NewApi")
@@ -329,6 +329,21 @@ public class PreferVisitor {
         return getSpByName(preferFileName).getBoolean(key, defValue);
     }
 
+    /**
+     * 批量移除喜好配置中的keys
+     * @param spFileName
+     * @param spKeys
+     */
+    public boolean batchRemoveKeys(String spFileName, String... spKeys) {
+        if (spKeys != null && spKeys.length > 0) {
+            Editor spFileEditor = getEditor(spFileName);
+            for (String toRemoveKey : spKeys) {
+                spFileEditor.remove(toRemoveKey);
+            }
+            return spFileEditor.commit();
+        }
+        return false;
+    }
     public static final class PreferConfig {
         // 程序中各SharedPreference 文件的名字
         /**

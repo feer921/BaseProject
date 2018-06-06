@@ -44,6 +44,20 @@ public final class JsonUtil {
     }
 
     /**
+     * 将Object对象转为JSONObject 字符串
+     * @param toJsonObj
+     * @return
+     */
+    public static String convertObj2JSonStr(Object toJsonObj) {
+        String jsonResultStr = "";
+        try {
+            converObject2JsonStr(toJsonObj);
+        } catch (IOException e) {
+            jsonResultStr = "";
+        }
+        return jsonResultStr;
+    }
+    /**
      * 将一个Java对象转换成Json字符串
      * @param curObject
      * @return eg.: User ==>  {"name":"jack","sex":1,"city":"sz"}

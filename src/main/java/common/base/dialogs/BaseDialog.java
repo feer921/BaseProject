@@ -67,7 +67,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     @ColorInt
     protected int dialogWindowBgColor = -1;
     public BaseDialog(Context context) {
-        this(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
     }
 
     /**
@@ -116,10 +116,14 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setCanceledOnTouchOutside(cancelableOutSide);
         setContentView(dialogView);
+        configDialogWindow();
+    }
+
+    protected void configDialogWindow() {
         Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
-            WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2)
-//            CommonLog.e("info",TAG+"--> onCreate() lp "+ lp.height +"  lp.width = " + lp.width);
+            WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2) //更正：2018-06-06：也不一定是-2，也有-1,初步结论为与dialog的style有关
+            CommonLog.e("info",TAG+"--> onCreate() window.lp.height = "+ lp.height +"  window.lp.width = " + lp.width);
             ViewGroup.LayoutParams dialogViewLp =  dialogView.getLayoutParams();
             if(dialogWidth > 0 ){
                 lp.width = dialogWidth;
@@ -127,7 +131,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             else{
                 //lp.width = WindowManager.LayoutParams.MATCH_PARENT 会使得该Dialog的窗口的宽与手机屏幕的宽相同
                 if (dialogViewLp != null && isWindowUseContentViewW) {
-                    lp.width  = dialogViewLp.width;
+                    lp.width  = dialogViewLp.width;//hint by fee 2018-06-06:就算在dialogView中指定了宽、高，也还是-1???
+//                    CommonLog.e("info", "---->^^^^^^^^^  " + lp.width +" " +
+//                            " MeasuredWidth= "  + dialogView.getMeasuredWidth()+  // 0
+//                            " getMeasuredHeight =" + dialogView.getMeasuredHeight()); // 0
                 }
             }
             if(dialogHeigth > 0){
@@ -164,7 +171,6 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             w.setAttributes(lp);
         }
     }
-
     /**
      * 构造方法中完成调用
      * @param dialogView 子类所提供的内容视图
@@ -379,6 +385,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         return null;
     }
 
+    /**
+     * 供外部调用来获取当前Dialog内部的View
+     * @param viewId
+     * @param <T>
+     * @return
+     */
     public <T extends View> T getViewFromDialog(@IdRes int viewId) {
         if (dialogView == null) {
             return null;

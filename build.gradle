@@ -2,18 +2,17 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
 //    The specified Android SDK Build Tools version (25.0.3) is ignored, as it is below the minimum
 // supported version (26.0.2) for Android Gradle Plugin 3.0.1.
 //    Android SDK Build Tools 26.0.2 will be used.
 //    To suppress this warning, remove "buildToolsVersion '25.0.3'" from your build.gradle file,
 // as each version of the Android Gradle Plugin now has a default version of the build tools.
 
-    buildToolsVersion '26.0.2'//25.0.2
 
     defaultConfig {
         minSdkVersion 11
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
@@ -31,7 +30,7 @@ repositories {
     maven { url 'https://maven.google.com' }
 }
 ext {
-    supportVersion = "25.4.0"
+    supportVersion = "26.1.0"
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
