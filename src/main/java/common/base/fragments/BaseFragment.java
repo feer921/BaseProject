@@ -18,7 +18,6 @@ import common.base.interfaces.ICommonUiHintActions;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
 import common.base.utils.CommonLog;
-import common.base.views.ToastUtil;
 
 /**
  * User: fee(lifei@cloudtone.com.cn)
@@ -499,13 +498,7 @@ public abstract class BaseFragment extends Fragment implements
     public void popupHint(int hintMsgResID) {
         popupHint(getString(hintMsgResID));
     }
-    protected void topToast(String msg) {
-        ToastUtil.topShow(msg);
-    }
 
-    protected void topToast(int msgResId) {
-        topToast(getString(msgResId));
-    }
     protected void i(String tag,Object... logBodys) {
         if (tag == null) {
             tag = TAG + "[" + extraInfoInLifeDebug + "]";

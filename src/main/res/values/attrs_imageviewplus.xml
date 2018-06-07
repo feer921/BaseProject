@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<resources>  
+    <attr name="type">  
+        <enum name="none" value="0" />  
+        <enum name="circle" value="1" />  
+        <enum name="rounded_rect" value="2" />
+    </attr>
+    <attr name="borderColor" format="color" />
+    <attr name="borderWidth" format="dimension" />
+    <attr name="rectRoundRadius" format="dimension" />
+
+    <declare-styleable name="ImageViewPlus">  
+        <attr name="type" />
+        <attr name="borderColor" />
+        <attr name="borderWidth" />
+        <attr name="rectRoundRadius" />
+    </declare-styleable>
+</resources>  

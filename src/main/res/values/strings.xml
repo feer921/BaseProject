@@ -24,4 +24,10 @@
     <string name="no_network">网络好像出问题了</string>
     <string name="click_retry">点击重试</string>
     <string name="setting_network">设置网络</string>
+    <string name="release_to_refresh">松手刷新</string>
+    <string name="pull_to_refresh">下拉刷新</string>
+    <string name="begin_refresh">即将刷新</string>
+    <string name="refreshing">刷新中</string>
+    <string name="refresh_complete">刷新完成</string>
+    <string name="cancel_refresh">取消刷新</string>
 </resources>

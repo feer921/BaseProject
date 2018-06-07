@@ -15,7 +15,6 @@ import common.base.WeakHandler;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
 import common.base.utils.CommonLog;
-import common.base.views.ToastUtil;
 
 /**
  * User: fee(lifei@cloudtone.com.cn)
@@ -46,7 +45,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onCreate()");
         }
         appContext = getApplicationContext();
-        ToastUtil.setContext(appContext);
         mContext = this;
         uiHintAgent = new UIHintAgent(mContext);
         uiHintAgent.setHintDialogOnClickListener(this);
@@ -358,13 +356,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         popupHint(getString(hintMsgResID));
     }
 
-    protected void topToast(String msg) {
-        ToastUtil.topShow(msg);
-    }
 
-    protected void topToast(int msgResId) {
-        topToast(getString(msgResId));
-    }
     //------------------------- 生命周期方法----------(我是不漂亮的分隔线)------------------
     @Override
     protected void onRestart() {
