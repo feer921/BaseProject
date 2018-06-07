@@ -2102,4 +2102,31 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
         return curFirstAndLastVisiblePos;
     }
+    protected float dp2px(float dpValue) {
+        if (mContext == null) {
+            return dpValue;
+        }
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        return dpValue * scale + 0.5f;
+    }
+
+    protected int dp2px(int dpValue) {
+        if (mContext == null) {
+            return dpValue;
+        }
+        float density = mContext.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * density + 0.5);
+    }
+    /**
+     * 将px值转换为sp值，保证文字大小不变
+     * @param pxValue
+     * @return
+     */
+    protected float px2sp(float pxValue) {
+        if (mContext == null) {
+            return pxValue;
+        }
+        final float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
+        return (pxValue / fontScale + 0.5f);
+    }
 }
