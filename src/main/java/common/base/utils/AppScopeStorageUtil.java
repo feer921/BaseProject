@@ -174,11 +174,16 @@ public class AppScopeStorageUtil {
     /**
      * 获取APP内部存储目录下的所填参数文件夹名的文件夹
      * 注：系统会自动在所传的参数前面加上"app_"前缀
+     * 注：这里好像不能传多级目录!!!!!!!!! 即不能传/yourdir1/yourdir2/
      * @param context 上下文
-     * @param dirName 要获取或者创建的文件夹名称
+     * @param dirName 要获取或者创建的文件夹名称   这里好像不能传多级目录!!!!!!!!! 即不能传/yourdir1/yourdir2/
      * @return File("data/data/com.xx.xx/app_dirName");
      */
-    public static File getDirInAppDataRootDir(Context context, String dirName) {
+    public static File getDirInRootDirAppendApp(Context context, String dirName) {
         return context.getDir(dirName, Context.MODE_PRIVATE);
+    }
+
+    public static File getDataBaseFile(Context context, String dbfileName) {
+        return context.getDatabasePath(dbfileName);
     }
 }

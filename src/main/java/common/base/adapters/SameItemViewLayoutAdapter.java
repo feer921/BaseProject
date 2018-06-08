@@ -72,8 +72,8 @@ public abstract class SameItemViewLayoutAdapter<T> extends BaseQuickAdapter<T, B
                 ) {
             return;
         }
-        this.itemTopPadding = topPadding;
-        this.itemBottomPadding  = bottomPadding;
+//        this.itemTopPadding = topPadding;// TODO: 2018/6/7 ???????
+//        this.itemBottomPadding  = bottomPadding;
         int newLeft = itemLeftPadding > 0 ? itemLeftPadding : leftPadding;
         int newTop = itemTopPadding > 0 ? itemTopPadding : topPadding;
         int newRight = itemRightPadding > 0 ? itemRightPadding : rightPadding;
