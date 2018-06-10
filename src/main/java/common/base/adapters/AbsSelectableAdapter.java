@@ -135,7 +135,13 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
                 if (selectedUniqueMarks == null) {
                     selectedUniqueMarks = new HashSet<>();
                 }
+                else{
+                    if (curAdapterMode == MODE_SINGLE_CHOICE) {
+                        selectedUniqueMarks.clear();
+                    }
+                }
                 selectedUniqueMarks.add(itemDataUniqueMark);
+                notifyDataSetChanged();
             }
         }
     }
