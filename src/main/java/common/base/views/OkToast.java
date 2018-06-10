@@ -68,6 +68,30 @@ public class OkToast {
         }
         return this;
     }
+
+    /**
+     * 该方法目前只接收大于0的正数padding值
+     * 注：单位为像素
+     * @param leftPadding 内部左边距
+     * @param topPadding 内部上边距
+     * @param rightPadding 内部右边距
+     * @param bottomPadding 内部底边距
+     * @return self
+     */
+    public OkToast withTextPadding(int leftPadding, int topPadding, int rightPadding, int bottomPadding) {
+        if (tvToast != null) {
+            int newLeftPadding = leftPadding > 0 ? leftPadding : tvToast.getPaddingLeft();
+            int newTopPadding = topPadding > 0 ? topPadding : tvToast.getPaddingTop();
+            int newRightPadding = rightPadding > 0 ? rightPadding : tvToast.getPaddingRight();
+            int newBottomPadding = bottomPadding > 0 ? bottomPadding : tvToast.getPaddingBottom();
+            tvToast.setPadding(newLeftPadding, newTopPadding, rightPadding, newBottomPadding);
+        }
+        return this;
+    }
+
+    public TextView peekToastTextView() {
+        return tvToast;
+    }
     private SparseArray<View> extraViews;
     public OkToast withToastTopView(View topView) {
         return withExtraView(topView, 0);

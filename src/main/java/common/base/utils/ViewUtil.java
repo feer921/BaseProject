@@ -18,6 +18,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,31 @@ public class ViewUtil{
         }
         return (T) containerView.findViewById(toFindViewResId);
     }
+    // 在TypedValue类中
+//    /**
+//     * px、dp、sp、pt、in、mm单位转换
+//     * @param unit  转换类型
+//     * @param value 转换值(float)
+//     * @param metrics 当前设备显示密度
+//     * @return 转换单位后的值
+//     */
+//    public static float applyDimension(int unit, float value, DisplayMetrics metrics) {
+//        switch (unit) {
+//            case COMPLEX_UNIT_PX: // 转换为px(像素)值
+//                return value;
+//            case COMPLEX_UNIT_DIP: // 转换为dp(密度)值
+//                return value * metrics.density;
+//            case COMPLEX_UNIT_SP: // 转换为sp(与刻度无关的像素)值
+//                return value * metrics.scaledDensity;
+//            case COMPLEX_UNIT_PT: // 转换为pt(磅)值
+//                return value * metrics.xdpi * (1.0f / 72);
+//            case COMPLEX_UNIT_IN: // 转换为in(英寸)值
+//                return value * metrics.xdpi;
+//            case COMPLEX_UNIT_MM: // 转换为mm(毫米)值
+//                return value * metrics.xdpi * (1.0f / 25.4f);
+//        }
+//        return 0;
+//    }
     /**
      * Convert Dp to Pixel
      */
