@@ -573,7 +573,25 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         }
         return this;
     }
+    //添加...by fee 2018-06-12
+    public SuperEmptyLoadingView loading() {
+        return showCase(LayoutStatus.Loading);
+    }
 
+    public SuperEmptyLoadingView horizontalLoadingLoading() {
+        return showCase(LayoutStatus.HorizontalLoading);
+    }
+    public SuperEmptyLoadingView hintNoData() {
+        return showCase(LayoutStatus.NoData);
+    }
+
+    public SuperEmptyLoadingView hintNoNetWork() {
+        return showCase(LayoutStatus.NoNetWork);
+    }
+
+    public SuperEmptyLoadingView hintLoadFailure() {
+        return showCase(LayoutStatus.LoadFailure);
+    }
     /**
      * 是否需要点击整个Layout
      * @param wholeLayutClickable
