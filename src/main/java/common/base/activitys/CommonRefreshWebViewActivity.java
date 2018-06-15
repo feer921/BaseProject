@@ -7,6 +7,7 @@ import android.net.http.SslError;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -346,8 +347,19 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
             return super.onJsAlert(view, url, message, result);
         }
+
+        @Override
+        public void onPermissionRequest(PermissionRequest request) {
+            boolean subClassAllow = onWebChromePermissonRequest(request);
+            if (!subClassAllow) {
+                super.onPermissionRequest(request);
+            }
+        }
     }
 
+    protected boolean onWebChromePermissonRequest(PermissionRequest permissionRequest) {
+        return false;
+    }
     protected void onLoadWebProgressChanged(WebView webView, int newProgress) {
         if (!hasCustomLoadWebProgressView) {
             boolean isProgressEnd = 100 == newProgress;

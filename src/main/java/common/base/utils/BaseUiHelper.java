@@ -150,4 +150,21 @@ public class BaseUiHelper{
         context.startActivity(Intent.createChooser(emailActionIntent,"ddd"));//这样会弹出选择要使用的邮箱应用
         return true;
     }
+
+    /**
+     * 跳转到Wifi设备界面
+     * @param context
+     * @return
+     */
+    public static boolean jumpToWifiSetting(Context context) {
+        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+        context.startActivity(intent);
+        return true;
+    }
+
+    public static boolean jumpToBtSetting(Context context) {
+        Intent intent = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS);
+        context.startActivity(intent);
+        return true;
+    }
 }

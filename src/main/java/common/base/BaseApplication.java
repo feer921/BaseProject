@@ -11,6 +11,7 @@ import common.base.utils.PreferVisitor;
  * DESC: APP程序上下文基类,一些通用的操作类 <E>指代BaseApplication子类自身，方便链式调用
  */
 public class BaseApplication<E extends BaseApplication> extends Application{
+    protected final String TAG = getClass().getSimpleName();
     protected PreferVisitor preferVisitor;
     protected String appPreferFileName = "def_app_config";
     @Override
