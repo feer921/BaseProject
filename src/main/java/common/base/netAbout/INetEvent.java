@@ -7,7 +7,10 @@ package common.base.netAbout;
  * DESC: 网络事件接口；主要指网络请求后的结果回调
  */
 public interface INetEvent<T> {
-    String UNKNOW_ERROR = "unknow_error";
+    /**
+     * 错误之：未知
+     */
+    String ERR_UNKNOW = "unknow_error";
     /**
      * 手动设置的超时错误
      */
@@ -16,7 +19,10 @@ public interface INetEvent<T> {
      * 人工延迟 结束(Loading)
      */
     String MANULLY_DELAY_OVER = "manully_delay_over";
-
+    /**
+     * 错误之：未知host(解析不出主机地址),可能是由于没有网络引起
+     */
+    String ERR_UNKNOW_HOST = "unknow_host";
     /**
      * 网络请求失败
      *

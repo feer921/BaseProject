@@ -50,7 +50,7 @@ public class NetDataAndErrorListener<T> implements Callback<T>{
      */
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        String errorMsg = INetEvent.UNKNOW_ERROR;
+        String errorMsg = INetEvent.ERR_UNKNOW;
         if (t != null) {
             if (!Util.isEmpty(t.getMessage())) {
                 //                errorMsg = t.getMessage();
