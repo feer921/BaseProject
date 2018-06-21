@@ -123,7 +123,7 @@ public class PackageManagerUtil {
                 field.setAccessible(true);
                 result.put(field.getName(), field.get(null).toString());
             } catch (Exception e) {
-                CommonLog.d(TAG, "an error occured when collect crash info " + e.getMessage());
+                CommonLog.d(TAG, "an error occured when collect device info " + e.getMessage());
             }
         }
 
@@ -151,11 +151,14 @@ public class PackageManagerUtil {
     }
 
     /**
-     * 退出应用
-     * @param context
+     * 停止本应用内的所有Service
+     * @param context context
      */
-    public static void exitApp(final Context context) {
+    public static void stopAllServiceOfApp(final Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (manager == null) {
+            return;
+        }
         for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (context.getPackageName().equals(service.service.getPackageName())) {
                 Intent stopIntent = new Intent();
@@ -166,8 +169,8 @@ public class PackageManagerUtil {
                 break;
             }
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(0);
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        System.exit(0);
     }
 
     /**
@@ -209,13 +212,18 @@ public class PackageManagerUtil {
 
     }
 
-    public static String getpackname(PackageInfo packageinfo) {
-        if (packageinfo == null)
-            return null;
-        String packname = packageinfo.packageName;
-        return packname;
-
-    }
+//    /**
+//     * @deprecated
+//     * @param packageinfo
+//     * @return
+//     */
+//    public static String getpackname(PackageInfo packageinfo) {
+//        if (packageinfo == null)
+//            return null;
+//        String packname = packageinfo.packageName;
+//        return packname;
+//
+//    }
 
     /**
      * 获取手机内部安装的非系统应用 只有基本信息，不包含签名等特殊信息

@@ -50,20 +50,19 @@ public class CommonWebView extends WebView{
     public void safeRelease(boolean clearCacheInDisk){
         clearCache(clearCacheInDisk);
         if(getSettings().supportZoom()){
-            Handler delayDestroyHandler = new Handler(){
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    destroy();
-                }
-            };
             long timeOut = ViewConfiguration.getZoomControlsTimeout();
-            delayDestroyHandler.sendEmptyMessageDelayed(0, timeOut);
             //            ZoomButtonsController
-
+            postDelayed(delayDestroyTask, timeOut);
         }
         else{
             destroy();
         }
     }
+
+    private Runnable delayDestroyTask = new Runnable() {
+        @Override
+        public void run() {
+            destroy();
+        }
+    };
 }

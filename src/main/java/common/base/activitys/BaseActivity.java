@@ -464,10 +464,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onBackPressed()");
         }
+        super.onBackPressed();
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

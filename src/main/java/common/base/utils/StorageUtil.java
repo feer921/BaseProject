@@ -326,5 +326,28 @@ public final class StorageUtil {
 //        return context.getDir(dirName, Context.MODE_PRIVATE);
 //    }
 
-
+    /**
+     * 删除文件或者文件夹(文件夹直接删除好像删除不了，所以要递归删除)
+     * @param toDeleteFileOrDir 要删除的文件或者文件夹
+     * @throws IOException 删除时的异常
+     */
+    public static void deleteFile(File toDeleteFileOrDir)throws IOException {
+        if (toDeleteFileOrDir != null) {
+            boolean isDirFile = toDeleteFileOrDir.isDirectory();
+            if (isDirFile) {
+                File[] listFiles =  toDeleteFileOrDir.listFiles();
+                if (listFiles == null) {
+                    throw new IOException("not a readable directory: " + toDeleteFileOrDir);
+                }
+                for (File subFile : listFiles) {
+                    deleteFile(subFile);
+                }
+            }
+            else{
+                if (!toDeleteFileOrDir.delete()) {
+                    throw new IOException("failed to delete file: " + toDeleteFileOrDir);
+                }
+            }
+        }
+    }
 }

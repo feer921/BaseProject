@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
@@ -115,6 +117,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
     protected void initSwipeRefreshView() {
     }
     private void initWebView() {
+        forwardInitWebViewAndWebSettings();
         if (webViewClient == null) {
             webViewClient = new LocalWebViewClient();
         }
@@ -123,7 +126,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
             webChromClient = new LocalWebChromClient();
         }
         webView.setWebChromeClient(webChromClient);
-        forwardInitWebViewAndWebSettings();
+//        forwardInitWebViewAndWebSettings();
     }
 
     /**
@@ -137,16 +140,40 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         webView.setHorizontalScrollBarEnabled(false);
         webView.setVerticalScrollBarEnabled(false);
         WebSettings webSettings = webView.getSettings();
+
         webSettings.setSavePassword(false);
         webSettings.setAppCacheEnabled(true);
+
+        // Enable Javascript
         webSettings.setJavaScriptEnabled(true);
+
+        // Enable pinch to zoom without the zoom buttons
         webSettings.setBuiltInZoomControls(true);
-        //       webSettings.setDisplayZoomControls(false);
-        webSettings.setSupportZoom(true);
+
+        if (Build.VERSION.SDK_INT > 11) {
+            // Hide the zoom controls for HONEYCOMB+
+            webSettings.setDisplayZoomControls(false);
+        }
+//        webSettings.setSupportZoom(true);
+
+        // Use WideViewport and Zoom out if there is no viewport defined
         webSettings.setUseWideViewPort(true);//设置此属性，可任意比例缩放
         webSettings.setLoadWithOverviewMode(true);
+
+        // Allow use of Local Storage
+        webSettings.setDomStorageEnabled(true);
+
+
+        // Enable remote debugging via chrome://inspect
+        if(Build.VERSION.SDK_INT >= 19) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
 
+
+        // AppRTC requires third party cookies to work
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptThirdPartyCookies(webView, true);
     }
 
     @Override
