@@ -322,8 +322,8 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
                 String schema = uri.getScheme();
                 if (!Util.isEmpty(schema)) {
                     if ("http".equalsIgnoreCase(schema) || "https".equalsIgnoreCase(schema)) {
-                        view.loadUrl(url);
-                        return true;
+                        view.loadUrl(url);//这样写就和return false是一样的
+                        return true;//自己处理
                     }
                 }
             }
