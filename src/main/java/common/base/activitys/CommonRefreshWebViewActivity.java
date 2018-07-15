@@ -11,6 +11,7 @@ import android.webkit.CookieManager;
 import android.webkit.JsResult;
 import android.webkit.PermissionRequest;
 import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -440,8 +441,78 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         webView.addJavascriptInterface(object, name);
     }
 
-    protected void runJsMethod(String jsMethodInfo) {
-        webView.loadUrl("javascript:" + jsMethodInfo);
+    /**
+     * <html>
+        <head>
+            <meta http-equiv ="Content-Type" charset="UTF-8"/>
+            <title>测试Java与JS的交互</title>
+            <script type = "text/javascript">
+                var s = "我来自JS方法";
+                function javaToJsCallback(param){
+                    document.getElementById("textshow").innerHTML=(param);
+                    //Js调用android的方法
+                    //window.android.JsToJavaInterface(s)
+                }
+            </script>
+        </head>
+        <body>
+            <h3>JS Method</h3>
+            <h3 id="textshow">这里将会显示来自JAVA的信息</h3>
+        </body>
+     </html>
+     * 使用WebView的loadUrl()方式来调用网页内Js的方法(方法内可传入java层的参数(依Js的方法参数))
+     * 注：1、该种方式，如果JS的方法有返回值，也会直接显示在WebView上，这样的话就不合适
+     * 2、由于loadUrl()不能从Js返回数据，可以让Js回调android的方法回传参数，如：window.android.JsToJavaInterface(s)
+     * 3、原生语法为webView.loadUrl("javascript:"+"js方法('参数'));但本基类把"javascript:"已经写了，调用方只传js内的方法和参数
+     * @param jsMethodInfo eg:JS内有方法： javaToJsCallback('param')
+     */
+    protected void loadJsMethod(String jsMethodInfo) {
+        if (webView != null) {
+            webView.loadUrl("javascript:" + jsMethodInfo);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    protected void evaluateJsMethod(String jsMethodInfo,ValueCallback<String> jsValueCallback) {
+        if (Util.isCompateApi(19)) {
+            if (webView != null) {
+                webView.evaluateJavascript("javascript:"+jsMethodInfo,jsValueCallback);
+            }
+        }
+    }
+
+    protected void evaluateJsMethod(String jsMethodInfo, boolean needReceiveJsValue) {
+        StringValueCallback jsValueCallback = null;
+        if (needReceiveJsValue) {
+            jsValueCallback = new StringValueCallback(jsMethodInfo);
+        }
+        evaluateJsMethod(jsMethodInfo, jsValueCallback);
+    }
+    private class StringValueCallback implements ValueCallback<String>{
+        private String curJsMethodName = "";
+        StringValueCallback(String curJsMehodInfo) {
+            int hasJsParamIndex = curJsMehodInfo.indexOf("(");
+            if (hasJsParamIndex < 0) {
+                curJsMethodName = curJsMehodInfo;
+            }
+            else{
+                //把JS的方法名截取出来(不包含JS方法的参数内容)
+                curJsMethodName = curJsMehodInfo.substring(0, hasJsParamIndex);//??
+            }
+        }
+        @Override
+        public void onReceiveValue(String value) {
+            onJsValueCallback(curJsMethodName, value);
+        }
+    }
+
+    /**
+     * 如果java层调用了JS内的方法，并且JS有返回值的话，重这里回调出来
+     * @param theJsMethodName 当前所执行的JS方法名，eg.: javaToJsMethod
+     * @param theJsValue JS方法所返回的值信息
+     */
+    protected void onJsValueCallback(String theJsMethodName, String theJsValue) {
+
     }
     @Override
     public void finish() {
