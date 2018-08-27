@@ -23,7 +23,7 @@ import common.base.utils.Util;
  */
 public class BaseServerResult {
     public static final int ERROR_CODE_NO_NET = 0;
-    private static final String TAG = "BaseServerResult";
+    protected final String TAG = getClass().getSimpleName();
     public String statusCode;
     public String msg;
     /**
@@ -84,7 +84,7 @@ public class BaseServerResult {
 
     @Override
     public String toString() {
-        return "BaseServerResult{" +
+        return TAG + "{" +
                 "statusCode='" + statusCode + '\'' +
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
