@@ -7,10 +7,8 @@ import com.lzy.okgo.request.GetRequest;
 import com.lzy.okgo.request.PostRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.TreeMap;
-
-import common.base.utils.CommonConfigs;
 import common.base.utils.CommonLog;
+import common.base.utils.Util;
 
 /**
  * ******************(^_^)***********************<br>
@@ -48,6 +46,7 @@ public class BaseOkgoApi extends BaseApi {
      * @param request
      * @param appendKeys keys
      * @param values values 要一一对应到key的值
+     * @return request请求自身
      */
     public static BaseRequest buildCommonRequestParams(BaseRequest request, String[] appendKeys, String... values) {
         if (appendKeys != null && values != null) {//如果有外部传入的参数
@@ -69,14 +68,20 @@ public class BaseOkgoApi extends BaseApi {
 
     /**
      * 不带请求参数指定请求类型值的get请求
-     * @param appPartialUrl 网络请求地址后缀部分
+     * @param apiUrl 可以是全路径，也可以是部分路径
      * @param callback 网络响应回调
      * @param requestType 请求类型值
      */
-    public static void getWithType(String appPartialUrl, AbsCallback callback, int requestType) {
-        String thisWholeUrl = URL_HOST + appPartialUrl;
+    public static void getWithType(String apiUrl, AbsCallback callback, int requestType) {
+        if (!Util.isEmpty(URL_HOST)) {
+            if (!Util.isEmpty(apiUrl)) {
+                if (!apiUrl.startsWith(URL_HOST)) {
+                    apiUrl = URL_HOST + apiUrl;
+                }
+            }
+        }
         callback.requestType = requestType;
-        get(thisWholeUrl,callback);
+        get(apiUrl,callback);
     }
 
     /**
@@ -97,10 +102,16 @@ public class BaseOkgoApi extends BaseApi {
     public static PostRequest postRequest(String wholeUrl) {
         return (PostRequest) createRequest(wholeUrl, POST);
     }
-    public static void postWithType(String appPartialUrl, AbsCallback callback, int requestType) {
-        String thisWholUrl = URL_HOST + appPartialUrl;
+    public static void postWithType(String apiUrl, AbsCallback callback, int requestType) {
+        if (!Util.isEmpty(URL_HOST)) {//表示URL_HOST已赋值
+            if (!Util.isEmpty(apiUrl)) {
+                if (!apiUrl.startsWith(URL_HOST)) {
+                    apiUrl = URL_HOST + apiUrl;
+                }
+            }
+        }
         callback.requestType = requestType;
-        post(thisWholUrl, callback);
+        post(apiUrl, callback);
     }
     protected static BaseRequest createRequest(String wholeUrl, byte requestMethod) {
         switch (requestMethod) {
@@ -163,51 +174,23 @@ public class BaseOkgoApi extends BaseApi {
         return jsonObj;
     }
 
-//    /**
-//     * 构建通用的Json参数body(不MD5参数体)
-//     * 键所对应的值皆为String类型
-//     * @param keysInParmJsonObject 仅为参数体的keys
-//     * @param valuesInParamJsonObject 仅为参数体keys对应的values
-//     * @return post请求中的Json body数据
-//     */
-//    public static JSONObject buildCommonJSonBody(String[] keysInParmJsonObject, String... valuesInParamJsonObject) {
-//        Object[] valuesInParams = null;
-//        if (valuesInParamJsonObject != null) {
-//            int valuesLen = valuesInParamJsonObject.length;
-//            if (valuesLen > 0) {
-////                System.arraycopy();
-//                valuesInParams = new Object[valuesInParamJsonObject.length];
-//                for(int index = 0; index < valuesLen; index++) {
-//                    valuesInParams[index] = valuesInParamJsonObject[index];
-//                }
-//            }
-//        }
-//        return buildCommonJSonBody(keysInParmJsonObject,false,valuesInParams);
-//    }
-
-//    /**
-//     *
-//     * @param keysInParmJsonObject
-//     * @param signParam 是否要加密参数数据体
-//     * @param valuesInParamJsonObject
-//     * @return 根节点的JSONObject
-//     */
-//    public static JSONObject buildCommonJSonBody(String[] keysInParmJsonObject,boolean signParam,Object... valuesInParamJsonObject) {
-////        JSONObject rootJsonRequestBody = new JSONObject();
-////        JSONObject paramJsonObject = createJsonWithParams(keysInParmJsonObject, valuesInParamJsonObject);
-////        return rootJsonRequestBody;
-//        return null;
-//    }
     /**
      * 仅可指定Param JSon数据体的键、值 的post请求
-     * @param partialUrl
-     * @param callback
-     * @param keysInParmJsonObject
-     * @param valuesInParamJsonObject
+     * @param apiUrl 可以是全路径也可以是部分路径
+     * @param callback 回调
+     * @param keysInParmJsonObject JSOn请求体的参数 ：键
+     * @param valuesInParamJsonObject JSOn请求体的参数 ：键对应的值
      */
-    protected static void jsonPost(String partialUrl, AbsCallback callback, String[] keysInParmJsonObject, Object... valuesInParamJsonObject) {
+    protected static void jsonPost(String apiUrl, AbsCallback callback, String[] keysInParmJsonObject, Object... valuesInParamJsonObject) {
+        if (!Util.isEmpty(URL_HOST)) {
+            if (!Util.isEmpty(apiUrl)) {
+                if (!apiUrl.startsWith(URL_HOST)) {
+                    apiUrl = URL_HOST + apiUrl;
+                }
+            }
+        }
         JSONObject jsonBody = createJsonWithParams(keysInParmJsonObject, valuesInParamJsonObject);
-        postRequest(URL_HOST + partialUrl)
+        postRequest(apiUrl)
                 .upJson(jsonBody)
                 .execute(callback);
     }
