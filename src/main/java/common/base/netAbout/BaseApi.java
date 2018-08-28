@@ -10,6 +10,8 @@ import retrofit2.Call;
  * DESC: 网络请求的基础API相关，各APP可继承，也可以按这思路自己写(因为不是通用)
  */
 public class BaseApi{
+
+    public static String URL_HOST = "";
     /**
      * 与用户相关的API分类
      */
