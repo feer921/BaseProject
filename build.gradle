@@ -37,13 +37,13 @@ ext {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    implementation "com.android.support:appcompat-v7:${supportVersion}"
-    implementation "com.android.support:support-v4:${supportVersion}"
-    implementation "com.android.support:design:${supportVersion}"
-    implementation "com.android.support:recyclerview-v7:${supportVersion}"
-    implementation "com.android.support:support-vector-drawable:${supportVersion}"
+    api "com.android.support:appcompat-v7:${supportVersion}"
+    api "com.android.support:support-v4:${supportVersion}"
+    api "com.android.support:design:${supportVersion}"
+    api "com.android.support:recyclerview-v7:${supportVersion}"
+    api "com.android.support:support-vector-drawable:${supportVersion}"
 
-    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    api 'com.squareup.retrofit2:retrofit:2.4.0'
 //    compile 'com.squareup.retrofit2:retrofit:2.3.0'
     //    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     api 'com.squareup.retrofit2:converter-jackson:2.4.0'
