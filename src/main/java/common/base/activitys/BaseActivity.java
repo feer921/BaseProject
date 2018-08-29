@@ -38,6 +38,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected Context appContext;
     protected Context mContext;
     protected NetRequestLifeMarker netRequestLifeMarker = new NetRequestLifeMarker();
+
+    /**
+     * 会自动调用：
+     * initViews();-->initData();
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

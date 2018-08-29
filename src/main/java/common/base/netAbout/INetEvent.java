@@ -36,7 +36,7 @@ public interface INetEvent<T> {
      * 网络请求的响应
      *
      * @param requestDataType 当前网络请求数据类型
-     * @param result          响应实体
+     * @param result          响应实体:即表示将网络响应的结果转化成指定的数据实体bean
      */
     void onResponse(int requestDataType, T result);
 

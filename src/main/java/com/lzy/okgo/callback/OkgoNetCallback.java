@@ -3,6 +3,7 @@ package com.lzy.okgo.callback;
 import java.net.UnknownHostException;
 
 import common.base.netAbout.INetEvent;
+import common.base.netAbout.INetEventWithResponse;
 import okhttp3.Call;
 import okhttp3.Response;
 
@@ -31,6 +32,17 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         }
     }
 
+    @Override
+    public void onSuccess(T t, Call call, Response response) {
+        if (response != null) {
+            if (netEvent != null) {
+                if (netEvent instanceof INetEventWithResponse) {
+                    ((INetEventWithResponse) netEvent).onResponse(requestType, t, response);
+                }
+            }
+        }
+        onSuccess(t);
+    }
 
     @Override
     public void onError(Call call, Response response, Exception e) {
