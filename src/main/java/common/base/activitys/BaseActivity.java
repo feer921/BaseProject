@@ -248,6 +248,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Intent startIntent = new Intent(mContext,targetActiviyClass);
         jumpToActivity(startIntent,requestCode,needReturnResult);
     }
+
+    protected void jumpToActivity(Class<?> targetActiviyClass, int requestCode, boolean needReturnResult, String[] intentKeys, String... keysValues) {
+        Intent startIntent = new Intent(mContext,targetActiviyClass);
+        if (intentKeys != null && keysValues != null) {
+            int keysLen = intentKeys.length;
+            if (keysLen > 0 && keysValues.length >= keysLen) {
+                for(int i =0; i < keysLen;i++) {
+                    startIntent.putExtra(intentKeys[i], keysValues[i]);
+                }
+            }
+        }
+        jumpToActivity(startIntent,requestCode,needReturnResult);
+    }
     protected boolean curRequestCanceled(int dataType) {
         if(netRequestLifeMarker != null){
             return netRequestLifeMarker.curRequestCanceled(dataType);
