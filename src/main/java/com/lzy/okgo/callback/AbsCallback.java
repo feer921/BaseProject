@@ -43,6 +43,7 @@ public abstract class AbsCallback<T> implements Converter<T> {
      * 默认请求类型为-1，表示没有赋值请求类型
      */
     public int requestType = -1;
+    public Object callBackTag;
 
     /** 请求网络开始前，UI线程 */
     public void onBefore(BaseRequest request) {
