@@ -72,24 +72,31 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
             return false;
         }
         boolean isSelected = false;
-
+        Object theUniqueMarkOfData = toJudgeItemDataUniqueMark(getItem(clickedPos));
+        //added by fee 2018-09-21 :判断当前点击的item是否已经在选中集合里了
+        boolean isAlreadyAdded = false;
         if (selectedUniqueMarks == null) {
             selectedUniqueMarks = new HashSet<>();
         }
         else{
+            isAlreadyAdded = selectedUniqueMarks.contains(theUniqueMarkOfData);
             if (curAdapterMode == MODE_SINGLE_CHOICE) {//如果当前是单选模式
+                if (isAlreadyAdded) {//如果已经在选中集合里，可以不清空一遍并刷新列表了
+                    return true;
+                }
                 selectedUniqueMarks.clear();
             }
         }
-        Object theUniqueMarkOfData = toJudgeItemDataUniqueMark(getItem(clickedPos));
+//        Object theUniqueMarkOfData = toJudgeItemDataUniqueMark(getItem(clickedPos));
         if (curAdapterMode == MODE_SINGLE_CHOICE) {//单选直接添加
             selectedUniqueMarks.add(theUniqueMarkOfData);
             isSelected = true;
             notifyDataSetChanged();//单选情况下，是需要全局刷新一下的
         }
         else{
-            boolean isAlready = selectedUniqueMarks.contains(theUniqueMarkOfData);
-            isSelected = !isAlready;
+//            boolean isAlready = selectedUniqueMarks.contains(theUniqueMarkOfData);
+//            isSelected = !isAlready;
+            isSelected = !isAlreadyAdded;
             if (isSelected) {
                 selectedUniqueMarks.add(theUniqueMarkOfData);
             }

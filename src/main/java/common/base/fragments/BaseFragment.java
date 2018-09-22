@@ -193,6 +193,7 @@ public abstract class BaseFragment extends Fragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (needReDrawUi) {
+            preInitViews(view);
             initViews(view);
             initData();
             initEvent();
@@ -204,6 +205,14 @@ public abstract class BaseFragment extends Fragment implements
      */
     protected abstract void initViews(View contentView);
 
+    /**
+     * 预初始初始化视图
+     * 提供给比如：ButterKnife需要bind的操作
+     * @param fragmentContentView
+     */
+    protected void preInitViews(View fragmentContentView) {
+
+    }
     /**
      * 初始化数据
      */
