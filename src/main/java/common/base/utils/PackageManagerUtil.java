@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -376,4 +377,51 @@ public class PackageManagerUtil {
 
         return null;
     }
+    public static JSONObject collectInfos() {
+        JSONObject infos = new JSONObject();
+        try {
+            infos.put("release", Build.VERSION.RELEASE)//系统版本	RELEASE	获取系统版本字符串。如4.1.2 或2.2 或2.3等	4.4.4
+                    .put("serialNo", Build.SERIAL)//返回串口序列号	YGKBBBB5C1711949
+                    .put("brand", Build.BRAND)//获取设备品牌	Huawei
+                    .put("device", Build.DEVICE)//设备名	DEVICE	获取设备驱动名称	hwG750-T01
+                    .put("displayName", Build.DISPLAY)//获取设备显示的版本包（在系统设置中显示为版本号）和ID一样	TAG-TLOOCO1B166
+                    .put("model", Build.MODEL)//获取设备的型号	HUAWEI G750-T01
+                    .put("product", Build.PRODUCT)//整个产品的名称	G750-T01
+                    .put("sdkInt", Build.VERSION.SDK_INT)//安卓系统SDK int值;eg.: 21(Android 5.0)
+                    .put("cpuAbi", Build.CPU_ABI)//获取设备指令集名称（CPU的类型） arm64-v8a
+                    .put("cupAbi2", Build.CPU_ABI2)
+                    .put("fingerPrint", Build.FINGERPRINT)//设备的唯一标识。由设备的多个信息拼接合成
+                    .put("hardWare", Build.HARDWARE)//设备硬件名称,一般和基板名称一样（BOARD）	mt6592
+                    .put("manufacturer", Build.MANUFACTURER)//获取设备制造商	HUAWEI
+                    .put("id", Build.ID)//like "M4-rc20"
+                    .put("buildTime", Build.TIME)//当前系统的构建时间
+            ;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return infos;
+    }
+
+    public static StringBuilder collectSysInfos(Context context) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("AppVer:" + getPackageVersionName(context)).append(",");
+        JSONObject infos = collectInfos();
+        sb.append("Brand:" + infos.optString("brand")).append(",")
+                .append("model:" + infos.optString("model")).append(",")
+                .append("SystemApi:"+infos.optString("sdkInt")).append(",")
+                .append("CPUABI:" + infos.optString("cpuAbi")).append(",")
+                .append("devName:"+infos.optString("device"))
+        ;
+        return sb;
+    }
+
+    private static String systeInfos = null;
+
+    public static String getSysteInfos(Context context) {
+        if (null == systeInfos) {
+            systeInfos = collectSysInfos(context).toString();
+        }
+        return systeInfos;
+    }
+
 }
