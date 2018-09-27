@@ -20,6 +20,7 @@ import android.view.WindowManager;
 
 import common.base.utils.CommonLog;
 import common.base.utils.Util;
+import common.base.utils.ViewUtil;
 
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected final String TAG = getClass().getSimpleName();
@@ -66,6 +67,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected boolean isWindowUseContentViewH = false;
     @ColorInt
     protected int dialogWindowBgColor = -1;
+    /**
+     * Dialog弹出时是否要关心Activity(应用Window)有沉浸式效果，如果不关心，会导致Dialog弹出时Activity退出沉浸式效果
+     * <P>https://www.jianshu.com/p/d10dd0c1a344</P>
+     * def: false
+     */
+    protected boolean needCareActivityImmersion = false;
     public BaseDialog(Context context) {
         this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
     }
@@ -430,7 +437,21 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     @Override
     public void show() {
+        if (needCareActivityImmersion) {
+            // Dialog 在初始化时会生成新的 Window，先禁止 Dialog Window 获取焦点，等 Dialog 显示后对
+            // Dialog Window 的 DecorView 设置 setSystemUiVisibility ，接着再获取焦点。 这样表面上看起来就没有退出沉浸模式。
+            // Set the dialog to not focusable (makes navigation ignore us adding the window)
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        }
         super.show();
+        if (needCareActivityImmersion) {
+            //Set the dialog to immersive
+            if (getWindow() != null) {
+                ViewUtil.fullScreenImmersive(getWindow().getDecorView());
+                //Clear the not focusable flag from the window
+                this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            }
+        }
         if (showHoldTime > 0) {
             if (mHandler == null) {
                 mHandler = new Handler(Looper.getMainLooper()){

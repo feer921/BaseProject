@@ -15,14 +15,16 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -482,7 +484,7 @@ public class ViewUtil{
     }
 
     public static void fullScreenImmersive(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= 19 && view != null) {//Android 4.4
             int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -491,5 +493,19 @@ public class ViewUtil{
                     | View.SYSTEM_UI_FLAG_FULLSCREEN;
             view.setSystemUiVisibility(uiOptions);
         }
+    }
+
+    @RequiresApi(api = 19)
+    public static boolean isWindowTranslucentStatus(Window window) {
+        if (window != null) {
+            if (Util.isCompateApi(19)) {
+                if (window.getAttributes() != null) {
+                    //API 19
+                    int translucentStatusFlag = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS & window.getAttributes().flags;
+                    return translucentStatusFlag == WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+                }
+            }
+        }
+        return false;
     }
 }

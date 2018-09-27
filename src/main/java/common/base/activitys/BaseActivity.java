@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-
 import common.base.R;
 import common.base.WeakHandler;
 import common.base.netAbout.BaseServerResult;
@@ -98,7 +97,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void initData() {
 
     }
-//    protected StaticHandler mHandler;
     protected WeakHandler mHandler;
     /**
      * 各子类按需决定是否需要Handler
@@ -111,27 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void handleMessage(Message msg) {
-        handlerMessage(msg);
     }
-
-    //    /**
-//     * 避免内存泄漏的Handler以供各子类需要使用Handler时调用initHandler()方法进行初始化并重载handlerMessage()方法对发送的消息进行处理
-//     */
-//    protected static class StaticHandler extends WeakHandler{
-//        public StaticHandler(Activity owner) {
-//            super(owner);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            super.handleMessage(msg);
-//            BaseActivity activity = (BaseActivity) getOwner();
-//            if (activity != null) {
-//                activity.handlerMessage(msg);
-//            }
-//        }
-//    }
-
     /**
      * 获取项目内Application级别的上下文
      * @param <APP> 各项目自己的继承自Application的实例
@@ -139,17 +117,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
      */
     protected <APP extends Application> APP getAppInstance() {
         return (APP) getApplication();
-    }
-    /**
-     * 鉴于可能许多Activity中需要处理Handler发送的消息，则可使用{@link #mHandler}来发送
-     * 在发送之前先调用initHandler()方法进行初始化
-     * @deprecated
-     * 请使用
-     * {@link #handleMessage(Message)}
-     * @param msg
-     */
-    protected void handlerMessage(Message msg) {
-
     }
 
     /**
