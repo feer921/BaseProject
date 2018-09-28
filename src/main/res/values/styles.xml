@@ -49,12 +49,13 @@
         <item name="android:windowExitAnimation">@anim/popwindow_y_translate_out</item>
     </style>
     <!-- 通用textView style:宽、高自适应；内部居中、外部居中；单行 -->
+    <!-- <item name="android:singleLine">true</item> 换成maxLines-->
     <style name="common_tv_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
     </style>
 
     <style name="common_edittext_style">
