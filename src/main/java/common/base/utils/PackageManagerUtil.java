@@ -377,6 +377,43 @@ public class PackageManagerUtil {
 
         return null;
     }
+
+    public static ComponentName[] getAppTopAndBaseActivitys(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager != null) {
+            List<RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1);
+            if (runningTaskInfos != null) {
+                RunningTaskInfo topRunningTask = runningTaskInfos.get(0);
+                if (topRunningTask != null) {
+                    if (topRunningTask.numActivities > 0) {
+                        ComponentName[] topAndBaseComponents = {
+                          topRunningTask.topActivity,
+                          topRunningTask.baseActivity
+                        };
+                        return topAndBaseComponents;
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    public static boolean isActivityOnTop(Context context, Class activityClass) {
+        if (activityClass == null) {
+            return false;
+        }
+//        CommonLog.d(TAG, "-->isActivityOnTop() " + activityClass.getName() +"" +
+//                "  " + activityClass.getCanonicalName());
+        ComponentName[] topAndBaseActivitys = getAppTopAndBaseActivitys(context);
+        if (topAndBaseActivitys != null && topAndBaseActivitys.length > 1) {
+            ComponentName topComponentName = topAndBaseActivitys[0];
+            if (topComponentName != null) {
+                return activityClass.getName().equals(topComponentName.getClassName());
+            }
+        }
+        return false;
+    }
     public static JSONObject collectInfos() {
         JSONObject infos = new JSONObject();
         try {
