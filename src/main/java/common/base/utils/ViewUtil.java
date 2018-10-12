@@ -331,9 +331,19 @@ public class ViewUtil{
      * @return FrameLayout.LayoutParams 便于能继续设置其他布局参数
      */
     public static FrameLayout.LayoutParams addView2ContainerView(View toAddView, Activity curActivity) {
+        if (toAddView == null || toAddView.getParent() != null) {
+            return null;
+        }
         FrameLayout containerView = getContentContainerView(curActivity);
         if (containerView != null) {
-            containerView.addView(toAddView);
+            ViewGroup.LayoutParams vlp = toAddView.getLayoutParams();
+            if (vlp == null) {//要添加的View无LayoutParams
+                vlp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                containerView.addView(toAddView, vlp);
+            }
+            else{
+                containerView.addView(toAddView);//这样直接添加好象会使toAddView 的宽高如果是wrap_content的会全部占据containerView的高
+            }
         }
         return (FrameLayout.LayoutParams) toAddView.getLayoutParams();
     }
