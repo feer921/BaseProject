@@ -309,6 +309,13 @@ public class Util {
         final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
+
+    /**
+     * 根据资源文件中的dimen Res id 来获取对应的像素值
+     * @param context
+     * @param dimeResId
+     * @return
+     */
     public static int getDimenResPixelSize(Context context,@DimenRes int dimeResId) {
         return context.getResources().getDimensionPixelSize(dimeResId);
     }

@@ -9,6 +9,7 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,6 +38,23 @@ public class VRefreshLayout extends ViewGroup {
     private int mStatus;
 
     private View mHeaderView;
+    private SparseArray<String> stateDesc;
+    {
+        stateDesc = new SparseArray<>(6);
+        stateDesc.put(STATUS_INIT, "状态：初始化");
+        stateDesc.put(STATUS_DRAGGING, "状态：正在下拉");
+        stateDesc.put(STATUS_RELEASE_PREPARE, "状态：松手将要刷新");
+        stateDesc.put(STATUS_REFRESHING, "状态：正在刷新");
+        stateDesc.put(STATUS_RELEASE_CANCEL, "状态：松手取消");
+        stateDesc.put(STATUS_COMPLETE, "状态：刷新完成");
+    }
+
+    public String theStateDesc(int refreshState) {
+        if (stateDesc != null) {
+            return stateDesc.get(refreshState);
+        }
+        return "Unknow";
+    }
 
     /**
      * 本容器视图的直接子视图，原来这里只兼容直接的子View：RecyclerView、ListView、AbsListView，
