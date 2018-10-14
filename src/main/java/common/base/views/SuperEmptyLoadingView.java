@@ -46,7 +46,10 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     private ImageView ivHorizontalLoad;
     private AnimationDrawable mAnimBgDrawable;
     private AnimationDrawable mAnimDrawableAtLeft;
-    private int animResAtHintIcon;
+    /**
+     * loading状态下的(垂直方向)动画(帧动画)资源
+     */
+    private @DrawableRes int animResAtHintIcon;
 
     /**
      * 整个布局是否可点击
@@ -58,33 +61,36 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     /**
     * 加载中时的提示文案
     */
-    private int loadingHintStr;
+    private @StringRes int loadingHintStr;
     /**
      * 加载完后没有数据的提示文案
       */
-    private int noDataHintStr;
+    private @StringRes int noDataHintStr;
     /**
      * 加载失败时的提示文案
       */
-    private int loadFailureHintStr;
+    private @StringRes int loadFailureHintStr;
     /**
      * 没有网络时的提示文案
       */
-    private int noNetHintStr;
+    private @StringRes int noNetHintStr;
     /**
      * 没有数据时的下面额外的提示文案
      */
-    private int extraNoDataStr;
+    private @StringRes int extraNoDataStr;
     /**
      * 加载失败时额外的提示文案
       */
-    private int extraLoadFailureStr;
+    private @StringRes int extraLoadFailureStr;
     /**
      * 没有网络时额外的提示文案
       */
-    private int extraNoNetStr;
-
-    private boolean isShowExtraOpt = true;
+    private @StringRes int extraNoNetStr;
+    /**
+     * 表示本SuperEmptyLoadingView是否默认显示再{@link #showCase(LayoutStatus)}后的另外提示性的视图
+     * def: false,默认不显示 //modified by fee 2018-10-14 由默认的true改为false不显示
+     */
+    private boolean isShowExtraOpt = false;
     public LayoutStatus getCurStatus() {
         return curStatus;
     }
@@ -169,6 +175,8 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     public SuperEmptyLoadingView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
+        //add by fee 2018-10-14: 如果有配置全局的统一SuperEmptyLoadingView,则在此生效
+        initDefGlobalConfigs();
     }
 
     /**
@@ -176,6 +184,11 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
      * added by fee 2010-10-24
      */
     private OnClickListener outSideClickListener;
+
+    /**
+     * 这里主要是初始化控件
+     * @param context content
+     */
     private void init(Context context) {
         inflate(context, R.layout.super_empty_load_layout, this);
         tvHintMsg = (TextView) findViewById(R.id.tv_hint_msg);
@@ -183,22 +196,6 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         ivShowStateIconOrAnim = (ImageView) findViewById(R.id.iv_load_or_hint_image);
         ivHorizontalLoad = (ImageView) findViewById(R.id.iv_horizontal_load_anim);
         LinearLayout llHintAndLoad = (LinearLayout) findViewById(R.id.ll_load_and_hint);
-//        View.OnClickListener onClickListener = new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (!isWholeLayoutClickable) {
-//                    //不能点击操作的时候，则点击无效
-//                    return;
-//                }
-//                //回调出去
-//                if (optListener != null) {
-//                    optListener.optCallback(SuperEmptyLoadingView.this,curStatus);
-//                }
-//                if (outSideClickListener != null) {
-//                    outSideClickListener.onClick(v);
-//                }
-//            }
-//        };
         llHintAndLoad.setOnClickListener(this);
         tvExtraOptHint.setOnClickListener(this);
         pbDefLeftAnim = (ProgressBar) findViewById(R.id.def_left_load_anim);
@@ -242,7 +239,7 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         pbDefLeftAnim.setVisibility(GONE);
         pbDefUpAnim.setVisibility(GONE);
         switch (targetStatus) {
-            case Loading:
+            case Loading:// TODO: 2018/10/14  loadingHintStr 资源id>>0 判断是否正确
                 tvHintMsg.setText(loadingHintStr > 0 ? loadingHintStr : attachHintMsgResId);
                 isWholeLayoutClickable = false;
                 if (mAnimBgDrawable == null) {
@@ -330,7 +327,7 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
 
     /**
      * 提供在showCase之后直接更改提示性文案的方法
-     * 注：在{@link #showCase(LayoutStatus)}之后调用
+     * 注：一般在{@link #showCase(LayoutStatus)}之后调用
      * @param afterShowCaseHintMsg
      * @return self
      */
@@ -340,7 +337,7 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
 
     /**
      * 提供在showCase之后直接更改Extra提示文案的方法
-     * 注：在{@link #showCase(LayoutStatus)}之后调用
+     * 注：一般在{@link #showCase(LayoutStatus)}之后调用
      * @param afterShowCaseExtraHintMsg
      * @return self
      */
@@ -351,12 +348,18 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     /**
      * 提供在{@link #showCase(LayoutStatus)}之后动态更改提示性图片的方法
      * 注：在{@link #showCase(LayoutStatus)}之后调用
-     * @param afterShowCaseHintImage
+     * @param afterShowCaseHintImage 在show case之后,再更换显示一张提示性的图片
      * @return self
      */
     public SuperEmptyLoadingView andHintImagePic(@DrawableRes int afterShowCaseHintImage){
         return withHintImage(afterShowCaseHintImage);
     }
+
+    /**
+     * 表示与当前{@link LayoutStatus}无关的直接设置给提示控件设置提示消息
+     * @param hintMsg 提示的消息方案
+     * @return self
+     */
     private SuperEmptyLoadingView withHintMsg(String hintMsg) {
         if (tvHintMsg != null) {
             tvHintMsg.setText(hintMsg);
@@ -389,6 +392,12 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         }
         return this;
     }
+
+    /**
+     * 表示与{{@link LayoutStatus}}当前状态无关的，直接给额外提示的【控件】设置额外的提示性方案
+     * @param extraHintMsg 额外的提示性方案
+     * @return self
+     */
     private SuperEmptyLoadingView withExtraHintMsg(String extraHintMsg) {
         if (tvExtraOptHint != null) {
             tvExtraOptHint.setText(extraHintMsg);
@@ -423,10 +432,10 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     }
 
     /**
-     * 不对外提供调用，外部可使用
+     * 不对外提供调用，外部不可使用
      * {@link #andHintImagePic(int)}
      * @param hintImageResId
-     * @return
+     * @return self
      */
     private SuperEmptyLoadingView withHintImage(@DrawableRes int hintImageResId){
 //        resetHintImageRes = hintImageResId;
@@ -439,15 +448,15 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     /**
      * 加载数据失败提示的图片/icon
      */
-    private int loadFailureImageRes;
+    private @DrawableRes int loadFailureImageRes;
     /**
      * 没有网络提示的图片/icon
      */
-    private int noNetworkImageRes;
+    private @DrawableRes int noNetworkImageRes;
     /**
      * 没有数据提示的图片/icon
      */
-    private int noDataImageRes;
+    private @DrawableRes int noDataImageRes;
     /**
      * 用户可调用{@link #withHintImage(int)}动态配置提示性的图片资源
      */
@@ -485,7 +494,11 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         }
         return this;
     }
-    private int animResAtHorizontalIv;
+
+    /**
+     * 表示当前该SuperEmptyLoadingView 视图控件如果是需要水平方向的loading时的帧动画资源
+     */
+    private @DrawableRes int animResAtHorizontalIv;
 
     /**
      * 水平方向的“正在加载...”设置帧动画资源
@@ -540,6 +553,10 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
          */
         void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus);
     }
+
+    /**
+     * 表示 SuperEmptyLoadingView 本控件默认的布局控件无法满足的情况下的自定义的用来额外提示的视图控件
+     */
     private View customExtraHintView;
     public SuperEmptyLoadingView withCustomExtraHintView(View toAppendExtraHintView) {
         if (toAppendExtraHintView != null && toAppendExtraHintView.getParent() == null) {
@@ -610,5 +627,99 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
          */
         void optCallback(SuperEmptyLoadingView theEmptyLoadingView, LayoutStatus curLayoutStatus, View clickView);
     }
+    //extension 扩展功能 add by fee 2018-10-14
+    /**
+     * 设置全局的自定义的空/加载 View
+     */
+    private static SuperEmptyLoadingView defGlobalCustomEmptyLoadingView;
 
+    /**
+     * 静态方法，全局调用，供项目内 配置默认的全局的 SuperEmptyLoadingView
+     * 该配置生效只有SuperEmptyLoadingView 的构造方法期间
+     * 配置了的情况下，如果一些界面仍然有差异化的需求，则可仍按SuperEmptyLoadingView的实例去再配置即可
+     * @param defCommonCustomEmptyLoadingView 项目需要的默认自定义的SuperEmptyLoadingView
+     */
+    public static void configDefGlobalCustomEmptyLoadingView(SuperEmptyLoadingView
+                                                                     defCommonCustomEmptyLoadingView) {
+        defGlobalCustomEmptyLoadingView = defCommonCustomEmptyLoadingView;
+    }
+    //一些属性的get方法
+
+    private void initDefGlobalConfigs() {
+        if (defGlobalCustomEmptyLoadingView != null) {
+            int loadingAnimRes = defGlobalCustomEmptyLoadingView.getAnimResAtHintIcon();
+            withLoadingAnim(loadingAnimRes)
+                    .withWholeLayoutClickable(defGlobalCustomEmptyLoadingView.isWholeLayoutClickable())
+                    .withHintMsg(LayoutStatus.Loading, defGlobalCustomEmptyLoadingView.getLoadingHintStr())
+                    .withHintMsg(LayoutStatus.NoData, defGlobalCustomEmptyLoadingView.getNoDataHintStr())
+                    .withHintMsg(LayoutStatus.LoadFailure, defGlobalCustomEmptyLoadingView.getLoadFailureHintStr())
+                    .withHintMsg(LayoutStatus.NoNetWork, defGlobalCustomEmptyLoadingView.getNoNetHintStr())
+                    //配置上面状态时，额外的提示控件的提示性方案资源
+                    .withExtraHintMsg(LayoutStatus.NoData, defGlobalCustomEmptyLoadingView.getExtraNoDataStr())
+                    .withExtraHintMsg(LayoutStatus.LoadFailure, defGlobalCustomEmptyLoadingView.getExtraLoadFailureStr())
+                    .withExtraHintMsg(LayoutStatus.NoNetWork, defGlobalCustomEmptyLoadingView.getExtraNoNetStr())
+                    .withShowExtraOpt(defGlobalCustomEmptyLoadingView.isShowExtraOpt())
+                    .withNoDataImage(defGlobalCustomEmptyLoadingView.getNoDataImageRes())
+                    .withNoNetWorkImage(defGlobalCustomEmptyLoadingView.getNoNetworkImageRes())
+                    .withLoadFailureImage(defGlobalCustomEmptyLoadingView.getLoadFailureImageRes())
+                    .withHorizontalLoadAnim(defGlobalCustomEmptyLoadingView.getAnimResAtHorizontalIv())
+            ;
+        }
+    }
+
+    public @DrawableRes int getAnimResAtHintIcon() {
+        return animResAtHintIcon;
+    }
+
+    public boolean isWholeLayoutClickable() {
+        return isWholeLayoutClickable;
+    }
+
+    public @StringRes int getLoadingHintStr() {
+        return loadingHintStr;
+    }
+
+    public @StringRes int getNoDataHintStr() {
+        return noDataHintStr;
+    }
+
+    public @StringRes int getLoadFailureHintStr() {
+        return loadFailureHintStr;
+    }
+
+    public @StringRes int getNoNetHintStr() {
+        return noNetHintStr;
+    }
+
+    public @StringRes int getExtraNoDataStr() {
+        return extraNoDataStr;
+    }
+
+    public @StringRes int getExtraLoadFailureStr() {
+        return extraLoadFailureStr;
+    }
+
+    public @StringRes int getExtraNoNetStr() {
+        return extraNoNetStr;
+    }
+
+    public boolean isShowExtraOpt() {
+        return isShowExtraOpt;
+    }
+
+    public @DrawableRes int getLoadFailureImageRes() {
+        return loadFailureImageRes;
+    }
+
+    public @DrawableRes int getNoNetworkImageRes() {
+        return noNetworkImageRes;
+    }
+
+    public @DrawableRes int getNoDataImageRes() {
+        return noDataImageRes;
+    }
+
+    public @DrawableRes int getAnimResAtHorizontalIv() {
+        return animResAtHorizontalIv;
+    }
 }

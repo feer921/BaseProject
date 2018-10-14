@@ -133,11 +133,11 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
 
     @Override
     public void finish() {
-        super.finish();
         //added by fee 2016-8-19 test now
         if (needCancelAllNetRequestWhenExit) {
             netRequestLifeMarker.cancelCallRequest(-1);
         }
+        super.finish();
     }
 
     //-------- added by fee 2016-12-13 ---------------------------

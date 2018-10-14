@@ -427,10 +427,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(uiHintAgent != null){
             uiHintAgent.finishAgentFollowUi();
         }
-        super.finish();
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> finish()");
         }
+        super.finish();
     }
 
     @Override
