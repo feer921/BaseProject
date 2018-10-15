@@ -2,6 +2,7 @@ package common.base.views;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -32,6 +33,10 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
      * 提示文本，如：正在加载...
      */
     private TextView tvHintMsg;
+
+    private @ColorInt int hintTextColor;
+    private float hintTextSizeSp;
+
     /**
      * 额外的操作提示文本
      */
@@ -664,6 +669,15 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
                     .withLoadFailureImage(defGlobalCustomEmptyLoadingView.getLoadFailureImageRes())
                     .withHorizontalLoadAnim(defGlobalCustomEmptyLoadingView.getAnimResAtHorizontalIv())
             ;
+            int hintTextColor = defGlobalCustomEmptyLoadingView.getHintTextColor();
+            if (hintTextColor != 0) {
+                withTvHintTextColor(hintTextColor);
+            }
+            float hintTextSizeSp = defGlobalCustomEmptyLoadingView.getHintTextSizeSp();
+            if (hintTextSizeSp > 0) {
+                withTvHintTextSize(hintTextSizeSp);
+            }
+
         }
     }
 
@@ -721,5 +735,33 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
 
     public @DrawableRes int getAnimResAtHorizontalIv() {
         return animResAtHorizontalIv;
+    }
+
+    public SuperEmptyLoadingView withTvHintTextColor(@ColorInt int hintTextColor) {
+        if (hintTextColor != 0) {
+            //不是透明
+            this.hintTextColor = hintTextColor;
+            if (tvHintMsg != null) {
+                tvHintMsg.setTextColor(hintTextColor);
+            }
+        }
+        return this;
+    }
+
+    public SuperEmptyLoadingView withTvHintTextSize(float hintTextSizeSp) {
+        if (hintTextSizeSp > 0) {
+            this.hintTextSizeSp = hintTextSizeSp;
+            if (tvHintMsg != null) {
+                tvHintMsg.setTextSize(hintTextSizeSp);
+            }
+        }
+        return this;
+    }
+    public int getHintTextColor() {
+        return hintTextColor;
+    }
+
+    public float getHintTextSizeSp() {
+        return hintTextSizeSp;
     }
 }
