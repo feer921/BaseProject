@@ -167,4 +167,10 @@ public class BaseUiHelper{
         context.startActivity(intent);
         return true;
     }
+
+    public static void jumpToBrowser(Context context,String theUrl) {
+        Uri uri = Uri.parse(theUrl);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        jumpToActivity(context,intent,-1,false);
+    }
 }
