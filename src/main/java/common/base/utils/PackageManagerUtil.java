@@ -386,6 +386,9 @@ public class PackageManagerUtil {
                 RunningTaskInfo topRunningTask = runningTaskInfos.get(0);
                 if (topRunningTask != null) {
                     if (topRunningTask.numActivities > 0) {
+                        CommonLog.e(TAG, "---> getAppTopAndBaseActivitys() top:" + topRunningTask.topActivity.getPackageName()
+                                + "  base:" + topRunningTask.baseActivity
+                        );
                         ComponentName[] topAndBaseComponents = {
                           topRunningTask.topActivity,
                           topRunningTask.baseActivity
@@ -406,10 +409,31 @@ public class PackageManagerUtil {
 //        CommonLog.d(TAG, "-->isActivityOnTop() " + activityClass.getName() +"" +
 //                "  " + activityClass.getCanonicalName());
         ComponentName[] topAndBaseActivitys = getAppTopAndBaseActivitys(context);
-        if (topAndBaseActivitys != null && topAndBaseActivitys.length > 1) {
+        if (topAndBaseActivitys != null && topAndBaseActivitys.length > 0) {
             ComponentName topComponentName = topAndBaseActivitys[0];
             if (topComponentName != null) {
                 return activityClass.getName().equals(topComponentName.getClassName());
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断某个指定的包名的app是否在前台
+     * 判断依据为：在top(前台)
+     * @param context
+     * @param classPackageName app 包名
+     * @return true:在前台; false: 在非前台
+     */
+    public static boolean isAppActivitysForeground(Context context, String classPackageName) {
+        ComponentName[] topAndBaseActivities = getAppTopAndBaseActivitys(context);
+        if (topAndBaseActivities != null && topAndBaseActivities.length > 0) {
+            ComponentName topComponentName = topAndBaseActivities[0];
+            if (topComponentName != null) {
+                String topAppPackageName = topComponentName.getPackageName();
+                if (classPackageName.equals(topAppPackageName)) {//在前台
+                    return true;
+                }
             }
         }
         return false;

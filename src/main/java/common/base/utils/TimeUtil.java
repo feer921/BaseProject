@@ -9,6 +9,7 @@ import java.util.Locale;
  * 关于时间信息的工具类
  * <br/>
  * 2015年12月25日-下午2:53:50
+ * todo SimpleDateFormat 可以复用
  * @author lifei
  */
 public class TimeUtil {
