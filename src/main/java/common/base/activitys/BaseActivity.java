@@ -419,8 +419,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
             switchActivity(true);
         }
     }
+
+    /**
+     *  Activity生命周期是否经历了finish()
+     */
+    private boolean isResumeFinish;
+    /**
+     * 注：该方法为主动调用方法，不在Activity的生命周期流程中
+     * 则需要注意：如果Activity是自动结束(如，屏幕旋转等)的，因不会走finish()而导致在此方法内作的释放不执行
+     */
     @Override
     public void finish() {
+        isResumeFinish = true;
         if (mHandler != null) {
             mHandler.removeCallbacksAndMessages(null);
         }
@@ -430,15 +440,28 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> finish()");
         }
-        super.finish();
+        //changed by fee 2018-10-18:这里屏蔽来自onDestroy()方法内的调用finish()时,不再调用super.finish()
+        if (!isResumeDestroy) {
+            super.finish();
+        }
     }
 
+    /**
+     * Activity生命周期是否经历了onDestroy()
+     */
+    private boolean isResumeDestroy;
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        //added by fee 2018-10-18:解决Activity在自动销毁过程中,不走finish()而导致一些子Activity在finish()作释放功能没有执行的问题，或者不在本框架内处理
+        isResumeDestroy = true;
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onDestroy()");
         }
+        if (!isResumeFinish) {
+            finish();
+        }
+        super.onDestroy();
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

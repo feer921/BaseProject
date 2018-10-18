@@ -67,6 +67,11 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     * 加载中时的提示文案
     */
     private @StringRes int loadingHintStr;
+
+    /**
+     * added by fee 2018-10-18:好象有点必要增加字符串类型的加载时的提示文本
+     */
+    private CharSequence loadingHintWords;
     /**
      * 加载完后没有数据的提示文案
       */
@@ -121,6 +126,8 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
     }
 
     public enum LayoutStatus{
+        //added by fee 2018-10-18:增加def类型
+        Def(0, 0, -1),
         /**
          * 正在加载...<br/>
          * hint msg: 正在加载...<br/>
@@ -245,7 +252,17 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         pbDefUpAnim.setVisibility(GONE);
         switch (targetStatus) {
             case Loading:// TODO: 2018/10/14  loadingHintStr 资源id>>0 判断是否正确
-                tvHintMsg.setText(loadingHintStr > 0 ? loadingHintStr : attachHintMsgResId);
+                if (loadingHintStr > 0 || !Util.isEmpty(loadingHintWords)) {
+                    if(loadingHintStr > 0){
+                        tvHintMsg.setText(loadingHintStr);
+                    }
+                    if (!Util.isEmpty(loadingHintWords)) {//这里意味着如果有loadingHintWords则会覆盖loadingHintStr
+                        tvHintMsg.setText(loadingHintWords);
+                    }
+                }
+                else{
+                    tvHintMsg.setText(attachHintMsgResId);
+                }
                 isWholeLayoutClickable = false;
                 if (mAnimBgDrawable == null) {
                     ivShowStateIconOrAnim.setVisibility(GONE);
@@ -260,7 +277,17 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
                 }
                 break;
             case HorizontalLoading://水平方向的正在加载...
-                tvHintMsg.setText(loadingHintStr > 0 ? loadingHintStr : attachHintMsgResId);
+                if (loadingHintStr > 0 || !Util.isEmpty(loadingHintWords)) {
+                    if(loadingHintStr > 0){
+                        tvHintMsg.setText(loadingHintStr);
+                    }
+                    if (!Util.isEmpty(loadingHintWords)) {//这里意味着如果有loadingHintWords则会覆盖loadingHintStr
+                        tvHintMsg.setText(loadingHintWords);
+                    }
+                }
+                else{
+                    tvHintMsg.setText(attachHintMsgResId);
+                }
                 isWholeLayoutClickable = false;
                 ivShowStateIconOrAnim.setVisibility(GONE);//垂直方向的隐藏
                 if (mAnimDrawableAtLeft == null) {
@@ -325,6 +352,8 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
                 }
 //                tvExtraOptHint.setVisibility(GONE);
                 break;
+            case Def:
+                break;
         }
         resetHintImageRes = 0;
         return this;
@@ -365,7 +394,7 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
      * @param hintMsg 提示的消息方案
      * @return self
      */
-    private SuperEmptyLoadingView withHintMsg(String hintMsg) {
+    private SuperEmptyLoadingView withHintMsg(CharSequence hintMsg) {
         if (tvHintMsg != null) {
             tvHintMsg.setText(hintMsg);
         }
@@ -398,6 +427,13 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
         return this;
     }
 
+    public SuperEmptyLoadingView withLoadingHint(CharSequence loadingHintWords) {
+        this.loadingHintWords = loadingHintWords;
+        if (!Util.isEmpty(loadingHintWords)) {
+            withHintMsg(loadingHintWords);
+        }
+        return this;
+    }
     /**
      * 表示与{{@link LayoutStatus}}当前状态无关的，直接给额外提示的【控件】设置额外的提示性方案
      * @param extraHintMsg 额外的提示性方案
@@ -613,6 +649,14 @@ public class SuperEmptyLoadingView extends LinearLayout implements View.OnClickL
 
     public SuperEmptyLoadingView hintLoadFailure() {
         return showCase(LayoutStatus.LoadFailure);
+    }
+
+    /**
+     * 该状态下，会停止动画等
+     * @return
+     */
+    public SuperEmptyLoadingView reset() {
+        return showCase(LayoutStatus.Def);
     }
     /**
      * 是否需要点击整个Layout
