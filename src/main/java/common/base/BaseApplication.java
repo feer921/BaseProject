@@ -59,6 +59,13 @@ public class BaseApplication<E extends BaseApplication> extends Application{
         return (E) this;
     }
 
+    public E clearAllStackedActivities() {
+        AppManager.getMe().finishAllActivity();
+        return self();
+    }
+    protected E self() {
+        return (E) this;
+    }
     @Override
     public void onTerminate() {
         super.onTerminate();
