@@ -161,13 +161,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * @param finishSelf
      */
     protected void switchActivity(boolean finishSelf) {
-        if (finishSelf) {
-            //被关闭的本Activity 往右方向整个渐出,返回到前台的Activity 从左方向短距离(部分的)的进来
-            overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
-        } else {
-            //要启动的Activity完整的从右侧进来，而运行至后台的本Activity 部分地、短距离的从右侧类似的出
-            overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
-        }
+//        if (finishSelf) {
+//            //被关闭的本Activity 往右方向整个渐出,返回到前台的Activity 从左方向短距离(部分的)的进来
+//            overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
+//        } else {
+//            //要启动的Activity完整的从右侧进来，而运行至后台的本Activity 部分地、短距离的从右侧类似的出
+//            overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
+//        }
     }
     /**
      * 从xml文件中找到一个Viwe控件的通配方法，将使用方需要的强制转换通用实现

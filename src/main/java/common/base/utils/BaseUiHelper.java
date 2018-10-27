@@ -171,6 +171,7 @@ public class BaseUiHelper{
     public static void jumpToBrowser(Context context,String theUrl) {
         Uri uri = Uri.parse(theUrl);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             jumpToActivity(context, intent, -1, false);
         } catch (Exception e) {

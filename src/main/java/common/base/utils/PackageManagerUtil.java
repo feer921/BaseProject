@@ -365,7 +365,10 @@ public class PackageManagerUtil {
      * 获取当前堆栈中的第一个activity
      * @param context
      * @return
+     * @deprecated https://blog.csdn.net/u011386173/article/details/79095757 Andorid4.0系列可以，5.0以上机器不行	Android5.0此方法被废弃
+     * 对第三方APP无效,但对于获取本应用内
      */
+    @Deprecated
     public static ComponentName getTheProcessBaseActivity(final Context context) {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         RunningTaskInfo task = activityManager.getRunningTasks(1).get(0);

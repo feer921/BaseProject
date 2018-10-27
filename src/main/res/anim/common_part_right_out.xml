@@ -2,11 +2,11 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <!-- 住右边出：从左往右短距离的位移 -->
-    <translate
-        android:duration="200"
-        android:fromXDelta="0"
-        android:interpolator="@android:anim/linear_interpolator"
-        android:toXDelta="10%p" />
+    <!--<translate-->
+        <!--android:duration="200"-->
+        <!--android:fromXDelta="0"-->
+        <!--android:interpolator="@android:anim/linear_interpolator"-->
+        <!--android:toXDelta="10%p" />-->
 
     <!-- <scale
         android:duration="200"
@@ -19,7 +19,7 @@
         android:toXScale=".95"
         android:toYScale=".95" /> -->
 
-    <alpha
-        android:fromAlpha="1.0"
-        android:toAlpha="0.5" />
+    <!--<alpha-->
+        <!--android:fromAlpha="1.0"-->
+        <!--android:toAlpha="0.9" />-->
 </set>

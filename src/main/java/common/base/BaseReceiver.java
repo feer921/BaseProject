@@ -3,6 +3,7 @@ package common.base;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 /**
@@ -21,7 +22,7 @@ public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastR
      * 本广播接收者基类，只有一个IntentFilter，但广播接收者是可以有多个IntentFilter的
      */
     protected IntentFilter mIntentFilter;
-
+    protected boolean asLocalReceiver;
     public I withAction(String action,String dataType) {
         if (action != null) {
             if (mIntentFilter == null) {
@@ -50,14 +51,41 @@ public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastR
         }
         return self();
     }
+
+    /**
+     * 将本广播接收者注册
+     * @param context Context
+     * @param registerAsLocal 是否作为本地广播接收者注册.
+     */
+    public void register(Context context, boolean registerAsLocal) {
+        if (registerAsLocal) {
+            LocalBroadcastManager.getInstance(context).registerReceiver(this,mIntentFilter);
+        }
+        else{
+            context.registerReceiver(this, mIntentFilter);
+        }
+    }
     public void register(Context context) {
-        context.registerReceiver(this, mIntentFilter);
+        register(context,false);
     }
 
     public void unRegister(Context context) {
         context.unregisterReceiver(this);
     }
 
+    /**
+     * 解注册本广播接收者
+     * @param context Context
+     * @param unRegisterInLocal 是否解注册本广播为本地广播
+     */
+    public void unRegister(Context context, boolean unRegisterInLocal) {
+        if (unRegisterInLocal) {
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(this);
+        }
+        else{
+            context.unregisterReceiver(this);
+        }
+    }
     public IntentFilter getInnerIntentFilter() {
         return mIntentFilter;
     }
