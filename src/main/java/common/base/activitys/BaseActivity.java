@@ -485,6 +485,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onConfigurationChanged() newConfig = " + newConfig);
         }
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (LIFE_CIRCLE_DEBUG) {
+            CommonLog.i(TAG,"---> onWindowFocusChanged() hasFocus = " + hasFocus);
+        }
+    }
     //---------------------up up up 生命周期方法 up up up ----------(我是不漂亮的分隔线)---------------
     /**
      * Called when a view has been clicked.

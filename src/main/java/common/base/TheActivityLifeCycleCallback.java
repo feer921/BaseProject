@@ -21,7 +21,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     protected volatile int theActivityCount = 0;
     protected boolean LIFE_CIRCLE_DEBUG = true;
 
-    protected Activity theAppTopActivity;
+    protected volatile Activity theAppTopActivity;
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         if (LIFE_CIRCLE_DEBUG) {
@@ -34,14 +34,14 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         theActivityCount++;
         theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG, "-->onActivityStarted() activity = " + activity);
+            CommonLog.i(TAG, "-->onActivityStarted() activity = " + activity );
         }
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity);
+            CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity + " theAppTopActivity = " + theAppTopActivity);
         }
     }
 

@@ -1,5 +1,6 @@
 package common.base.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -21,6 +22,7 @@ public final class JsonUtil {
     static {
         mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);//属性为 空（“”） 或者为 NULL 都不序列化
     }
 
     private JsonUtil() {
@@ -51,7 +53,7 @@ public final class JsonUtil {
     public static String convertObj2JSonStr(Object toJsonObj) {
         String jsonResultStr = "";
         try {
-            converObject2JsonStr(toJsonObj);
+            jsonResultStr = converObject2JsonStr(toJsonObj);
         } catch (IOException e) {
             jsonResultStr = "";
         }
