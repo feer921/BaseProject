@@ -84,7 +84,7 @@ public class AppScopeStorageUtil {
      */
     @SuppressLint("NewApi")
     public static File appDataRootDir(Context context) {
-        if (Util.isCompateApi(24)) {//android 4.0
+        if (Util.isCompateApi(24)) {//android 7.0
             return context.getDataDir();
         }
         return appCacheDir(context).getParentFile();
@@ -186,4 +186,19 @@ public class AppScopeStorageUtil {
     public static File getDataBaseFile(Context context, String dbfileName) {
         return context.getDatabasePath(dbfileName);
     }
+    /**
+     * 追加文件夹文件的路径"/"目录符号
+     * @param dirFile 可以是目录File也可以是文件File
+     * @return 如果参数是文件夹："xxx/xxx/xx/"; 如果参数是文件:"xxx/xx/xx.txt"
+     */
+    public static String appendDirSeparator(File dirFile) {
+        String filePathStr = dirFile.getAbsolutePath();
+        if (dirFile.isDirectory()) {
+            if (!filePathStr.endsWith(File.separator)) {
+                filePathStr += File.separator;
+            }
+        }
+        return filePathStr;
+    }
+
 }
