@@ -101,7 +101,8 @@ public class HintPopuWindow extends PopupWindow implements WeakHandler.Handleabl
     }
 
     @Override
-    public void handleMessage(Message msg) {
+    public int handleMessage(Message msg) {
         dismiss();
+        return 0;
     }
 }

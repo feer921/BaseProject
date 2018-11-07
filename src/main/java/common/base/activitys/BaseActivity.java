@@ -107,9 +107,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * 处理消息
+     * @param msg 要处理的消息
+     * @return 被处理了的MessageId
+     */
     @Override
-    public void handleMessage(Message msg) {
+    public int handleMessage(Message msg) {
+        return -1;
     }
+
     /**
      * 获取项目内Application级别的上下文
      * @param <APP> 各项目自己的继承自Application的实例

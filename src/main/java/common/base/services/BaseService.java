@@ -139,7 +139,7 @@ public class BaseService extends Service implements WeakHandler.Handleable{
      * @param msg 要处理的消息
      */
     @Override
-    public void handleMessage(Message msg) {
-
+    public int handleMessage(Message msg) {
+        return 0;
     }
 }

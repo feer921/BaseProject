@@ -71,8 +71,9 @@ public class WeakHandler<T extends WeakHandler.Handleable> extends Handler {
         }
         return false;
     }
+    //changed by fee 2018-11-07:去除final修饰，让子类可以直接重写
     @Override
-    public final void handleMessage(Message msg) {
+    public void handleMessage(Message msg) {
         int msgWhat = msg.what;
         //判断该Message 被忽略了
         boolean isIgnored = false;
@@ -101,6 +102,11 @@ public class WeakHandler<T extends WeakHandler.Handleable> extends Handler {
         removeCallbacksAndMessages(null);
     }
    public interface Handleable{
-        void handleMessage(Message msg);
+       /**
+        * 处理消息
+        * @param msg
+        * @return 被处理了的MessageId
+        */
+        int handleMessage(Message msg);
     }
 }
