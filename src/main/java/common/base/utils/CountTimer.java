@@ -7,6 +7,7 @@ package common.base.utils;
  * Time: 9:52<br>
  * <P>DESC:
  * 统计开始到结束的所用的时间
+ * 注意，这个只适合单线程
  * </p>
  * ******************(^_^)***********************
  */
@@ -39,7 +40,7 @@ public class CountTimer {
         long endTiem = System.currentTimeMillis();
         long wasteTiem = endTiem - startTime;
         String finalLogTag = logTag == null ? TAG : logTag;
-        String logInfoContent = " -->end() experience time: "+ wasteTiem;
+        String logInfoContent = " -->end() waste time: "+ wasteTiem;
         if (logExtraInfo != null) {
             logInfoContent = logExtraInfo + logInfoContent;
         }

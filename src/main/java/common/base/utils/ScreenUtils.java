@@ -2,9 +2,21 @@ package common.base.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Picture;
+import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.ScrollView;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * 工具类
@@ -88,5 +100,82 @@ public class ScreenUtils {
     public static int sp2px(float spValue) {
         final float fontScale = sContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
+    }
+
+    //截屏功能
+    //这是webview的，利用了webview的api
+    private static Bitmap captureWebView(WebView webView) {
+        Picture snapShot = webView.capturePicture();
+        if (snapShot == null) {
+            return null;
+        }
+        Bitmap bmp = Bitmap.createBitmap(snapShot.getWidth(),
+                snapShot.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmp);
+        snapShot.draw(canvas);
+        return bmp;
+    }
+
+    /**
+     * 截取scrollview的屏幕
+     * **/
+    public static Bitmap getScrollViewBitmap(ScrollView scrollView) {
+        int h = 0;
+        Bitmap bitmap;
+        for (int i = 0; i < scrollView.getChildCount(); i++) {
+            h += scrollView.getChildAt(i).getHeight();
+        }
+        // 创建对应大小的bitmap
+        bitmap = Bitmap.createBitmap(scrollView.getWidth(), h,
+                Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bitmap);
+        scrollView.draw(canvas);
+        return bitmap;
+    }
+
+    public static Bitmap captureViewSnapShot(View theView,String savedPath) {
+        if (theView != null) {
+            theView.setDrawingCacheEnabled(true);
+//            theView.buildDrawingCache(true);
+            theView.buildDrawingCache();
+            Bitmap bitmap = null;
+            bitmap = Bitmap.createBitmap(theView.getDrawingCache(false));
+            FileOutputStream fos = null;
+            if (bitmap != null && savedPath != null) {
+                try {
+                    File snapShotFile = new File(savedPath);
+                    fos = new FileOutputStream(snapShotFile);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                    fos.flush();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fos != null) {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                bitmap.recycle();
+                return null;
+            }
+            return bitmap;
+        }
+        return null;
+    }
+
+    public static Bitmap captureView(View notRootView) {
+        View theView = notRootView;
+        if (theView != null) {
+            theView.setDrawingCacheEnabled(true);
+            theView.buildDrawingCache();
+            Bitmap bitmap = Bitmap.createBitmap(theView.getDrawingCache());
+            return bitmap;
+        }
+        return null;
     }
 }
