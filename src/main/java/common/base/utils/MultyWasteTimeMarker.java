@@ -15,38 +15,56 @@ import java.util.HashMap;
  */
 public class MultyWasteTimeMarker {
     private static volatile HashMap<String, Long> tagTimeInfos = new HashMap<>();
+    private static final String TAG = "MultyWasteTimeMarker";
 
-
-    public static void start(String tag) {
-        if (tag == null || "".equals(tag)) {
+    public static void start(String markTag) {
+        long startTime = System.currentTimeMillis();
+        if (markTag == null || "".equals(markTag)) {
             return;
         }
-        long startTime = System.currentTimeMillis();
-        tagTimeInfos.put(tag, startTime);
+        tagTimeInfos.put(markTag, startTime);
     }
 
-    public static long markEnd(String tag) {
+    public static long markEnd(String markTag) {
         long theEndTime = System.currentTimeMillis();
-        if (tag == null) {
+        if (markTag == null) {
             return 0;
         }
-        Long startTimeOfTheTag = tagTimeInfos.get(tag);
+        Long startTimeOfTheTag = tagTimeInfos.get(markTag);
         if (startTimeOfTheTag != null) {
             long wasteTime = theEndTime - startTimeOfTheTag;
-            CommonLog.i(tag, " waste time: " + wasteTime);
+            CommonLog.i(TAG, markTag + "--> waste time：" + wasteTime);
             return wasteTime;
         }
         return 0;
     }
-    public static long markEnd(String tag, String logExtraInfo) {
+    public static long markEnd(String markTag,String logTag) {
         long theEndTime = System.currentTimeMillis();
-        if (tag == null) {
+        if (markTag == null) {
             return 0;
         }
-        Long startTimeOfTheTag = tagTimeInfos.get(tag);
+        Long startTimeOfTheTag = tagTimeInfos.get(markTag);
         if (startTimeOfTheTag != null) {
             long wasteTime = theEndTime - startTimeOfTheTag;
-            CommonLog.i(tag, logExtraInfo + " waste time: " + wasteTime);
+            String finalLogTag = logTag == null || "".equals(logTag) ? TAG : logTag;
+            CommonLog.i(finalLogTag, markTag + "--> waste time: " + wasteTime);
+            return wasteTime;
+        }
+        return 0;
+    }
+    public static long markEnd(String markTag,String logTag, String logExtraInfo) {
+        long theEndTime = System.currentTimeMillis();
+        if (markTag == null) {
+            return 0;
+        }
+        Long startTimeOfTheTag = tagTimeInfos.get(markTag);
+        if (startTimeOfTheTag != null) {
+            long wasteTime = theEndTime - startTimeOfTheTag;
+            String finalLogTag = logTag == null || "".equals(logTag) ? TAG : logTag;
+            if (logExtraInfo == null) {
+                logExtraInfo = "";
+            }
+            CommonLog.i(finalLogTag, markTag + logExtraInfo + " waste time: " + wasteTime);
             return wasteTime;
         }
         return 0;
