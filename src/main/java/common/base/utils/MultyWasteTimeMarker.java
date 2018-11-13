@@ -33,7 +33,8 @@ public class MultyWasteTimeMarker {
         Long startTimeOfTheTag = tagTimeInfos.get(markTag);
         if (startTimeOfTheTag != null) {
             long wasteTime = theEndTime - startTimeOfTheTag;
-            CommonLog.i(TAG, markTag + "--> waste time：" + wasteTime);
+            CommonLog.w(TAG, markTag + "--> waste time：" + wasteTime);
+            tagTimeInfos.remove(markTag);
             return wasteTime;
         }
         return 0;
@@ -47,7 +48,8 @@ public class MultyWasteTimeMarker {
         if (startTimeOfTheTag != null) {
             long wasteTime = theEndTime - startTimeOfTheTag;
             String finalLogTag = logTag == null || "".equals(logTag) ? TAG : logTag;
-            CommonLog.i(finalLogTag, markTag + "--> waste time: " + wasteTime);
+            CommonLog.w(finalLogTag, markTag + "--> waste time: " + wasteTime);
+            tagTimeInfos.remove(markTag);
             return wasteTime;
         }
         return 0;
@@ -64,7 +66,8 @@ public class MultyWasteTimeMarker {
             if (logExtraInfo == null) {
                 logExtraInfo = "";
             }
-            CommonLog.i(finalLogTag, markTag + logExtraInfo + " waste time: " + wasteTime);
+            CommonLog.w(finalLogTag, markTag + logExtraInfo + " waste time: " + wasteTime);
+            tagTimeInfos.remove(markTag);
             return wasteTime;
         }
         return 0;

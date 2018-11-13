@@ -40,7 +40,7 @@ public class CountTimer {
         long endTiem = System.currentTimeMillis();
         long wasteTiem = endTiem - startTime;
         String finalLogTag = logTag == null ? TAG : logTag;
-        String logInfoContent = " -->end() waste time: "+ wasteTiem;
+        String logInfoContent = " --> waste time: "+ wasteTiem;
         if (logExtraInfo != null) {
             logInfoContent = logExtraInfo + logInfoContent;
         }
