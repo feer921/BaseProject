@@ -2,6 +2,8 @@ package common.base;
 
 import android.app.Activity;
 import android.app.Application;
+
+import common.base.utils.CommonLog;
 import common.base.utils.PreferVisitor;
 
 /**
@@ -70,5 +72,13 @@ public class BaseApplication<E extends BaseApplication> extends Application{
     public void onTerminate() {
         super.onTerminate();
         AppManager.getMe().exitWholeApp(this);
+    }
+
+    protected void i(String logTag, Object... logInfo) {
+        CommonLog.i(logTag == null ? TAG : logTag, logInfo);
+    }
+
+    protected void e(String logTag, Object... logInfo) {
+        CommonLog.e(logTag == null ? TAG : logTag, logInfo);
     }
 }
