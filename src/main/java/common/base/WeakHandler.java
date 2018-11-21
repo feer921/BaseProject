@@ -1,6 +1,7 @@
 package common.base;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.SparseIntArray;
 
@@ -25,6 +26,15 @@ public class WeakHandler<T extends WeakHandler.Handleable> extends Handler {
         handleableObj = new WeakReference<>(toHandleMsgObj);
     }
 
+    /**
+     * 增加可以指定关联到不同looper的Handler
+     * @param toHandleMsgObj
+     * @param looper
+     */
+    public WeakHandler(T toHandleMsgObj, Looper looper) {
+        super(looper);
+        handleableObj = new WeakReference<>(toHandleMsgObj);
+    }
     /**
      * 添加需要忽略的消息类型
      * @param toIgnoreMsgWhat 需要忽略的消息类型，可多个

@@ -1,10 +1,12 @@
 package common.base.services;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import common.base.WeakHandler;
@@ -109,23 +111,23 @@ public class BaseService extends Service implements WeakHandler.Handleable{
 
     protected WeakHandler weakHandler ;
     protected void initHandler() {
+        initHandler(null);
+    }
+
+    protected void initHandler(Looper looper) {
         if (weakHandler == null) {
-//            weakHandler = new WeakHandler<>(this){
-//                @Override
-//                public void handleMessage(Message msg) {
-//                    super.handleMessage(msg);
-//                    if (getOwner() != null) {
-//                        handlerMsg(msg);
-//                    }
-//                }
-//            };
-            weakHandler = new WeakHandler<>(this);
+            if (looper == null) {
+                weakHandler = new WeakHandler<>(this);
+            }
+            else{
+                weakHandler = new WeakHandler<>(this);
+            }
         }
     }
-//    protected void handlerMsg(Message msg) {
-//
-//    }
 
+    protected <App extends Application> App getAppInstance() {
+        return (App) getApplication();
+    }
     protected void e(Object... logBody) {
         CommonLog.e(TAG,logBody);
     }
