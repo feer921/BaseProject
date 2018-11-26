@@ -2,6 +2,7 @@ package common.base.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -24,7 +25,7 @@ import common.base.utils.ViewUtil;
 
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected final String TAG = getClass().getSimpleName();
-    protected OnClickListener dialogClickListener;
+    protected DialogInterface.OnClickListener dialogClickListener;
     /**
      * 对话框的布局视图
      */
@@ -205,7 +206,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         
     }
 
-    public I setDialogClickListener(OnClickListener dialogClickListener) {
+    public I setDialogClickListener(DialogInterface.OnClickListener dialogClickListener) {
         this.dialogClickListener = dialogClickListener;
         return self();
     }
