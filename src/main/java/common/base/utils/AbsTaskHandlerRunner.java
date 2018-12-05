@@ -160,11 +160,12 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
     @MainThread
     protected abstract boolean handleMsgOnMainThread(Message msg);
 
-    public I doTask(int whatTask, Object taskObj) {
+    public boolean doTask(int whatTask, Object taskObj) {
         return doTask(whatTask, taskObj, false);
     }
 
-    public I doTask(int whatTask, Object taskObj, boolean needRemoveLast) {
+    public boolean doTask(int whatTask, Object taskObj, boolean needRemoveLast) {
+        boolean sendSuc = false;
         WeakHandler theHandler = taskDispatchHandler;
         if (theHandler != null) {
             if (needRemoveLast) {
@@ -172,13 +173,30 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
             }
             Message taskMessage = Message.obtain(theHandler, whatTask);
             taskMessage.obj = taskObj;
-            taskMessage.sendToTarget();
+            sendSuc = theHandler.sendMessage(taskMessage);
         }
-        return self();
+        else{//task Handler还没初始化好
+            sendSuc = doTaskUseOtherHandler(whatTask, taskObj, false, 2000);
+        }
+        return sendSuc;
     }
 
-    public I doTask(Object taskOjb) {
+    public boolean doTask(Object taskOjb) {
         return doTask(MSG_WHAT_DO_TASK, taskOjb);
+    }
+
+    public boolean doTaskUseOtherHandler(int whatTask, Object taskObj, boolean needRemoveLastOne, long delaySendTimeMills) {
+        WeakHandler theHandler = mHandler4MainThread;
+        boolean sendSuc = false;
+        if (theHandler != null) {
+            if (needRemoveLastOne) {
+                theHandler.removeMessages(whatTask);
+            }
+            Message msg = Message.obtain(theHandler, whatTask);
+            msg.obj = taskObj;
+            sendSuc = theHandler.sendMessageDelayed(msg, delaySendTimeMills);
+        }
+        return sendSuc;
     }
     protected I self() {
         return (I) this;

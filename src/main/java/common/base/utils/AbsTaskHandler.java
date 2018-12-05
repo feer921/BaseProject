@@ -73,11 +73,17 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
     public final int handleMessage(Message msg) {
         if (msg != null) {
             Handler handlerInMsg = msg.getTarget();
-            if (handlerInMsg== taskDispatchHandler) {
+            if (handlerInMsg == taskDispatchHandler) {
                 handleTask(msg);
             }
             else if (handlerInMsg == mHandler4MainThread) {
-                handleMsgOnMainThread(msg);
+                int msgWhat = msg.what;
+                if (MSG_WHAT_DO_TASK == msgWhat) {//这里表示之前发送的要执行的任务(因为taskDispatchHandler未初始化好)被延迟执行了
+                    doTask(msg.obj);
+                }
+                else{
+                    handleMsgOnMainThread(msg);
+                }
             }
         }
         return 0;
@@ -100,26 +106,51 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
     @MainThread
     protected abstract boolean handleMsgOnMainThread(Message msg);
 
-    public I doTask(int whatTask, Object taskObj) {
+    public boolean doTask(int whatTask, Object taskObj) {
         return doTask(whatTask, taskObj, false);
     }
 
-    public I doTask(int whatTask, Object taskObj, boolean needRemoveLast) {
+    public boolean doTask(int whatTask, Object taskObj, boolean needRemoveLast) {
+        boolean sendSuc = false;
         WeakHandler theHandler = taskDispatchHandler;
         if (theHandler != null) {
+            Message taskMessage = null;
             if (needRemoveLast) {
                 theHandler.removeMessages(whatTask);
+                // TODO: 2018/12/4  需要重新new????
+//                taskMessage = new Message();
             }
-            Message taskMessage = Message.obtain(theHandler, whatTask);
+            else{
+
+            }
+            taskMessage = Message.obtain(theHandler, whatTask);
+
             taskMessage.obj = taskObj;
-            taskMessage.sendToTarget();
+            sendSuc = theHandler.sendMessage(taskMessage);
         }
-        return self();
+        else{
+            sendSuc = doTaskUseOtherHandler(whatTask, taskObj, needRemoveLast, 2000);
+        }
+        return sendSuc;
     }
 
-    public I doTask(Object taskOjb) {
+    public boolean doTask(Object taskOjb) {
         return doTask(MSG_WHAT_DO_TASK, taskOjb);
     }
+    public boolean doTaskUseOtherHandler(int whatTask, Object taskObj, boolean needRemoveLastOne, long delaySendTimeMills) {
+        WeakHandler theHandler = mHandler4MainThread;
+        boolean sendSuc = false;
+        if (theHandler != null) {
+            if (needRemoveLastOne) {
+                theHandler.removeMessages(whatTask);
+            }
+            Message msg = Message.obtain(theHandler, whatTask);
+            msg.obj = taskObj;
+            sendSuc = theHandler.sendMessageDelayed(msg, delaySendTimeMills);
+        }
+        return sendSuc;
+    }
+
     protected I self() {
         return (I) this;
     }
