@@ -30,9 +30,21 @@ public class ScreenUtils {
     private static int navigationBarHeight = 10;
     public static void init(Context context) {
         sContext = context.getApplicationContext();
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (sContext == null) {
+            sContext = context.getApplicationContext();
+        }
+        if (sContext == null) {
+            return;
+        }
+        WindowManager windowManager = (WindowManager) sContext.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager == null) {
+            return;
+        }
         DisplayMetrics displayMetrics = new DisplayMetrics();
         Display defDisplay = windowManager.getDefaultDisplay();
+        if (defDisplay == null) {
+            return;
+        }
         defDisplay.getMetrics(displayMetrics);
         windowWidth = displayMetrics.widthPixels;
         windowHeight = displayMetrics.heightPixels;
