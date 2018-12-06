@@ -1,5 +1,6 @@
 package com.lzy.okgo.callback;
 
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 
 import common.base.netAbout.INetEvent;
@@ -22,12 +23,21 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
     }
     public OkgoNetCallback(Class<T> tTypeClass,INetEvent<T> netEvent){
         genericsTypeClass = tTypeClass;
-        this.netEvent = netEvent;
+//        this.netEvent = netEvent;
+        weakRefNetEvent = new WeakReference<>(netEvent);
     }
+    protected WeakReference<INetEvent<T>> weakRefNetEvent;
     protected INetEvent<T> netEvent;
 
     public void onSuccess(T repData) {
+        if (canceled) {
+            return;
+        }
         if (null != netEvent) {
+            netEvent.onResponse(requestType, repData);
+        }
+        INetEvent<T> netEvent = theNetEvent();
+        if (netEvent != null) {
             netEvent.onResponse(requestType, repData);
         }
     }
@@ -40,12 +50,21 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
                     ((INetEventWithResponse) netEvent).onResponse(requestType, t, response);
                 }
             }
+            INetEvent<T> netEvent = theNetEvent();
+            if (netEvent != null) {
+                if (netEvent instanceof INetEventWithResponse) {
+                    ((INetEventWithResponse) netEvent).onResponse(requestType, t, response);
+                }
+            }
         }
         onSuccess(t);
     }
 
     @Override
     public void onError(Call call, Response response, Exception e) {
+        if (canceled) {
+            return;
+        }
         String errorMsg = INetEvent.ERR_UNKNOW;
         if (null != e) {
             errorMsg = e.toString();
@@ -56,5 +75,16 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         if (null != netEvent) {
             netEvent.onErrorResponse(requestType,errorMsg);
         }
+        INetEvent<T> netEvent = theNetEvent();
+        if (netEvent != null) {
+            netEvent.onErrorResponse(requestType,errorMsg);
+        }
+    }
+
+    protected INetEvent<T> theNetEvent() {
+        if (weakRefNetEvent != null) {
+            return weakRefNetEvent.get();
+        }
+        return null;
     }
 }

@@ -44,7 +44,10 @@ public abstract class AbsCallback<T> implements Converter<T> {
      */
     public int requestType = -1;
     public Object callBackTag;
-
+    /**
+     * 取消了
+     */
+    public boolean canceled;
     /** 请求网络开始前，UI线程 */
     public void onBefore(BaseRequest request) {
     }

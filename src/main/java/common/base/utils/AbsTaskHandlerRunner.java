@@ -11,6 +11,7 @@ import android.support.annotation.WorkerThread;
 import java.util.concurrent.ExecutorService;
 
 import common.base.WeakHandler;
+import common.base.interfaces.IDoTaskCallback;
 
 /**
  * ******************(^_^)***********************<br>
@@ -23,7 +24,7 @@ import common.base.WeakHandler;
  * </p>
  * ******************(^_^)***********************
  */
-public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> implements WeakHandler.Handleable,Runnable{
+public class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> implements WeakHandler.Handleable,Runnable{
     protected final String TAG = getClass().getSimpleName();
 
     protected static final int MSG_WHAT_DO_TASK = 0x11;
@@ -31,6 +32,7 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
      * 任务的优先级
      */
     protected int taskPriority;
+
     /**
      * 是否需要初始化工作在主线程上的Handler
      */
@@ -44,6 +46,22 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
     protected String theTaskName = "";
 
     private volatile boolean isQuit;
+
+    protected IDoTaskCallback doTaskCallback;
+
+    public I withTaskCallback(IDoTaskCallback taskCallback) {
+        this.doTaskCallback = taskCallback;
+        return self();
+    }
+
+    public I withTaskPriority(int taskPriority) {
+        this.taskPriority = taskPriority;
+        return self();
+    }
+    public I withNeedMainThreadHandler(boolean need) {
+        this.needMainThreadHandler = need;
+        return self();
+    }
     public I prepare(@NonNull String taskName) {
         if (null == taskName || "".equals(taskName.trim())) {
             taskName = TAG;
@@ -150,7 +168,12 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
      * @return true:处理完了
      */
     @WorkerThread
-    protected abstract boolean handleTask(Message msg);
+    protected boolean handleTask(Message msg){
+        if (msg != null) {
+            onDoTask(msg.what, msg.obj);
+        }
+        return false;
+    }
 
     /**
      * 主线程处理消息
@@ -158,7 +181,12 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
      * @return true:处理了
      */
     @MainThread
-    protected abstract boolean handleMsgOnMainThread(Message msg);
+    protected boolean handleMsgOnMainThread(Message msg){
+        if (msg != null) {
+            onTaskResult(msg.what,msg.obj);
+        }
+        return false;
+    }
 
     public boolean doTask(int whatTask, Object taskObj) {
         return doTask(whatTask, taskObj, false);
@@ -203,6 +231,7 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
     }
     public void workOver() {
         isQuit = true;
+        doTaskCallback = null;
         if (taskDispatchHandler != null) {
             taskDispatchHandler.release();
         }
@@ -215,6 +244,19 @@ public abstract class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> imple
             mHandler4MainThread.release();
         }
         mHandler4MainThread = null;
+    }
+
+    protected boolean onDoTask(int whatTask, Object taskObj) {
+        if (doTaskCallback != null) {
+            return doTaskCallback.onDoTask(whatTask, taskObj);
+        }
+        return false;
+    }
+
+    protected void onTaskResult(int whatTask, Object taskResult) {
+        if (doTaskCallback != null) {
+            doTaskCallback.onDoTaskResult(whatTask, taskResult);
+        }
     }
     /**
      * Returns the identifier of this thread. See Process.myTid().

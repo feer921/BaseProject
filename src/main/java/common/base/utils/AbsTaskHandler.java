@@ -8,6 +8,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import common.base.WeakHandler;
+import common.base.interfaces.IDoTaskCallback;
 
 /**
  * ******************(^_^)***********************<br>
@@ -20,7 +21,7 @@ import common.base.WeakHandler;
  * </p>
  * ******************(^_^)***********************
  */
-public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHandler.Handleable{
+public class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHandler.Handleable{
     protected final String TAG = getClass().getSimpleName();
 
     protected static final int MSG_WHAT_DO_TASK = 0x11;
@@ -38,6 +39,8 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
     protected WeakHandler taskDispatchHandler;
 
     protected WeakHandler mHandler4MainThread;
+
+    protected IDoTaskCallback taskCallback;
 
     public I prepare(@NonNull String taskName) {
         if (null == taskName || "".equals(taskName.trim())) {
@@ -60,6 +63,20 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
         return self();
     }
 
+    public I withDoTaskCallback(IDoTaskCallback callback) {
+        this.taskCallback = callback;
+        return self();
+    }
+
+    public I withNeedMainThreadHandler(boolean need){
+        this.needMainThreadHandler = need;
+        return self();
+    }
+
+    public I withTaskPriority(int taskPriority) {
+        this.taskPriority = taskPriority;
+        return self();
+    }
     public I prepare() {
         return prepare(TAG);
     }
@@ -92,19 +109,31 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
     /**
      * 在这里来处理任务
      * 注：在工作线程中
+     *
      * @param msg 任务消息
      * @return true:处理完了
      */
     @WorkerThread
-    protected abstract boolean handleTask(Message msg);
+    protected boolean handleTask(Message msg) {
+        if (msg != null) {
+            onDoTask(msg.what, msg.obj);
+        }
+        return false;
+    }
 
     /**
      * 主线程处理消息
+     *
      * @param msg 消息(可能为在工作任务中执行结束的任务结果)
      * @return true:处理了
      */
     @MainThread
-    protected abstract boolean handleMsgOnMainThread(Message msg);
+    protected boolean handleMsgOnMainThread(Message msg) {
+        if (msg != null) {
+            onTaskResult(msg.what, msg.obj);
+        }
+        return false;
+    }
 
     public boolean doTask(int whatTask, Object taskObj) {
         return doTask(whatTask, taskObj, false);
@@ -155,6 +184,7 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
         return (I) this;
     }
     public void workOver() {
+        taskCallback = null;
         if (taskDispatchHandler != null) {
             taskDispatchHandler.release();
         }
@@ -169,4 +199,16 @@ public abstract class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHa
         mHandler4MainThread = null;
     }
 
+    protected boolean onDoTask(int whatTask, Object taskObj) {
+        if (taskCallback != null) {
+            return taskCallback.onDoTask(whatTask, taskObj);
+        }
+        return false;
+    }
+
+    protected void onTaskResult(int whatTask, Object taskResult) {
+        if (taskCallback != null) {
+            taskCallback.onDoTaskResult(whatTask, taskResult);
+        }
+    }
 }
