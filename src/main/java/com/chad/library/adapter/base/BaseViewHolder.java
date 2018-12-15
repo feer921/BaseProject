@@ -360,6 +360,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      * <p>
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public BaseViewHolder addOnClickListener(@IdRes final int viewId) {
         childClickViewIds.add(viewId);

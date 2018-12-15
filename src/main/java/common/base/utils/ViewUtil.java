@@ -533,4 +533,15 @@ public class ViewUtil{
 
         w.getDecorView().setSystemUiVisibility(uiFlags);
     }
+
+    /**
+     * 使用像素来设置TextView的文本大小
+     * @param tv TextView
+     * @param pixelValue 像素单位的文本大小
+     */
+    public static void setTextViewTextSizeWithPixelValue(TextView tv, int pixelValue) {
+        if (tv != null) {
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,pixelValue);
+        }
+    }
 }

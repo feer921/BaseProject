@@ -1,99 +1,76 @@
 package common.base.dialogs;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import common.base.R;
 import common.base.activitys.IProxyCallback;
 import common.base.utils.ViewUtil;
+import common.base.views.SuperEmptyLoadingView;
 
 /**
  * ******************(^_^)***********************<br>
- * User: 11776610771@qq.com<br>
- * Date: 2017/5/18<br>
- * Time: 14:52<br>
+ * User: fee(QQ/WeiXin:1176610771)<br>
+ * Date: 2018/10/17<br>
+ * Time: 14:10<br>
  * <P>DESC:
  * </p>
- * @deprecated please use {@link SimpleDialogLoading}
  * ******************(^_^)***********************
  */
-@Deprecated
-public class CommonProgressDialog extends ProgressDialog implements DialogInterface.OnCancelListener{
-
-    private AnimationDrawable mAnimBgDrawable;
-    private ImageView mIvLoadingAnim;
-    private TextView mTvLoadingHint;
+public class SimpleDialogLoading extends android.app.ProgressDialog implements DialogInterface.OnCancelListener{
+    private SuperEmptyLoadingView loadingView;
     private View contentView;
     private IProxyCallback callback;
     private int animResId;
-    ProgressBar pb;
-    public CommonProgressDialog(Context context) {
-        this(context, 0);
-    }
 
-    public CommonProgressDialog(Context context, int theme) {
+//    public SimpleDialogLoading(Context context) {
+//        this(context,0);
+//    }
+
+    public SimpleDialogLoading(Context context, int theme) {
         super(context, theme);
-//        initView();
+        initView();
     }
 
-    public CommonProgressDialog withAnim(@DrawableRes int animResId) {
+    public SimpleDialogLoading withAnim(@DrawableRes int animResId) {
         if (this.animResId != animResId) {
-            if (mIvLoadingAnim != null) {
-                mIvLoadingAnim.setBackgroundResource(animResId);
-                mAnimBgDrawable = (AnimationDrawable) mIvLoadingAnim.getBackground();
+            if (loadingView != null) {
+                loadingView.withLoadingAnim(animResId);
             }
-        }
-        if (pb != null) {
-            pb.setVisibility(View.GONE);
         }
         this.animResId = animResId;
         return this;
     }
-    public CommonProgressDialog withHint(@StringRes int hintStrResId) {
-        if (mTvLoadingHint != null) {
-            mTvLoadingHint.setText(hintStrResId);
+    public SimpleDialogLoading withHint(@StringRes int hintStrResId) {
+        if (loadingView != null) {
+            loadingView.withHintMsg(SuperEmptyLoadingView.LayoutStatus.Loading, hintStrResId);
         }
         return this;
     }
 
-    /**
-     * @param hintTextColor A color value in the form 0xAARRGGBB.
-     * @return self
-     */
-    public CommonProgressDialog withHintTextColor(@ColorInt int hintTextColor) {
-        if (mTvLoadingHint != null) {
-            mTvLoadingHint.setTextColor(hintTextColor);
+    public SimpleDialogLoading withHint(String hintMsg) {
+        if (loadingView != null) {
+            loadingView.withLoadingHint(hintMsg);
         }
         return this;
     }
-    public CommonProgressDialog withHint(String hintMsg) {
-        if (mTvLoadingHint != null) {
-            mTvLoadingHint.setText(hintMsg);
-        }
-        return this;
-    }
-    public CommonProgressDialog withCancel(boolean cancelAble) {
+    public SimpleDialogLoading withCancel(boolean cancelAble) {
         setCancelable(cancelAble);
         return this;
     }
 
-    public CommonProgressDialog withCancelOutside(boolean cancelOutside) {
+    public SimpleDialogLoading withCancelOutside(boolean cancelOutside) {
         setCanceledOnTouchOutside(cancelOutside);
         return this;
     }
-    public CommonProgressDialog withCancelCallback(IProxyCallback cancelCallback) {
+    public SimpleDialogLoading withCancelCallback(IProxyCallback cancelCallback) {
         this.callback = cancelCallback;
         if (cancelCallback != null) {
             setOnCancelListener(this);
@@ -104,7 +81,7 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
         return this;
     }
     public TextView getHintView() {
-        return mTvLoadingHint;
+        return loadingView == null ? null : loadingView.getTvHintMsg();
     }
     public void run() {
         clearOldMsg();
@@ -126,9 +103,12 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
     @Override
     public void dismiss() {
         clearOldMsg();
-//        CommonLog.e("info","-------CommonProgressDialog-------dismiss()---------------------------");
-        if (mAnimBgDrawable != null) {
-            mAnimBgDrawable.stop();
+        if (loadingView != null) {
+            loadingView.reset();
+        }
+        //防止dismiss的时候，window已无
+        if (getWindow() == null) {
+            return;
         }
         super.dismiss();
     }
@@ -136,38 +116,33 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ViewUtil.hideNavigationBar(getWindow());
         initView();
         setContentView(contentView);
     }
 
-    private void showAnim() {
-        if (mIvLoadingAnim != null) {
-            if (mAnimBgDrawable != null && !mAnimBgDrawable.isRunning()) {
-                mIvLoadingAnim.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAnimBgDrawable.start();
-                    }
-                });
-            }
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (hasFocus) {
+            ViewUtil.hideNavigationBar(getWindow());
         }
     }
 
-    public CommonProgressDialog withContentView(View contentView) {
+    private void showAnim() {
+        if (loadingView != null) {
+            loadingView.loading();
+        }
+    }
+
+    public SimpleDialogLoading withContentView(View contentView) {
         this.contentView = contentView;
         initView();
         return this;
     }
     private void initView() {
         if (contentView == null) {
-            contentView = getLayoutInflater().inflate(R.layout.common_progress_dialog_layout2, null);
-        }
-        mTvLoadingHint = ViewUtil.findViewInView(contentView, R.id.tv_dialog_load_hint);
-        mIvLoadingAnim = ViewUtil.findViewInView(contentView, R.id.iv_dialog_loading);
-        try {
-            pb = ViewUtil.findViewInView(contentView, R.id.loading_progress);
-        } catch (Exception ignore) {
-
+            contentView = getLayoutInflater().inflate(R.layout.simple_dialog_loading, null);
+            loadingView = contentView.findViewById(R.id.empty_layout_4_loading);
         }
     }
 
@@ -212,4 +187,5 @@ public class CommonProgressDialog extends ProgressDialog implements DialogInterf
     }
     private static final int MSG_DELAY_TO_DISMISS = 0x10;
     private Handler mHandler;
+
 }

@@ -39,7 +39,7 @@ public class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> implements Wea
     protected boolean needMainThreadHandler;
 
     protected Looper mLooper;
-    int mTid = -1;
+    private volatile int mTid = -1;
     protected WeakHandler taskDispatchHandler;
 
     protected WeakHandler mHandler4MainThread;
@@ -199,9 +199,12 @@ public class AbsTaskHandlerRunner<I extends AbsTaskHandlerRunner> implements Wea
             if (needRemoveLast) {
                 theHandler.removeMessages(whatTask);
             }
-            Message taskMessage = Message.obtain(theHandler, whatTask);
-            taskMessage.obj = taskObj;
-            sendSuc = theHandler.sendMessage(taskMessage);
+            boolean canSend = mTid != -1;//防止线程已经退出了，报sending message to a Handler on a dead thread
+            if (canSend) {
+                Message taskMessage = Message.obtain(theHandler, whatTask);
+                taskMessage.obj = taskObj;
+                sendSuc = theHandler.sendMessage(taskMessage);
+            }
         }
         else{//task Handler还没初始化好
             sendSuc = doTaskUseOtherHandler(whatTask, taskObj, false, 2000);

@@ -19,6 +19,7 @@ import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
+import android.support.annotation.DimenRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
@@ -2128,5 +2129,17 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
         final float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
         return (pxValue / fontScale + 0.5f);
+    }
+
+    /**
+     * dimension 资源的像素值
+     * @param dimenResId dimen资源id
+     * @return 0 if mContet is null; or,Dimension res convert pixel size
+     */
+    public int dimen2PixValue(@DimenRes int dimenResId) {
+        if (mContext != null) {
+            return mContext.getResources().getDimensionPixelSize(dimenResId);
+        }
+        return 0;
     }
 }

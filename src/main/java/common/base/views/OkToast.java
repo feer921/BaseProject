@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -136,6 +137,17 @@ public class OkToast {
         return this;
     }
 
+    /**
+     * 直接使用像素值来设置TextView的文本大小
+     * @param pixelValue 像素值
+     * @return self
+     */
+    public OkToast withTextSizePixelValue(float pixelValue) {
+        if (tvToast != null) {
+            tvToast.setTextSize(TypedValue.COMPLEX_UNIT_PX, pixelValue);
+        }
+        return this;
+    }
     public OkToast withTextColor(@ColorInt int textColor) {
         if (tvToast != null) {
             tvToast.setTextColor(textColor);

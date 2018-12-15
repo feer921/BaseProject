@@ -152,10 +152,12 @@ public class AbsTaskHandler<I extends AbsTaskHandler> implements WeakHandler.Han
             else{
 
             }
-            taskMessage = Message.obtain(theHandler, whatTask);
-
-            taskMessage.obj = taskObj;
-            sendSuc = theHandler.sendMessage(taskMessage);
+            boolean canSend = taskThread != null && taskThread.getThreadId() != -1;//避免线程已经dead状态了,报sending message to a Handler on a dead thread
+            if (canSend) {
+                taskMessage = Message.obtain(theHandler, whatTask);
+                taskMessage.obj = taskObj;
+                sendSuc = theHandler.sendMessage(taskMessage);
+            }
         }
         else{
             sendSuc = doTaskUseOtherHandler(whatTask, taskObj, needRemoveLast, 2000);
