@@ -11,7 +11,9 @@ import common.base.utils.Util;
 
 /**
  * 一个通用的提示性对象框，适用有头部Title、取消、确定按钮，以及中部的EditText、TextView切换的Dialog效果
+ * @deprecated please use CommonMdDialog instead
  */
+@Deprecated
 public class CommonHintDialog extends BaseDialog<CommonHintDialog>{
     private TextView tvTitle;
     private EditText edtContentView;

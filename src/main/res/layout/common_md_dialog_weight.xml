@@ -31,10 +31,10 @@
             style="@style/tv_fill_w_h_style"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:padding="@dimen/common_md_dialog_title_padding"
+            android:padding="@dimen/dp_20"
             android:text="@string/hint"
             android:textColor="#445979"
-            android:textSize="@dimen/common_md_dialog_title_textsize"
+            android:textSize="@dimen/sp_18"
             />
 
         <FrameLayout
@@ -42,21 +42,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.5"
-            android:minHeight="@dimen/common_md_dialog_center_layout_min_h"
-            android:paddingLeft="@dimen/common_md_dialog_center_layout_padding_lr"
-            android:paddingRight="@dimen/common_md_dialog_center_layout_padding_lr"
+            android:minHeight="@dimen/dp_40"
+            android:paddingLeft="@dimen/dp_23"
+            android:paddingRight="@dimen/dp_23"
             >
 
             <TextView
                 android:id="@+id/tv_4_dialog_msg"
                 style="@style/tv_fill_w_h_style"
                 android:layout_gravity="center_horizontal"
-                android:lineSpacingExtra="3dp"
-                android:paddingBottom="@dimen/common_md_dialog_hintmsg_padding_bottom"
+                android:lineSpacingExtra="@dimen/dp_3"
+                android:paddingBottom="@dimen/dp_15"
                 android:singleLine="false"
                 android:text="ddddddddddfdfdfdffdfdfdfdfdfdfd"
                 android:textColor="#445979"
-                android:textSize="@dimen/common_md_dialog_hintmsg_textsize"
+                android:textSize="@dimen/sp_14"
                 />
 
             <EditText
@@ -86,7 +86,7 @@
         <LinearLayout
             android:id="@+id/ll_btns"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/common_md_dialog_btn_layout_height"
+            android:layout_height="@dimen/dp_50"
             android:layout_weight="1"
             android:orientation="vertical"
             >
@@ -105,7 +105,7 @@
                     android:background="@drawable/selector_4_bottom_left_rounded"
                     android:text="@string/cancel"
                     android:textColor="#445979"
-                    android:textSize="@dimen/common_md_dialog_btn_textsize"
+                    android:textSize="@dimen/sp_16"
                     />
 
                 <View
@@ -121,7 +121,7 @@
                     android:background="@drawable/selector_4_bottom_right_rounded"
                     android:text="@string/confirm"
                     android:textColor="#3fa2ff"
-                    android:textSize="@dimen/common_md_dialog_btn_textsize"
+                    android:textSize="@dimen/sp_16"
                     />
             </LinearLayout>
         </LinearLayout>

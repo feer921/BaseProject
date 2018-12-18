@@ -60,6 +60,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         mdDialogContentLayout = ViewUtil.findViewInContainer(containerLayout, R.id.common_md_dialog_content_layout);
 
         tvDialogTitle = ViewUtil.findViewInContainer(containerLayout, R.id.tv_dialog_title);
+       // CommonLog.e(TAG, "-->initViews() textSize = " + tvDialogTitle.getTextSize());
         tvDialogHint = ViewUtil.findViewInContainer(containerLayout, R.id.tv_4_dialog_msg);
         tvDialogCancel = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_cancel);
         tvDialogCommit = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_commit);

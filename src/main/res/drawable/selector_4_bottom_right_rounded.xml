@@ -17,7 +17,7 @@
                 android:dashGap="3dp" />
             <!-- 圆角 -->
             <corners
-                android:bottomRightRadius="@dimen/common_md_dialog_bg_radius"
+                android:bottomRightRadius="@dimen/dp_7"
                 />
             <!--<padding
                 android:left="10dp"
@@ -49,7 +49,7 @@
     <item>
         <shape>
             <corners
-                android:bottomRightRadius="@dimen/common_md_dialog_bg_radius"
+                android:bottomRightRadius="@dimen/dp_7"
                 />
 
             <!--<gradient-->

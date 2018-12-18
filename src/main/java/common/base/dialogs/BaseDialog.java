@@ -142,8 +142,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
             WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2) //更正：2018-06-06：也不一定是-2，也有-1,初步结论为与dialog的style有关
-            CommonLog.e("info",TAG+"--> onCreate() window.lp.height = "+ lp.height +"  window.lp.width = " + lp.width);
             ViewGroup.LayoutParams dialogViewLp =  dialogView.getLayoutParams();
+            CommonLog.e("info", TAG + "--> onCreate() window.lp.height = " + lp.height + "  window.lp.width = " + lp.width + "  dialogViewLp=" + dialogViewLp);
             if(dialogWidth > 0 ){
                 lp.width = dialogWidth;
             }

@@ -10,7 +10,7 @@
     <RelativeLayout
         android:id="@+id/rl_content_header"
         android:layout_width="match_parent"
-        android:layout_height="49dp"
+        android:layout_height="@dimen/dp_49"
         >
         <TextView
             android:id="@+id/tv_top_confirm"
@@ -19,11 +19,13 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp"
+            android:paddingStart="@dimen/dp_15"
+            android:paddingLeft="@dimen/dp_15"
+            android:paddingRight="@dimen/dp_15"
+            android:paddingEnd="@dimen/dp_15"
             android:text="@string/confirm"
             android:textColor="#ff8855"
-            android:textSize="16sp"
+            android:textSize="@dimen/sp_16"
             />
 
         <TextView
@@ -31,7 +33,7 @@
             style="@style/common_tv_style"
             android:text="我是标题"
             android:textColor="#111111"
-            android:textSize="18sp"
+            android:textSize="@dimen/sp_18"
             android:layout_centerInParent="true"
             />
 
@@ -40,17 +42,19 @@
             style="@style/common_tv_style"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp"
+            android:paddingStart="@dimen/dp_15"
+            android:paddingLeft="@dimen/dp_15"
+            android:paddingRight="@dimen/dp_15"
+            android:paddingEnd="@dimen/dp_15"
             android:text="@string/cancel"
             android:textColor="#666666"
-            android:textSize="16sp"
+            android:textSize="@dimen/sp_16"
             />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="@dimen/dp_0_5"
         android:background="@color/gray"
         android:id="@+id/view_gray_divider"
         />
@@ -71,13 +75,13 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/dp_5"
         android:background="#939393"
         android:id="@+id/btns_top_divider"
         />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="@dimen/dp_55"
         android:orientation="horizontal"
         android:id="@+id/ll_bottom_btns"
         >
@@ -87,12 +91,12 @@
             android:text="@string/cancel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            android:textSize="@dimen/sp_18"
             android:textColor="#111"
             android:id="@+id/tv_bottom_cancel"
             />
         <View
-            android:layout_width="0.5dp"
+            android:layout_width="@dimen/dp_1_5"
             android:layout_height="match_parent"
             android:background="@color/color_999"
             android:id="@+id/bottom_btns_divider"
@@ -103,7 +107,7 @@
             android:text="@string/confirm"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textSize="18sp"
+            android:textSize="@dimen/sp_18"
             android:textColor="#111"
             android:id="@+id/tv_bottom_confirm"
             />
