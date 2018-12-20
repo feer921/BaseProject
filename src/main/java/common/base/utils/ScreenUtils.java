@@ -1,6 +1,8 @@
 package common.base.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -9,7 +11,10 @@ import android.graphics.Picture;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ScrollView;
@@ -98,6 +103,26 @@ public class ScreenUtils {
             }
         }
         return navigationBarHeight;
+    }
+
+    /**
+     * 好像无效
+     * @param activity
+     * @return
+     */
+    @SuppressLint("NewApi")
+    public static boolean checkDeviceHasNavigationBar(Context activity) {
+
+        //通过判断设备是否有返回键、菜单键(不是虚拟键,是手机屏幕外的按键)来确定是否有navigation bar
+         boolean hasMenuKey = ViewConfiguration.get(activity)
+                .hasPermanentMenuKey();
+        boolean hasBackKey = KeyCharacterMap
+                .deviceHasKey(KeyEvent.KEYCODE_BACK);
+
+        if (!hasMenuKey && !hasBackKey) {
+            return true;
+        }
+        return false;
     }
 
     public static int dp2px(float dpValue) {
@@ -201,5 +226,30 @@ public class ScreenUtils {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    public static String screenOrientationDesc(int curScreenOr) {
+        String oriDesc = curScreenOr + "";
+        switch (curScreenOr) {
+            case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
+                oriDesc = "在后面BEHIND";
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+                oriDesc = "竖屏";
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+                oriDesc = "横屏";
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_USER:
+                oriDesc = "跟随用户";
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_SENSOR:
+                oriDesc = "跟随传感器";
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
+                oriDesc = "未指明的";
+                break;
+        }
+        return oriDesc;
     }
 }

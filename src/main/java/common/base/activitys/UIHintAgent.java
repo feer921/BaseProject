@@ -38,6 +38,8 @@ public class UIHintAgent {
      */
     private DialogInterface.OnClickListener mClickListenerForDialog;
     private IProxyCallback  mProxyCallback;
+
+
     /**
      * 当前宿主(Activity)是否可见，一般不可见的情况(比如执行了onStop())不应该弹出提示性Dialog
      */
@@ -348,6 +350,14 @@ public class UIHintAgent {
     }
     public void setOwnerVisibility(boolean isVisible){
         this.isOwnerVisible = isVisible;
+    }
+
+    /**
+     * 查询宿主是否可见状态
+     * @return
+     */
+    public boolean isOwnerVisible() {
+        return isOwnerVisible;
     }
     /**
      * 结束代理UI交互

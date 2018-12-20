@@ -21,9 +21,12 @@ import android.widget.AbsListView;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.base.utils.CommonLog;
+
 /**
  * 支持垂直下拉刷新的Layout
  * Created by leelay on 2016/12/3.
+ * modified by fee
  */
 
 public class VRefreshLayout extends ViewGroup {
@@ -35,6 +38,11 @@ public class VRefreshLayout extends ViewGroup {
     public final static int STATUS_RELEASE_CANCEL = 4;//松手取消
     public final static int STATUS_COMPLETE = 5;//刷新完成
     private static final String TAG = "VRefreshLayout";
+
+    /**
+     * 本控件归属在哪的tag
+     */
+    private String belongTag;
     private int mStatus;
 
     private View mHeaderView;
@@ -411,6 +419,11 @@ public class VRefreshLayout extends ViewGroup {
 
     }
 
+    /**
+     * 当手指拿起时Action_UP时
+     * 根据下拉离开的距离来判断是取消操作还是要释放刷新
+     * @param dy 手指Action_UP时，距离开始的位置的垂直间距
+     */
     private void actionUp(float dy) {
         Log.d(TAG, "actionUp: " + dy);
         if (dy < mRefreshDistance) {
@@ -474,6 +487,9 @@ public class VRefreshLayout extends ViewGroup {
         });
     }
 
+    /**
+     * 动画移到初始的位置
+     */
     private void animOffsetToStartPos() {
         final int from = mHeaderCurrentTop = mHeaderView.getTop();
         int to = mHeaderOrginTop;
@@ -645,6 +661,21 @@ public class VRefreshLayout extends ViewGroup {
 
     public void setNestedCanScrolableView(View canScrolableView) {
         this.canScrolableView = canScrolableView;
+    }
+
+    public void setBelongTag(String meBelongTheTag) {
+        this.belongTag = meBelongTheTag;
+    }
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+//        CommonLog.d(TAG, belongTag + " : -->onWindowFocusChanged() hasWindowFocus= " + hasWindowFocus +" mStatus = " + theStateDesc(mStatus));
+        if (!hasWindowFocus) {
+            //失去焦点了,但是却仍然在拖动状态
+            if (STATUS_DRAGGING == mStatus) {
+                animOffsetToStartPos();
+            }
+        }
     }
 
     public interface OnRefreshListener {
