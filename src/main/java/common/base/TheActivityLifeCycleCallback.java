@@ -22,8 +22,13 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     protected boolean LIFE_CIRCLE_DEBUG = true;
 
     protected volatile Activity theAppTopActivity;
+    /**
+     * APP进程内存在Activity的数量统计
+     */
+    protected int existActivityCount = 0;
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        existActivityCount ++;
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityCreated() activity = " + activity);
         }
@@ -70,6 +75,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
 
     @Override
     public void onActivityDestroyed(Activity activity) {
+        existActivityCount--;
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityDestroyed() activity = " + activity);
         }
@@ -83,6 +89,13 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         return theActivityCount <= 0;
     }
 
+    /**
+     * 是否app进程内没有Activity存在了
+     * @return true:没有Activity存在了;false:App进程内有Activity存在
+     */
+    public boolean isNoActivitiesExist() {
+        return existActivityCount <= 0;
+    }
     /**
      * 获取app当前在栈顶的Activity
      * @return

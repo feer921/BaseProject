@@ -52,6 +52,9 @@ public class ScreenUtils {
             return;
         }
         defDisplay.getMetrics(displayMetrics);
+        //note here :宽、高的获取是会根据当前屏幕的方向来定义的，如果是竖屏,则宽的值为最短边，如果是横屏，宽为最长边
+        //note here : 因而可能会出现初始化时是竖屏的宽，但实际在Activity(横屏)时想获取屏幕宽，却没有获取到所要的最长边的值，所以需要使用本类提供的
+        //getScreenCurWidth(boolean needLandscapeScreenWidth)
         windowWidth = displayMetrics.widthPixels;
         windowHeight = displayMetrics.heightPixels;
         density = displayMetrics.density;
@@ -61,12 +64,26 @@ public class ScreenUtils {
         );
     }
 
-    public static int getScreenWidth() {
-       return windowWidth;
+//    public static int getScreenWidth() {
+//       return windowWidth;
+//    }
+//
+//    public static int getScreenHeight() {
+//        return windowHeight;
+//    }
+
+    public static int getScreenCurWidth(boolean needLandscapeScreenWidth) {
+        if (needLandscapeScreenWidth) {//需要横屏的宽,则是找最长边
+            return Math.max(windowWidth, windowHeight);
+        }
+        return Math.min(windowWidth, windowHeight);//则是找最短的边
     }
 
-    public static int getScreenHeight() {
-        return windowHeight;
+    public static int getScreenCurHeight(boolean needLandscapeScreenHeight) {
+        if (needLandscapeScreenHeight) {//如果需要横屏高，则是找最短的边
+            return Math.min(windowHeight, windowWidth);
+        }
+        return Math.max(windowHeight, windowWidth);//竖屏则是找最长的边
     }
     /**
      * 获取状态栏高度

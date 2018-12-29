@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -96,7 +97,7 @@ public final class JsonUtil {
         T javaObj = null;
         try {
             javaObj = mapper.readValue(jsonStr, javaObjClass);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return javaObj;
@@ -111,7 +112,7 @@ public final class JsonUtil {
     public static <T> List<T> jsonArrayStr2ListObject(String jsonArrayStr, TypeReference<List<T>> listTypeReference) {
         try {
             return mapper.readValue(jsonArrayStr, listTypeReference);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -155,5 +156,17 @@ public final class JsonUtil {
             }
         }
         return paramJson;
+    }
+
+    public static HashMap<String, Object> jsonStr2HashMap(String jsonStr) {
+        if (jsonStr != null && "".equals(jsonStr.trim())) {
+            try {
+                JavaType jvt = mapper.getTypeFactory().constructParametricType(HashMap.class,String.class,Object.class);
+                return mapper.readValue(jsonStr, jvt);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

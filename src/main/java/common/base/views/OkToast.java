@@ -8,12 +8,14 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import common.base.R;
+import common.base.WeakHandler;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
@@ -37,7 +39,16 @@ public class OkToast {
     private TextView tvToast;
     private ImageView ivDefToastHint;
     private LinearLayout llToastViewContainer;
+    /**
+     * 兼容方案二：采用windown addView的方式；
+     * 有两个注意点：
+     * 1)context应为Activity，并且在没有授权悬浮窗权限时只能在当前Activity上显示
+     * 2)需要Activity销毁时，及时移除
+     */
+    private WindowManager windowManager;
 
+    private WeakHandler msgHandler;
+    private View customToastView;
     private OkToast() {
 
     }
@@ -48,6 +59,7 @@ public class OkToast {
         return one;
     }
     private OkToast innerWith(Context appContext) {
+        windowManager = (WindowManager) appContext.getSystemService(Context.WINDOW_SERVICE);
         this.appContext = appContext.getApplicationContext();
         mLayoutInflater = LayoutInflater.from(this.appContext);
         llToastRootView = (LinearLayout) mLayoutInflater.inflate(R.layout.ok_toast, null);
@@ -191,6 +203,21 @@ public class OkToast {
             defYOffset = mToast.getYOffset();
         }
         return mToast;
+    }
+
+    public void showCompatToast(CharSequence toastText, View customToastView, int duration, int showGravity, int xOffset, int yOffset, float horizontalMargin, float verticalMargin) {
+        if (tvToast != null && !Util.isEmpty(toastText)) {
+            tvToast.setText(toastText);
+        }
+        if (customToastView != null) {
+           this.customToastView = customToastView;
+        }
+        if (duration <= 0) {
+            duration = 500;
+        }
+        WindowManager.LayoutParams wlp = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        wlp.gravity = showGravity;
+        
     }
     /**
      * 默认就是Short
