@@ -2,19 +2,19 @@ package com.chad.library.adapter.base;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.LayoutRes;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.ViewGroup;
 
 import com.chad.library.adapter.base.entity.IExpandable;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+import com.chad.library.adapter.base.entity.SectionMultiEntity;
 
 import java.util.List;
 
 /**
  * https://github.com/CymChad/BaseRecyclerViewAdapterHelper
  */
-public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K extends BaseViewHolder> extends BaseQuickAdapter<T, K> {
+public abstract class BaseSectionMultiItemQuickAdapter<T extends SectionMultiEntity, K extends BaseViewHolder> extends BaseQuickAdapter<T, K> {
 
     /**
      * layouts indexed with their types
@@ -24,21 +24,28 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     private static final int DEFAULT_VIEW_TYPE = -0xff;
     public static final int TYPE_NOT_FOUND = -404;
 
+    protected int mSectionHeadResId;
+    protected static final int SECTION_HEADER_VIEW = 0x00000444;
+
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
      * some initialization data.
      *
-     * @param data A new list is created out of this one to avoid mutable list
+     * @param sectionHeadResId The section head layout id for each item
+     * @param data             A new list is created out of this one to avoid mutable list
      */
-    public BaseMultiItemQuickAdapter(List<T> data) {
+    public BaseSectionMultiItemQuickAdapter(int sectionHeadResId, List<T> data) {
         super(data);
+        this.mSectionHeadResId = sectionHeadResId;
     }
 
     @Override
     protected int getDefItemViewType(int position) {
         T item = mData.get(position);
+
         if (item != null) {
-            return item.getItemType();
+            // check the item type include header or not
+            return item.isHeader ? SECTION_HEADER_VIEW : item.getItemType();
         }
         return DEFAULT_VIEW_TYPE;
     }
@@ -49,6 +56,10 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
 
     @Override
     protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
+        // add this to check viewType of section
+        if (viewType == SECTION_HEADER_VIEW)
+            return createBaseViewHolder(getItemView(mSectionHeadResId, parent));
+
         return createBaseViewHolder(parent, getLayoutId(viewType));
     }
 
@@ -56,6 +67,12 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
         return layouts.get(viewType, TYPE_NOT_FOUND);
     }
 
+    /**
+     * collect layout types you need
+     *
+     * @param type             The key of layout type
+     * @param layoutResId      The layoutResId of layout type
+     */
     protected void addItemType(int type, @LayoutRes int layoutResId) {
         if (layouts == null) {
             layouts = new SparseIntArray();
@@ -63,11 +80,29 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
         layouts.put(type, layoutResId);
     }
 
+    @Override
+    protected boolean isFixedViewType(int type) {
+        return super.isFixedViewType(type) || type == SECTION_HEADER_VIEW;
+    }
+
+    @Override
+    public void onBindViewHolder(K holder, int position) {
+        switch (holder.getItemViewType()) {
+            case SECTION_HEADER_VIEW:
+                setFullSpan(holder);
+                convertHead(holder, getItem(position - getHeaderLayoutCount()));
+                break;
+            default:
+                super.onBindViewHolder(holder, position);
+                break;
+        }
+    }
+
+    protected abstract void convertHead(K helper, T item);
 
     @Override
     public void remove(@IntRange(from = 0L) int position) {
-        if (mData == null
-                || position < 0
+        if (mData == null || position < 0
                 || position >= mData.size()) return;
 
         T entity = mData.get(position);
@@ -79,10 +114,10 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     }
 
     /**
-     * ÒÆ³ý¸¸¿Ø¼þÊ±£¬Èô¸¸¿Ø¼þ´¦ÓÚÕ¹¿ª×´Ì¬£¬ÔòÏÈÒÆ³ýÆäËùÓÐµÄ×Ó¿Ø¼þ
+     * ç§»é™¤çˆ¶æŽ§ä»¶æ—¶ï¼Œè‹¥çˆ¶æŽ§ä»¶å¤„äºŽå±•å¼€çŠ¶æ€ï¼Œåˆ™å…ˆç§»é™¤å…¶æ‰€æœ‰çš„å­æŽ§ä»¶
      *
-     * @param parent         ¸¸¿Ø¼þÊµÌå
-     * @param parentPosition ¸¸¿Ø¼þÎ»ÖÃ
+     * @param parent         çˆ¶æŽ§ä»¶å®žä½“
+     * @param parentPosition çˆ¶æŽ§ä»¶ä½ç½®
      */
     protected void removeAllChild(IExpandable parent, int parentPosition) {
         if (parent.isExpanded()) {
@@ -97,9 +132,9 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     }
 
     /**
-     * ÒÆ³ý×Ó¿Ø¼þÊ±£¬ÒÆ³ý¸¸¿Ø¼þÊµÌåÀàÖÐÏà¹Ø×Ó¿Ø¼þÊý¾Ý£¬±ÜÃâ¹Ø±ÕºóÔÙ´ÎÕ¹¿ªÊý¾ÝÖØÏÖ
+     * ç§»é™¤å­æŽ§ä»¶æ—¶ï¼Œç§»é™¤çˆ¶æŽ§ä»¶å®žä½“ç±»ä¸­ç›¸å…³å­æŽ§ä»¶æ•°æ®ï¼Œé¿å…å…³é—­åŽå†æ¬¡å±•å¼€æ•°æ®é‡çŽ°
      *
-     * @param child ×Ó¿Ø¼þÊµÌå
+     * @param child å­æŽ§ä»¶å®žä½“
      */
     protected void removeDataFromParent(T child) {
         int position = getParentPosition(child);

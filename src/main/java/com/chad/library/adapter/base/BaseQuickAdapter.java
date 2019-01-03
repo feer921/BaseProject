@@ -232,7 +232,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             recyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if ((linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1) != getItemCount()) {
+                    if (isFullScreen(linearLayoutManager)) {
                         setEnableLoadMore(true);
                     }
                 }
@@ -251,6 +251,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 }
             }, 50);
         }
+    }
+
+    private boolean isFullScreen(LinearLayoutManager llm) {
+        return (llm.findLastCompletelyVisibleItemPosition() + 1) != getItemCount() ||
+                llm.findFirstCompletelyVisibleItemPosition() != 0;
     }
 
     private int getTheBiggestNumber(int[] numbers) {
@@ -325,7 +330,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     /**
      * Set custom load more
      *
-     * @param loadingView
+     * @param loadingView 加载视图
      */
     public void setLoadMoreView(LoadMoreView loadingView) {
         this.mLoadMoreView = loadingView;
@@ -466,7 +471,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         mDuration = duration;
     }
 
-
+    /**
+     * If you have added headeview, the notification view refreshes.
+     * Do not need to care about the number of headview, only need to pass in the position of the final view
+     * @param position
+     */
+    public final void refreshNotifyItemChanged(int position) {
+        notifyItemChanged(position + getHeaderLayoutCount());
+    }
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
      * some initialization data.
@@ -597,8 +609,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * @param data data collection
      */
     public void replaceData(@NonNull Collection<? extends T> data) {
-        mData.clear();
-        mData.addAll(data);
+        // 不是同一个引用才清空列表
+        if (data != mData) {
+            mData.clear();
+            mData.addAll(data);
+        }
         notifyDataSetChanged();
     }
 
@@ -633,7 +648,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     @Nullable
     public T getItem(@IntRange(from = 0) int position) {
-        if (position < mData.size())
+        if (position >= 0 && position < mData.size())
             return mData.get(position);
         else
             return null;
@@ -1031,8 +1046,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             z = getInstancedGenericKClass(temp);
             temp = temp.getSuperclass();
         }
-        K k = createGenericKInstance(z, view);
-        return null != k ? k : (K) new BaseViewHolder(view);
+        K k;
+        // 泛型擦除会导致z为null
+        if (z == null) {
+            k = (K) new BaseViewHolder(view);
+        } else {
+            k = createGenericKInstance(z, view);
+        }
+        return k != null ? k : (K) new BaseViewHolder(view);
     }
 
     /**
@@ -1083,6 +1104,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                     Class tempClass = (Class) temp;
                     if (BaseViewHolder.class.isAssignableFrom(tempClass)) {
                         return tempClass;
+                    }
+                } else if (temp instanceof ParameterizedType) {
+                    Type rawType = ((ParameterizedType) temp).getRawType();
+                    if (rawType instanceof Class && BaseViewHolder.class.isAssignableFrom((Class<?>) rawType)) {
+                        return (Class<?>) rawType;
                     }
                 }
             }
@@ -1339,9 +1365,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
-     *
+     * Recommend you to use {@link #setEmptyView(layoutResId,viewGroup)}
      * @see #bindToRecyclerView(RecyclerView)
+     *
      */
+    @Deprecated
     public void setEmptyView(int layoutResId) {
         checkNotNull();
         setEmptyView(layoutResId, getRecyclerView());
@@ -1415,11 +1443,16 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return mEmptyLayout;
     }
 
-    private int mAutoLoadMoreSize = 1;
+    private int mPreLoadNumber = 1;
 
-    public void setAutoLoadMoreSize(int autoLoadMoreSize) {
-        if (autoLoadMoreSize > 1) {
-            mAutoLoadMoreSize = autoLoadMoreSize;
+    @Deprecated
+    public void setAutoLoadMoreSize(int preLoadNumber) {
+        setPreLoadNumber(preLoadNumber);
+    }
+
+    public void setPreLoadNumber(int preLoadNumber) {
+        if (preLoadNumber > 1) {
+            mPreLoadNumber = preLoadNumber;
         }
     }
 
@@ -1427,7 +1460,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (getLoadMoreViewCount() == 0) {
             return;
         }
-        if (position < getItemCount() - mAutoLoadMoreSize) {//即position ==时可触发加载更多
+        if (position < getItemCount() - mPreLoadNumber) {//即position ==时可触发加载更多
             return;
         }
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
@@ -1550,6 +1583,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     public void openLoadAnimation() {
         this.mOpenAnimationEnable = true;
     }
+    /**
+     * To close the animation when loading
+     */
+    public void closeLoadAnimation() {
+        this.mOpenAnimationEnable = false;
+    }
 
     /**
      * {@link #addAnimation(RecyclerView.ViewHolder)}
@@ -1606,7 +1645,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     @SuppressWarnings("unchecked")
     private int recursiveExpand(int position, @NonNull List list) {
-        int count = 0;
+        int count = list.size();
         int pos = position + list.size() - 1;
         for (int i = list.size() - 1; i >= 0; i--, pos--) {
             if (list.get(i) instanceof IExpandable) {
@@ -1641,7 +1680,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             return 0;
         }
         if (!hasSubItems(expandable)) {
-            expandable.setExpanded(false);
+            expandable.setExpanded(true);
+            notifyItemChanged(position);
             return 0;
         }
         int subItemCount = 0;
@@ -1651,7 +1691,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             subItemCount += recursiveExpand(position + 1, list);
 
             expandable.setExpanded(true);
-            subItemCount += list.size();
+//            subItemCount += list.size();
         }
         int parentPos = position + getHeaderLayoutCount();
         if (shouldNotify) {
@@ -1695,7 +1735,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
 
         IExpandable expandable = getExpandableItem(position);
-        if (expandable == null || !hasSubItems(expandable)) {
+        if (expandable == null) {
+            return 0;
+        }
+
+        if (!hasSubItems(expandable)) {
+            expandable.setExpanded(true);
+            notifyItemChanged(position);
             return 0;
         }
 
@@ -1734,7 +1780,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     public void expandAll() {
-        for (int i = mData.size() - 1; i >= 0 + getHeaderLayoutCount(); i--) {
+
+        for (int i = mData.size() - 1 + getHeaderLayoutCount(); i >= getHeaderLayoutCount(); i--) {
             expandAll(i, false, false);
         }
     }
@@ -1749,6 +1796,8 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int subItemCount = 0;
         if (expandable.isExpanded()) {
             List<T> subItems = expandable.getSubItems();
+            if (null == subItems) return 0;
+
             for (int i = subItems.size() - 1; i >= 0; i--) {
                 T subItem = subItems.get(i);
                 int pos = getItemPosition(subItem);
