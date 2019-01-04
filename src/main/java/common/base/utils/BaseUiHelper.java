@@ -27,8 +27,14 @@ public class BaseUiHelper{
             return;
         }
         if (needBackResult) {
-            Activity curActivity = (Activity) context;
-            curActivity.startActivityForResult(startIntent, requestCode);
+            boolean isActivityInstance = context instanceof Activity;
+            if (isActivityInstance) {
+                Activity curActivity = (Activity) context;
+                curActivity.startActivityForResult(startIntent, requestCode);
+            }
+            else{
+                context.startActivity(startIntent);
+            }
         }
         else{
             context.startActivity(startIntent);
@@ -177,6 +183,19 @@ public class BaseUiHelper{
         } catch (Exception e) {
             //nt.ActivityNotFoundException: No Activity found to handle Intent { act=android.intent.action.VIEW dat=www.baidu.com }
             CommonLog.e("--->jumpToBrowser() occur:" + e);
+        }
+    }
+
+    public static void jumpToAppMarket(Context context) {
+        if (context != null) {
+            String protocolUrl = "market://details?id=" + context.getPackageName();
+            Intent startIntent = new Intent(Intent.ACTION_VIEW);
+            startIntent.setData(Uri.parse(protocolUrl));
+            startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                jumpToActivity(context, startIntent, -1, false);
+            } catch (Exception ignore) {
+            }
         }
     }
 }

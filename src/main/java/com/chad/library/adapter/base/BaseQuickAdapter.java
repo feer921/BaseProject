@@ -1358,14 +1358,14 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return -1;
     }
 
-    public void setEmptyView(int layoutResId, ViewGroup viewGroup) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutResId, viewGroup, false);
+    public void setEmptyView(int layoutResId, ViewGroup emptyViewInContainerView) {
+        View view = LayoutInflater.from(emptyViewInContainerView.getContext()).inflate(layoutResId, emptyViewInContainerView, false);
         setEmptyView(view);
     }
 
     /**
      * bind recyclerView {@link #bindToRecyclerView(RecyclerView)} before use!
-     * Recommend you to use {@link #setEmptyView(layoutResId,viewGroup)}
+     * Recommend you to use {@link #setEmptyView(int, ViewGroup)}
      * @see #bindToRecyclerView(RecyclerView)
      *
      */

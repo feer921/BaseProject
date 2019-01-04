@@ -79,10 +79,10 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     }
 
     /**
-     * ÒÆ³ý¸¸¿Ø¼þÊ±£¬Èô¸¸¿Ø¼þ´¦ÓÚÕ¹¿ª×´Ì¬£¬ÔòÏÈÒÆ³ýÆäËùÓÐµÄ×Ó¿Ø¼þ
+     * ç§»é™¤çˆ¶æŽ§ä»¶æ—¶ï¼Œè‹¥çˆ¶æŽ§ä»¶å¤„äºŽå±•å¼€çŠ¶æ€ï¼Œåˆ™å…ˆç§»é™¤å…¶æ‰€æœ‰çš„å­æŽ§ä»¶
      *
-     * @param parent         ¸¸¿Ø¼þÊµÌå
-     * @param parentPosition ¸¸¿Ø¼þÎ»ÖÃ
+     * @param parent         çˆ¶æŽ§ä»¶å®žä½“
+     * @param parentPosition çˆ¶æŽ§ä»¶ä½ç½®
      */
     protected void removeAllChild(IExpandable parent, int parentPosition) {
         if (parent.isExpanded()) {
@@ -97,9 +97,9 @@ public abstract class BaseMultiItemQuickAdapter<T extends MultiItemEntity, K ext
     }
 
     /**
-     * ÒÆ³ý×Ó¿Ø¼þÊ±£¬ÒÆ³ý¸¸¿Ø¼þÊµÌåÀàÖÐÏà¹Ø×Ó¿Ø¼þÊý¾Ý£¬±ÜÃâ¹Ø±ÕºóÔÙ´ÎÕ¹¿ªÊý¾ÝÖØÏÖ
+     * ç§»é™¤å­æŽ§ä»¶æ—¶ï¼Œç§»é™¤çˆ¶æŽ§ä»¶å®žä½“ç±»ä¸­ç›¸å…³å­æŽ§ä»¶æ•°æ®ï¼Œé¿å…å…³é—­åŽå†æ¬¡å±•å¼€æ•°æ®é‡çŽ°
      *
-     * @param child ×Ó¿Ø¼þÊµÌå
+     * @param child å­æŽ§ä»¶å®žä½“
      */
     protected void removeDataFromParent(T child) {
         int position = getParentPosition(child);

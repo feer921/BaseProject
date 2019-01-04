@@ -118,9 +118,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        if (needCareActivityImmersion) {
-            ViewUtil.hideNavigationBar(getWindow());
-        }
+//        if (needCareActivityImmersion) {
+//            ViewUtil.hideNavigationBar(getWindow());
+//        }
         //added by fee 2018-05-26
         if (mOnDialogPreCreateListener != null) {
             mOnDialogPreCreateListener.onDialogViewCreated(this);
@@ -130,12 +130,24 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         setContentView(dialogView);
         configDialogWindow();
     }
+
+    /**
+     * show()-->[onCreate()如果没有创建的话]--->onStart()
+     */
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (hasFocus && needCareActivityImmersion) {
+    protected void onStart() {
+        super.onStart();
+        if (needCareActivityImmersion) {
             ViewUtil.hideNavigationBar(getWindow());
         }
     }
+
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        if (hasFocus && needCareActivityImmersion) {
+//            ViewUtil.hideNavigationBar(getWindow());
+//        }
+//    }
 
 
     protected void configDialogWindow() {

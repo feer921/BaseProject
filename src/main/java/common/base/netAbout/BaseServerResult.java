@@ -82,6 +82,19 @@ public class BaseServerResult {
         return null;
     }
 
+    public static <T extends BaseServerResult> T jsonStr2Me(String jsonStr, Class<T> beanClass) {
+        if (!Util.isEmpty(jsonStr)) {
+            return JsonUtil.jsonStr2Obj(jsonStr, beanClass);
+        }
+        return null;
+    }
+
+    public static <T> T anyJsonStrToAnyBean(String anyJsonStr, Class<T> anyBeanClass) {
+        if (!Util.isEmpty(anyJsonStr)) {
+            return JsonUtil.jsonStr2Obj(anyJsonStr, anyBeanClass);
+        }
+        return null;
+    }
     @Override
     public String toString() {
         return TAG + "{" +
