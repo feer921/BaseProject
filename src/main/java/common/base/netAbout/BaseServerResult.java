@@ -95,6 +95,13 @@ public class BaseServerResult {
         }
         return null;
     }
+
+    public static <T> List<T> anyJsonStrToAnyListBean(String anyJsonStr, Class<T> anyListItemBeanClass) {
+        if (!Util.isEmpty(anyJsonStr)) {
+            return JsonUtil.jsonArrayStr2ListObject(anyJsonStr, anyListItemBeanClass);
+        }
+        return null;
+    }
     @Override
     public String toString() {
         return TAG + "{" +
