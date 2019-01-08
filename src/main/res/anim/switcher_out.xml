@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android" >
-
+    <!-- 效果为：从当前位置位移至更左侧 -->
     <translate
         android:duration="200"
         android:fromXDelta="0%"

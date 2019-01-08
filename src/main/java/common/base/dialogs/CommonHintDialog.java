@@ -22,7 +22,7 @@ public class CommonHintDialog extends BaseDialog<CommonHintDialog>{
     private TextView tvHintMsg;
     
     public CommonHintDialog(Context context,int width,int height) {
-        super(context, R.style.login_dialog);
+        super(context, R.style.common_dialog);
         dialogWidth = width;
         dialogHeigth = height;
     }

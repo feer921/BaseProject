@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
+import common.base.R;
 import common.base.utils.CommonLog;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
@@ -75,7 +76,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     protected boolean needCareActivityImmersion = true;
     public BaseDialog(Context context) {
-        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
+//        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
+        this(context, R.style.common_dialog_bg_dim);
     }
 
     /**

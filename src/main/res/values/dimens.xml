@@ -5,6 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="space_20">20.0dip</dimen>
 	<dimen name="radius_4_half_rectangle">16dip</dimen>
+    <integer name="activity_transition_anim_duration">400</integer>
     <!-- 以下尺寸为按照标准同等尺寸来定，然后，各app级项目可以覆盖达到适配目的 -->
     <dimen name="dp_m_60">-60.0000dp</dimen>
     <dimen name="dp_m_30">-30.0000dp</dimen>
