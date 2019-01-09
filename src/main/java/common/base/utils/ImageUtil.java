@@ -477,45 +477,45 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         return target;
     }
 
-    /**
-     * 使用Glide来下载【图片】文件
-     * 注意：非异步下载
-     * @param context Context
-     * @param fileUrl 要下载的文件地址
-     * @param targetLocalFilePath 目标存储
-     * @return file
-     */
-    private static File download(Context context, String fileUrl,String targetLocalFilePath) {
-        if (fileUrl == null || "".equals(fileUrl.trim())) {
-            return null;
-        }
-        File targetFile = null;
-        try {
-            targetFile = Glide.with(context).download(fileUrl).submit().get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (targetLocalFilePath != null && !"".equals(targetLocalFilePath.trim())) {//表示需要复制到目标路径
-             //判断是否需要复制到目标
-            boolean isValidFile = targetFile != null && targetFile.length() > 1;
-            if (isValidFile) {
-                String downloadFileAbsPath = targetFile.getAbsolutePath();
-                CommonLog.e("info", "--->download() downloadFileAbsPath=" + downloadFileAbsPath);
-                if (!targetLocalFilePath.equals(downloadFileAbsPath)) {//一般不会相同
-                    File targetLocalFile = new File(targetLocalFilePath);
-                    boolean needCopyToTargetPath = true;
-
-                    boolean copySuc = copyFile(targetFile, targetLocalFile);
-                    if (copySuc) {
-                        targetFile.delete();
-                        targetFile = targetLocalFile;
-                    }
-                }
-            }
-        }
-        return targetFile;
-    }
+//    /**
+//     * 使用Glide来下载【图片】文件
+//     * 注意：非异步下载
+//     * @param context Context
+//     * @param fileUrl 要下载的文件地址
+//     * @param targetLocalFilePath 目标存储
+//     * @return file
+//     */
+//    private static File download(Context context, String fileUrl,String targetLocalFilePath) {
+//        if (fileUrl == null || "".equals(fileUrl.trim())) {
+//            return null;
+//        }
+//        File targetFile = null;
+//        try {
+//            targetFile = Glide.with(context).download(fileUrl).submit().get();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (targetLocalFilePath != null && !"".equals(targetLocalFilePath.trim())) {//表示需要复制到目标路径
+//             //判断是否需要复制到目标
+//            boolean isValidFile = targetFile != null && targetFile.length() > 1;
+//            if (isValidFile) {
+//                String downloadFileAbsPath = targetFile.getAbsolutePath();
+//                CommonLog.e("info", "--->download() downloadFileAbsPath=" + downloadFileAbsPath);
+//                if (!targetLocalFilePath.equals(downloadFileAbsPath)) {//一般不会相同
+//                    File targetLocalFile = new File(targetLocalFilePath);
+//                    boolean needCopyToTargetPath = true;
+//
+//                    boolean copySuc = copyFile(targetFile, targetLocalFile);
+//                    if (copySuc) {
+//                        targetFile.delete();
+//                        targetFile = targetLocalFile;
+//                    }
+//                }
+//            }
+//        }
+//        return targetFile;
+//    }
 
     public static boolean copyFile(File srcFile, File targetFile) {
         if (srcFile == null || srcFile.length() < 1 || targetFile == null) {

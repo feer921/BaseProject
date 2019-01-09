@@ -368,7 +368,7 @@ public class OkToast {
                 mToast.cancel();
             }
         }
-        if (hintDialogCompatToast != null) {
+        if (hintDialogCompatToast != null && hintDialogCompatToast.isShowing()) {
             hintDialogCompatToast.cancel();
         }
     }

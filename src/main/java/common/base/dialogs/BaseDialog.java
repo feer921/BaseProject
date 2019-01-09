@@ -24,6 +24,16 @@ import common.base.utils.CommonLog;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
+/**
+ * ******************(^_^)***********************<br>
+ * User: fee(QQ/WeiXin:1176610771)<br>
+ * Date: 2016/1/8<br>
+ * Time: 20:29<br>
+ * <P>DESC:
+ * Dialog的基类
+ * </p>
+ * ******************(^_^)***********************
+ */
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected final String TAG = getClass().getSimpleName();
     protected DialogInterface.OnClickListener dialogClickListener;
