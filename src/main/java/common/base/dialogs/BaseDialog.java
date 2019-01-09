@@ -442,10 +442,19 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     private long showHoldTime = 0;
     public I showHoldTime(long showTimeInMs){
         this.showHoldTime = showTimeInMs;
-        clearShowHoldTaskInfo();
+//        clearShowHoldTaskInfo();//如果已经show了，不能移除show hold task,不然就不能自动dismiss了
         return self();
     }
 
+    public I withHoldTimeAndShow(long showHoldTimeMills) {
+        clearShowHoldTaskInfo();
+        this.showHoldTime = showHoldTimeMills;
+        show();
+//        if (!isShowing()) {
+
+//        }
+        return self();
+    }
 
 
     protected void handlerMsg(Message msg) {
@@ -498,8 +507,8 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     @Override
     public void dismiss() {
-        super.dismiss();
         clearShowHoldTaskInfo();
+        super.dismiss();
     }
 
     public I clearShowHoldTaskInfo() {

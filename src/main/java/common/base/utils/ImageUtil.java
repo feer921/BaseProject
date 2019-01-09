@@ -22,6 +22,10 @@ import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * ******************(^_^)***********************
@@ -471,5 +475,152 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(source, 0, 0, paint);
         return target;
+    }
+
+    /**
+     * 使用Glide来下载【图片】文件
+     * 注意：非异步下载
+     * @param context Context
+     * @param fileUrl 要下载的文件地址
+     * @param targetLocalFilePath 目标存储
+     * @return file
+     */
+    private static File download(Context context, String fileUrl,String targetLocalFilePath) {
+        if (fileUrl == null || "".equals(fileUrl.trim())) {
+            return null;
+        }
+        File targetFile = null;
+        try {
+            targetFile = Glide.with(context).download(fileUrl).submit().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (targetLocalFilePath != null && !"".equals(targetLocalFilePath.trim())) {//表示需要复制到目标路径
+             //判断是否需要复制到目标
+            boolean isValidFile = targetFile != null && targetFile.length() > 1;
+            if (isValidFile) {
+                String downloadFileAbsPath = targetFile.getAbsolutePath();
+                CommonLog.e("info", "--->download() downloadFileAbsPath=" + downloadFileAbsPath);
+                if (!targetLocalFilePath.equals(downloadFileAbsPath)) {//一般不会相同
+                    File targetLocalFile = new File(targetLocalFilePath);
+                    boolean needCopyToTargetPath = true;
+
+                    boolean copySuc = copyFile(targetFile, targetLocalFile);
+                    if (copySuc) {
+                        targetFile.delete();
+                        targetFile = targetLocalFile;
+                    }
+                }
+            }
+        }
+        return targetFile;
+    }
+
+    public static boolean copyFile(File srcFile, File targetFile) {
+        if (srcFile == null || srcFile.length() < 1 || targetFile == null) {
+            return false;
+        }
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            fis = new FileInputStream(srcFile);
+            fos = new FileOutputStream(targetFile, true);
+            byte[] readBuf = new byte[1024];
+            int hasReadLen = -1;
+            while ((hasReadLen = fis.read(readBuf)) != -1) {
+                byte[] readDatas = new byte[hasReadLen];
+                System.arraycopy(readBuf, 0, readDatas, 0, hasReadLen);
+                fos.write(readDatas);
+            }
+            fos.flush();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
+    public static File downloadAndCopyToTarget(Context context, String fileUrl, String targetDirPath, String targetFileName, boolean deleteSrcFile) {
+        File downloadResultFile = download(context, fileUrl);
+        if (downloadResultFile == null) {
+            return null;
+        }
+        boolean isTargetDirNull = isTextEmpty(targetDirPath);
+        boolean isTargetFileNameNull = isTextEmpty(targetFileName);
+        if (!isTargetDirNull) {//表示需要复制到目标路径
+            boolean isDownloadFileValid = downloadResultFile.length() > 1;
+            if (isDownloadFileValid) {//下载的文件有效
+                String downloadedFileName = downloadResultFile.getName();
+                CommonLog.e("info", "-->downloadAndCopyToTarget() downloadedFileName = " + downloadedFileName);
+                String targetWholeFilePath = appendSeparator(targetDirPath);
+                File targetFile = null;
+                if (isTargetFileNameNull) {//指定的需要复制的文件名为空,则使用下载好了的文件的文件名
+                    targetWholeFilePath += downloadedFileName;
+                    targetFile = new File(targetWholeFilePath);
+                    if (targetFile.exists() && targetFile.length() > 1) {
+                        //这种情况下已经存在了，则不用复制了,直接返回
+                        CommonLog.e("info", "-->downloadAndCopyToTarget() not need copy file...");
+                        return targetFile;
+                    }
+                }
+                else{
+                    targetWholeFilePath += targetFileName;
+                }
+                targetFile = new File(targetWholeFilePath);
+                boolean isCopySuc = copyFile(downloadResultFile, targetFile);
+                if (isCopySuc) {
+                    if (deleteSrcFile) {
+                        downloadResultFile.delete();
+                    }
+                    downloadResultFile = targetFile;
+                }
+            }
+        }
+        return downloadResultFile;
+    }
+    public static File download(Context context, String fileUrl) {
+        if (fileUrl == null || "".equals(fileUrl.trim())) {
+            return null;
+        }
+        File targetFile = null;
+        try {
+            targetFile = Glide.with(context).download(fileUrl).submit().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return targetFile;
+    }
+
+    private static boolean isTextEmpty(String text) {
+        if (text == null || text.trim().length() == 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private static String appendSeparator(String text) {
+        if (!isTextEmpty(text)) {
+            if (!text.endsWith("/")) {
+                return text + "/";
+            }
+        }
+        return text;
     }
 }

@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import common.base.R;
 import common.base.WeakHandler;
+import common.base.dialogs.HintDialog;
+import common.base.utils.MrNotification;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
 
@@ -34,7 +36,8 @@ import common.base.utils.ViewUtil;
 public class OkToast {
     private Toast mToast;
     private LayoutInflater mLayoutInflater;
-    private Context appContext;
+    private Context mContext;
+    private Context mAppContext;
     private LinearLayout llToastRootView;
     private TextView tvToast;
     private ImageView ivDefToastHint;
@@ -49,6 +52,10 @@ public class OkToast {
 
     private WeakHandler msgHandler;
     private View customToastView;
+    /**
+     * 为了兼容app被用户禁止了通知权限而toast无法显示，本次使用Dialog来兼容
+     */
+    private HintDialog hintDialogCompatToast;
     private OkToast() {
 
     }
@@ -58,10 +65,11 @@ public class OkToast {
         one.innerWith(appContext);
         return one;
     }
-    private OkToast innerWith(Context appContext) {
-        windowManager = (WindowManager) appContext.getSystemService(Context.WINDOW_SERVICE);
-        this.appContext = appContext.getApplicationContext();
-        mLayoutInflater = LayoutInflater.from(this.appContext);
+    private OkToast innerWith(Context context) {
+        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        this.mContext = context;
+        mAppContext = context.getApplicationContext();
+        mLayoutInflater = LayoutInflater.from(context);
         llToastRootView = (LinearLayout) mLayoutInflater.inflate(R.layout.ok_toast, null);
         tvToast = ViewUtil.findViewInView(llToastRootView, R.id.toast_msg);
         ivDefToastHint = ViewUtil.findViewInView(llToastRootView, R.id.toast_icon);
@@ -195,7 +203,7 @@ public class OkToast {
     private int defToastGravity,defXOffset,defYOffset;
 
     private Toast newToast(View toastView) {
-        Toast mToast = new Toast(appContext);
+        Toast mToast = new Toast(mAppContext);
         mToast.setView(toastView);
         if (defToastGravity == 0) {
             defToastGravity = mToast.getGravity();
@@ -206,18 +214,32 @@ public class OkToast {
     }
 
     public void showCompatToast(CharSequence toastText, View customToastView, int duration, int showGravity, int xOffset, int yOffset, float horizontalMargin, float verticalMargin) {
-        if (tvToast != null && !Util.isEmpty(toastText)) {
-            tvToast.setText(toastText);
+//        if (tvToast != null && !Util.isEmpty(toastText)) {
+//            tvToast.setText(toastText);
+//        }
+//        if (customToastView != null) {
+//           this.customToastView = customToastView;
+//        }
+//        if (duration <= 0) {
+//            duration = 500;
+//        }
+//        WindowManager.LayoutParams wlp = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//        wlp.gravity = showGravity;
+        if (hintDialogCompatToast == null) {
+            hintDialogCompatToast = new HintDialog(mContext);
+            int tvToastPaddingLeft = tvToast.getPaddingLeft();
+            int tvToastPaddingRight = tvToast.getPaddingRight();
+            int tvToastPaddingTop = tvToast.getPaddingTop();
+            int tvToastPaddingBottom = tvToast.getPaddingBottom();
+            hintDialogCompatToast.withTextPadding(tvToastPaddingLeft,tvToastPaddingTop,tvToastPaddingRight,tvToastPaddingBottom)
+                .withTextSizePixelValue(tvToast.getTextSize())
+                .withBackground(llToastRootView.getBackground())
+//            .setCanceledOnTouchOut(true)
+            .showHoldTime(2000)
+            ;
         }
-        if (customToastView != null) {
-           this.customToastView = customToastView;
-        }
-        if (duration <= 0) {
-            duration = 500;
-        }
-        WindowManager.LayoutParams wlp = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        wlp.gravity = showGravity;
-        
+        hintDialogCompatToast.withToastText(toastText)
+                .show();
     }
     /**
      * 默认就是Short
@@ -233,6 +255,11 @@ public class OkToast {
      */
     public void show(CharSequence toastText,View customToastView, int duration, int showGravity, int xOffset, int yOffset
             ,float horizontalMargin, float verticalMargin) {
+        //added by fee 2019-01-08:兼容无通知栏权限时的提示
+        if (!MrNotification.isNotifyPermissionAllowed(mAppContext)) {
+            showCompatToast(toastText, customToastView, duration, showGravity, xOffset, yOffset, horizontalMargin, verticalMargin);
+            return;
+        }
         if (tvToast != null && !Util.isEmpty(toastText)) {
             tvToast.setText(toastText);
         }
@@ -328,9 +355,21 @@ public class OkToast {
     public void bottomLongShow(CharSequence toastText) {
         bottomShow(toastText,Toast.LENGTH_LONG);
     }
-    public void cancelShow() {
+
+//    public void cancelShow() {
+//        if (mToast != null) {
+//            mToast.cancel();
+//        }
+//    }
+
+    public void cancelShow(boolean cancelToast) {
         if (mToast != null) {
-            mToast.cancel();
+            if (cancelToast) {
+                mToast.cancel();
+            }
+        }
+        if (hintDialogCompatToast != null) {
+            hintDialogCompatToast.cancel();
         }
     }
 }
