@@ -38,6 +38,11 @@ public final class JsonUtil {
      * @throws IOException
      */
     public static String convertObject2JsonStr(String nodeName, Object curObject) throws IOException {
+        if (curObject != null) {
+            if (curObject instanceof JSONObject) {//因为如果是JSONObject对象，会序列化失败 No serializer found for class org.json.JSONObject and no pro
+                return curObject.toString();
+            }
+        }
         if (Util.isEmpty(nodeName)) {
             return mapper.writeValueAsString(curObject);
         }
@@ -57,6 +62,7 @@ public final class JsonUtil {
             jsonResultStr = converObject2JsonStr(toJsonObj);
         } catch (IOException e) {
             jsonResultStr = "";
+            e.printStackTrace();
         }
         return jsonResultStr;
     }
