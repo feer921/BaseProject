@@ -1,6 +1,8 @@
 package common.base.utils;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
 /**
@@ -22,5 +24,19 @@ public class MrNotification {
      */
     public static boolean isNotifyPermissionAllowed(Context context) {
        return NotificationManagerCompat.from(context).areNotificationsEnabled();
+    }
+
+    /**
+     * 是否授予音量操作的权限
+     * <a>https://blog.csdn.net/manjianchao/article/details/77576638</a>
+     * @param context
+     * @return
+     */
+    public static boolean isNotificationPolicyAccessGranted(Context context) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null && Build.VERSION.SDK_INT >= 23) {
+            return nm.isNotificationPolicyAccessGranted();//need api >= 23
+        }
+        return true;
     }
 }
