@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_white_shape"
+    android:orientation="vertical"
+    android:padding="@dimen/dp_15"
+    android:minWidth="@dimen/dp_290"
+    >
+
+    <TextView
+        android:id="@+id/tv_dialog_title"
+        style="@style/common_tv_style"
+        android:text="我是标题"
+        android:textColor="@color/txt_black"
+        android:textSize="@dimen/sp_17" />
+
+    <TextView
+        android:id="@+id/tv_dialog_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_15"
+        android:gravity=""
+        android:text="我是 "
+        android:textColor="@color/txt_gray"
+        android:textSize="@dimen/sp_14" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_23"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/common_tv_style"
+            android:layout_width="@dimen/dp_118"
+            android:layout_height="@dimen/dp_38"
+            android:layout_weight="1"
+            android:text="@string/cancel_no_gap"
+            android:id="@+id/tv_btn_dialog_cancel"
+            android:textSize="@dimen/sp_16"
+            android:textColor="@color/color_999"
+            android:background="@drawable/sel_4_rounded_stroke"
+            />
+
+        <TextView
+            style="@style/common_tv_style"
+            android:layout_width="@dimen/dp_118"
+            android:layout_height="@dimen/dp_38"
+            android:layout_weight="1"
+            android:text="@string/confirm_no_gap"
+            android:id="@+id/tv_btn_dialog_commit"
+            android:textSize="@dimen/sp_16"
+            android:layout_marginLeft="@dimen/dp_15"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginRight="0dp"
+            android:layout_marginEnd="0dp"
+            android:background="@drawable/sel_4_rounded_stroke"
+            />
+    </LinearLayout>
+</LinearLayout>

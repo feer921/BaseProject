@@ -560,6 +560,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         this.mOnDialogPreCreateListener = listener;
         return self();
     }
+
+    public I setDialogViewBackground(@DrawableRes int bgResId) {
+        if (dialogView != null) {
+            dialogView.setBackgroundResource(bgResId);
+        }
+        return self();
+    }
     interface OnDialogPreCreateListener{
         /**
          * 在Dialog的onCreate()方法中回调出来，可以让监听者再初始化一下视图等
