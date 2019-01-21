@@ -2,8 +2,12 @@ package common.base.netAbout;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
+
 import common.base.utils.CommonLog;
 import common.base.utils.JsonUtil;
 import common.base.utils.Util;
@@ -110,5 +114,21 @@ public class BaseServerResult {
                 ", data=" + data +
                 ", dataStr='" + dataStr + '\'' +
                 '}';
+    }
+    @JsonIgnore
+    public JSONObject dataJson;
+
+    public Object peekValueInData(String key) {
+        if (dataJson == null) {
+            try {
+                dataJson = new JSONObject(getDataStr());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (dataJson != null) {
+            return dataJson.opt(key);
+        }
+        return null;
     }
 }

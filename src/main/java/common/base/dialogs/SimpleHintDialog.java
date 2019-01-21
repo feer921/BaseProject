@@ -101,7 +101,14 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         if (CheckUtil.isEmpty(cancelBtnText)) {
             cancelBtnText = getStrFromResId(R.string.cancel_no_gap);
         }
+
         if (tvBtnCancel != null) {
+            if ("HiDe".equals(cancelBtnText.toString())) {
+                tvBtnCancel.setVisibility(View.GONE);
+            }
+            else{
+                tvBtnCancel.setVisibility(View.VISIBLE);
+            }
             tvBtnCancel.setText(cancelBtnText);
         }
         return self();

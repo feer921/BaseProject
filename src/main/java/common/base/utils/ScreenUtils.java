@@ -37,7 +37,7 @@ public class ScreenUtils {
     public static void init(Context context) {
         sContext = context.getApplicationContext();
         if (sContext == null) {
-            sContext = context.getApplicationContext();
+            sContext = context;
         }
         if (sContext == null) {
             return;
@@ -89,7 +89,7 @@ public class ScreenUtils {
      * 获取状态栏高度
      */
     public static int getStatusBarHeight() {
-        if (statusBarHeight == 10) {
+        if (statusBarHeight == 10 && sContext != null) {
             int result = 0;
             Resources res = sContext.getResources();
             int resourceId = res.getIdentifier("status_bar_height", "dimen", "android");
@@ -108,7 +108,7 @@ public class ScreenUtils {
      * @return 导航栏高度
      */
     public static int getNavigationBarHeight(){
-        if (navigationBarHeight == 10) {
+        if (navigationBarHeight == 10 && sContext != null) {
             int result = 0;
             Resources res = sContext.getResources();
             int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
@@ -153,7 +153,10 @@ public class ScreenUtils {
     }
 
     public static int sp2px(float spValue) {
-        final float fontScale = sContext.getResources().getDisplayMetrics().scaledDensity;
+        if (sContext == null) {
+            return (int) spValue;
+        }
+        float fontScale = sContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
 
