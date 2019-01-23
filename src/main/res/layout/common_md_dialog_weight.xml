@@ -53,7 +53,7 @@
                 android:layout_gravity="center_horizontal"
                 android:lineSpacingExtra="@dimen/dp_3"
                 android:paddingBottom="@dimen/dp_15"
-                android:singleLine="false"
+                android:maxLines="10"
                 android:text="ddddddddddfdfdfdffdfdfdfdfdfdfd"
                 android:textColor="#445979"
                 android:textSize="@dimen/sp_14"
