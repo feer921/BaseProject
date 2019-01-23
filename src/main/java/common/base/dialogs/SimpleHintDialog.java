@@ -2,6 +2,7 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.TextView;
 
@@ -90,6 +91,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         return self();
     }
 
+    public SimpleHintDialog withTitle(@StringRes int titleResId) {
+        if (tvTitle != null) {
+            tvTitle.setText(titleResId);
+        }
+        return self();
+    }
     public SimpleHintDialog withDialogHint(CharSequence dialogHint) {
         if (tvHint != null) {
             tvHint.setText(dialogHint);
@@ -97,6 +104,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         return self();
     }
 
+    public SimpleHintDialog withDialogHint(@StringRes int hintResId) {
+        if (tvHint != null) {
+            tvHint.setText(hintResId);
+        }
+        return self();
+    }
     public SimpleHintDialog withCancelBtnText(CharSequence cancelBtnText) {
         if (CheckUtil.isEmpty(cancelBtnText)) {
             cancelBtnText = getStrFromResId(R.string.cancel_no_gap);
@@ -114,6 +127,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         return self();
     }
 
+    public SimpleHintDialog withCancelBtnText(@StringRes int cancelBtnTextResId) {
+        if (tvBtnCancel != null) {
+            tvBtnCancel.setText(cancelBtnTextResId);
+        }
+        return self();
+    }
     public SimpleHintDialog withCommitBtnText(CharSequence commitBtnText) {
         if (CheckUtil.isEmpty(commitBtnText)) {
             commitBtnText = getStrFromResId(R.string.confirm_no_gap);
@@ -124,6 +143,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         return self();
     }
 
+    public SimpleHintDialog withCommitBtnText(@StringRes int commitBtnTextResId) {
+        if (tvBtnCommit != null) {
+            tvBtnCommit.setText(commitBtnTextResId);
+        }
+        return self();
+    }
     @Override
     public TextView getDialogTitleView() {
         return tvTitle;

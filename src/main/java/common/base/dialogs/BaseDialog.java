@@ -37,6 +37,7 @@ import common.base.utils.ViewUtil;
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected final String TAG = getClass().getSimpleName();
     protected DialogInterface.OnClickListener dialogClickListener;
+    public static final String HIDE_FLAG = "HiDe";
     /**
      * 对话框的布局视图
      */

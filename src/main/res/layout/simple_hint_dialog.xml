@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
         android:gravity=""
-        android:text="我是 "
+        android:text="我是提示消息"
         android:textColor="@color/txt_gray"
         android:textSize="@dimen/sp_14" />
 
