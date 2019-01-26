@@ -25,6 +25,8 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         genericsTypeClass = tTypeClass;
 //        this.netEvent = netEvent;
         weakRefNetEvent = new WeakReference<>(netEvent);
+        //added by fee 2019-01-26: 网络请求的取消标记默认设置为 netEent
+        obj4CancelTag = weakRefNetEvent.get();
     }
     protected WeakReference<INetEvent<T>> weakRefNetEvent;
     protected INetEvent<T> netEvent;
@@ -87,4 +89,5 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         }
         return null;
     }
+
 }

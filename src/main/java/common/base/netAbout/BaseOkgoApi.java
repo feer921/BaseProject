@@ -124,8 +124,13 @@ public class BaseOkgoApi extends BaseApi {
         }
         return null;
     }
+
     public static void excute(BaseRequest request, AbsCallback callback) {
-        request.tag(request.getUrl()).execute(callback);
+        Object cancelFlagInCallback = null;
+        if (callback != null) {
+            cancelFlagInCallback = callback.getObj4CancelTag();
+        }
+        request.tag(cancelFlagInCallback == null ? request.getUrl() : cancelFlagInCallback).execute(callback);
     }
 
     /**

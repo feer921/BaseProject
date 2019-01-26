@@ -48,6 +48,7 @@ public abstract class AbsCallback<T> implements Converter<T> {
      * 取消了
      */
     public boolean canceled;
+
     /** 请求网络开始前，UI线程 */
     public void onBefore(BaseRequest request) {
     }
@@ -96,5 +97,18 @@ public abstract class AbsCallback<T> implements Converter<T> {
      * @param networkSpeed 当前下载的速度 字节/秒
      */
     public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+    }
+
+    /**
+     * added by fee 2019-01-26: 网络请求的取消标志
+     * def: null;
+     */
+    protected Object obj4CancelTag = null;
+    public Object getObj4CancelTag() {
+        return obj4CancelTag;
+    }
+
+    public void setObj4CancelTag(Object obj4CancelTag) {
+        this.obj4CancelTag = obj4CancelTag;
     }
 }

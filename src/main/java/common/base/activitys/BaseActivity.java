@@ -433,7 +433,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     /**
      *  Activity生命周期是否经历了finish()
      */
-    private boolean isResumeFinish;
+    protected boolean isResumeFinish;
     /**
      * 注：该方法为主动调用方法，不在Activity的生命周期流程中
      * 则需要注意：如果Activity是自动结束(如，屏幕旋转等)的，因不会走finish()而导致在此方法内作的释放不执行
@@ -495,11 +495,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onConfigurationChanged() newConfig = " + newConfig);
         }
     }
-
+    protected boolean EXTRA_BORING_LOG_DEBUG = true;
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (LIFE_CIRCLE_DEBUG) {
+        if (LIFE_CIRCLE_DEBUG && EXTRA_BORING_LOG_DEBUG) {
             CommonLog.i(TAG,"---> onWindowFocusChanged() hasFocus = " + hasFocus);
         }
     }

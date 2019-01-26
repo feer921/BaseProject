@@ -1,5 +1,6 @@
 package common.base.fragments;
 
+import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.OkgoNetCallback;
 
 import common.base.netAbout.INetEvent;
@@ -221,5 +222,13 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      */
     protected <E> OkgoNetCallback<E> createETypeOkgoListener(Class<E> eTypeClass) {
         return OkgoNetCallback.create(eTypeClass,new ETypeNetEvent<E>());
+    }
+
+    /**
+     * 按tag 取消 Okgo 的网络请求
+     * @param toCancelTag
+     */
+    protected void cancelOkGoNetWork(Object toCancelTag) {
+        OkGo.getInstance().cancelTag(toCancelTag);
     }
 }

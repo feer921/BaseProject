@@ -1,5 +1,6 @@
 package common.base.activitys;
 
+import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.OkgoNetCallback;
 
 import common.base.netAbout.INetEvent;
@@ -90,6 +91,13 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
         }
     }
 
+    /**
+     * 按tag 取消 Okgo 的网络请求
+     * @param toCancelTag
+     */
+    protected void cancelOkGoNetWork(Object toCancelTag) {
+        OkGo.getInstance().cancelTag(toCancelTag);
+    }
     protected OkgoNetCallback<T> createOkgoNetListener() {
         return new OkgoNetCallback<>(getSubClasGenericsParamClass(),this);
     }
@@ -130,6 +138,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
     public void onErrorBeforeRequest(int curRequestDataType, int errorType) {
 
     }
+
 
     @Override
     public void finish() {

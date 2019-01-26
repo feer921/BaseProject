@@ -47,4 +47,13 @@ public interface INetEvent<T> {
      * @param errorType          错误类型
      */
     void onErrorBeforeRequest(int curRequestDataType, int errorType);
+
+//    /**
+//     * 当前请求是否可以回调结果
+//     * 目的：为了避免Activity已经finish的情况下，仍有网络回调的问题
+//     * 注：一般要为true
+//     * @param curRequestDataType 当前请求类型，为了兼容可以某个请求有特殊需求
+//     * @return true:正常响应、异常响应，可以回调；false:不能回调
+//     */
+//    boolean canCallbackResult(int curRequestDataType);
 }
