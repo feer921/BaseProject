@@ -5,13 +5,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Message;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,18 +52,18 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
      */
     private int playTotalDuration = 0;
 
-    public void loadGifDrawable(Context context, @DrawableRes int gifDrawableResId, ImageView iv) {
+    public void loadGifDrawable(Context context, @RawRes @DrawableRes int gifDrawableResId, ImageView iv) {
         loadGifDrawable(context, gifDrawableResId, iv, playTimes);
     }
 
-    public void loadGifDrawable(Context context, @DrawableRes int gifDrawableResId, ImageView iv, int playTimes) {
+    public void loadGifDrawable(Context context, @RawRes @DrawableRes int gifDrawableResId, ImageView iv, int playTimes) {
         if (context == null || iv == null) {
             return;
         }
         this.playTimes = playTimes;
         //注：如果不是gif资源，则在asGif()时会抛异常
         RequestBuilder<GifDrawable> requestBuilder =
-                Glide.with(context)
+                Glide.with(context.getApplicationContext())
                         .asGif()
                         .load(gifDrawableResId);
         if (
@@ -69,6 +72,9 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
             requestBuilder.listener(this)
             ;
         }
+        RequestOptions options = new RequestOptions();
+        options.diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+        requestBuilder.apply(options);
 //        listener(this)
         requestBuilder.into(iv);
     }
@@ -82,7 +88,7 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
             mHandler.sendEmptyMessageDelayed(WHAT_NOTIFY_PLAY_FINISH, playTotalDuration);
         }
         if (rePlay) {
-            if (curGifDrawable != null) {
+            if (curGifDrawable != null && !curGifDrawable.isRunning()) {
                 curGifDrawable.startFromFirstFrame();
             }
         }
