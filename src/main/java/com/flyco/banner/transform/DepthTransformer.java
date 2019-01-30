@@ -3,7 +3,6 @@ package com.flyco.banner.transform;
 import android.view.View;
 import android.support.v4.view.ViewPager;
 
-import com.nineoldandroids.view.ViewHelper;
 
 public class DepthTransformer implements ViewPager.PageTransformer {
     private static final float MIN_SCALE_DEPTH = 0.75f;
@@ -23,9 +22,9 @@ public class DepthTransformer implements ViewPager.PageTransformer {
             translationX = 0;
         }
 
-        ViewHelper.setAlpha(page, alpha);
-        ViewHelper.setTranslationX(page, translationX);
-        ViewHelper.setScaleX(page, scale);
-        ViewHelper.setScaleY(page, scale);
+        page.setAlpha(alpha);
+        page.setTranslationX(translationX);
+        page.setScaleX(scale);
+        page.setScaleY(scale);
     }
 }

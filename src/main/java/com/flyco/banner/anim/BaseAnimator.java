@@ -1,19 +1,17 @@
 package com.flyco.banner.anim;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.view.View;
 import android.view.animation.Interpolator;
 
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorSet;
-import com.nineoldandroids.view.ViewHelper;
 
 public abstract class BaseAnimator {
     protected long mDuration = 500;
+
     protected AnimatorSet mAnimatorSet = new AnimatorSet();
     private Interpolator mInterpolator;
     private long mDelay;
-    private AnimatorListener mListener;
-
     public abstract void setAnimation(View view);
 
     protected void start(final View view) {
@@ -24,47 +22,24 @@ public abstract class BaseAnimator {
         if (mInterpolator != null) {
             mAnimatorSet.setInterpolator(mInterpolator);
         }
-
         if (mDelay > 0) {
             mAnimatorSet.setStartDelay(mDelay);
         }
-
-        if (mListener != null) {
-            mAnimatorSet.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                    mListener.onAnimationStart(animator);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animator) {
-                    mListener.onAnimationRepeat(animator);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    mListener.onAnimationEnd(animator);
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animator) {
-                    mListener.onAnimationCancel(animator);
-                }
-            });
-        }
-
         mAnimatorSet.start();
     }
 
     public static void reset(View view) {
-        ViewHelper.setAlpha(view, 1);
-        ViewHelper.setScaleX(view, 1);
-        ViewHelper.setScaleY(view, 1);
-        ViewHelper.setTranslationX(view, 0);
-        ViewHelper.setTranslationY(view, 0);
-        ViewHelper.setRotation(view, 0);
-        ViewHelper.setRotationY(view, 0);
-        ViewHelper.setRotationX(view, 0);
+        if (view == null) {
+            return;
+        }
+        view.setAlpha(1);
+        view.setScaleX(1);
+        view.setScaleY(1);
+        view.setTranslationX(0);
+        view.setTranslationY(0);
+        view.setRotation(0);
+        view.setRotationY(0);
+        view.setRotationX(0);
     }
 
     public BaseAnimator duration(long duration) {
@@ -82,22 +57,14 @@ public abstract class BaseAnimator {
         return this;
     }
 
-    public BaseAnimator listener(AnimatorListener listener) {
-        this.mListener = listener;
+    public BaseAnimator listener(Animator.AnimatorListener listener) {
+        if (mAnimatorSet != null) {
+            mAnimatorSet.addListener(listener);
+        }
         return this;
     }
 
     public void playOn(View view) {
         start(view);
-    }
-
-    public interface AnimatorListener {
-        void onAnimationStart(Animator animator);
-
-        void onAnimationRepeat(Animator animator);
-
-        void onAnimationEnd(Animator animator);
-
-        void onAnimationCancel(Animator animator);
     }
 }

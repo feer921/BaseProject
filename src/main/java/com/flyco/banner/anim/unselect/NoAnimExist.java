@@ -1,10 +1,9 @@
 package com.flyco.banner.anim.unselect;
 
+import android.animation.ObjectAnimator;
 import android.view.View;
 
 import com.flyco.banner.anim.BaseAnimator;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.ObjectAnimator;
 
 public class NoAnimExist extends BaseAnimator {
     public NoAnimExist() {
@@ -12,7 +11,7 @@ public class NoAnimExist extends BaseAnimator {
     }
 
     public void setAnimation(View view) {
-        this.mAnimatorSet.playTogether(new Animator[]{
-                ObjectAnimator.ofFloat(view, "alpha", 1, 1)});
+        this.mAnimatorSet.playTogether(
+                ObjectAnimator.ofFloat(view, "alpha", 1, 1));
     }
 }

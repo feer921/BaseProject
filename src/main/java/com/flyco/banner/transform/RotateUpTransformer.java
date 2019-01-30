@@ -1,9 +1,7 @@
 package com.flyco.banner.transform;
 
-import android.view.View;
 import android.support.v4.view.ViewPager;
-
-import com.nineoldandroids.view.ViewHelper;
+import android.view.View;
 
 public class RotateUpTransformer implements ViewPager.PageTransformer {
 
@@ -14,9 +12,9 @@ public class RotateUpTransformer implements ViewPager.PageTransformer {
 		final float width = page.getWidth();
 		final float rotation = ROT_MOD * position;
 
-		ViewHelper.setPivotX(page,width * 0.5f);
-        ViewHelper.setPivotY(page,0f);
-        ViewHelper.setTranslationX(page,0f);
-        ViewHelper.setRotation(page,rotation);
+		page.setPivotX(width * 0.5f);
+		page.setPivotY(0f);
+		page.setTranslationX(0f);
+		page.setRotation(rotation);
 	}
 }

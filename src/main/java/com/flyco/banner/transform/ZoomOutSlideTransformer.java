@@ -1,9 +1,7 @@
 package com.flyco.banner.transform;
 
-import android.view.View;
 import android.support.v4.view.ViewPager;
-
-import com.nineoldandroids.view.ViewHelper;
+import android.view.View;
 
 public class ZoomOutSlideTransformer implements ViewPager.PageTransformer {
 
@@ -20,21 +18,21 @@ public class ZoomOutSlideTransformer implements ViewPager.PageTransformer {
             final float horzMargin = page.getWidth() * (1 - scaleFactor) / 2;
 
             // Center vertically
-            ViewHelper.setPivotY(page, 0.5f * height);
+            page.setPivotY(0.5f * height);
 
 
             if (position < 0) {
-                ViewHelper.setTranslationX(page, horzMargin - vertMargin / 2);
+                page.setTranslationX(horzMargin - vertMargin / 2);
             } else {
-                ViewHelper.setTranslationX(page, -horzMargin + vertMargin / 2);
+                page.setTranslationX(-horzMargin + vertMargin / 2);
             }
 
             // Scale the page down (between MIN_SCALE and 1)
-            ViewHelper.setScaleX(page, scaleFactor);
-            ViewHelper.setScaleY(page, scaleFactor);
+            page.setScaleX(scaleFactor);
+            page.setScaleY(scaleFactor);
 
             // Fade the page relative to its size.
-            ViewHelper.setAlpha(page, MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+            page.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
         }
     }
 }
