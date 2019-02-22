@@ -61,7 +61,6 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     public void onClick(View v) {
         int curClickedBtnType = DialogInterface.BUTTON_NEGATIVE;
         if (v == tvBtnCancel) {
-            curClickedBtnType = DialogInterface.BUTTON_NEGATIVE;
             dismiss();
         } else if (v == tvBtnCommit) {
             curClickedBtnType = DialogInterface.BUTTON_POSITIVE;
@@ -116,7 +115,7 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         }
 
         if (tvBtnCancel != null) {
-            if ("HiDe".equals(cancelBtnText.toString())) {
+            if (HIDE_FLAG.equals(cancelBtnText.toString())) {
                 tvBtnCancel.setVisibility(View.GONE);
             }
             else{

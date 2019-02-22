@@ -228,7 +228,15 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected abstract int getDialogViewResID();
     @Override
     public void onClick(View v) {
-        
+//        int curClickedBtnType = DialogInterface.BUTTON_NEGATIVE;
+//        if (v == getDialogCancelBtn()) {
+//            dismiss();
+//        } else if (v == getDialogCommitBtn()) {
+//            curClickedBtnType = DialogInterface.BUTTON_POSITIVE;
+//        }
+//        if(dialogClickListener != null){
+//            dialogClickListener.onClick(this, curClickedBtnType);
+//        }
     }
 
     public I setDialogClickListener(DialogInterface.OnClickListener dialogClickListener) {

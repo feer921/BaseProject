@@ -158,7 +158,7 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         if (callback != null) {
             int hasSelectedCount = selectedUniqueMarks.size();
             boolean isAllSelected = hasSelectedCount == getJustDataCount();
-            callback.onSelected(hasSelectedCount, isAllSelected);
+            callback.onSelected(this,hasSelectedCount, isAllSelected);
         }
     }
 
@@ -193,6 +193,6 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         return null;
     }
     public interface IChooseCallback{
-        void onSelected(int selectedCount, boolean isAllSelected);
+        void onSelected(AbsSelectableAdapter curAdapter,int selectedCount, boolean isAllSelected);
     }
 }
