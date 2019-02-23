@@ -6,6 +6,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -68,6 +69,11 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         return itemPos;
     }
 
+    /**
+     * 统一处理适配器中的可选择数据的点击、选择操作
+     * @param clickedPos
+     * @return
+     */
     public boolean theItemClicked(int clickedPos) {
         if (curAdapterMode == MODE_NORMAL) {
             return false;
@@ -133,11 +139,16 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         callbackSelectedCase();
     }
 
+    public void markItemDataSelected(T itemData) {
+        if (itemData != null) {
+            markSelected(toJudgeItemDataUniqueMark(itemData));
+        }
+    }
     /**
      *  根据item data数据的惟一标识，来标记一个数据应该被选中了
      * @param itemDataUniqueMark 要标识被选择的item data的唯一标识
      */
-    public void markSekected(Object itemDataUniqueMark) {
+    public boolean markSelected(Object itemDataUniqueMark) {
         if (itemDataUniqueMark != null) {
             if (curAdapterMode != MODE_NORMAL) {
                 if (selectedUniqueMarks == null) {
@@ -150,9 +161,82 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
                 }
                 selectedUniqueMarks.add(itemDataUniqueMark);
                 notifyDataSetChanged();
+                return true;
             }
         }
+        return false;
     }
+
+    /**
+     * 标记多个数据应该选中
+     * 注：只适全多选模式
+     * @param itemDataUniqueMarks
+     */
+    public boolean markSelected(Collection<Object> itemDataUniqueMarks) {
+        if (curAdapterMode == MODE_MULTY_CHOICE) {
+            if (itemDataUniqueMarks != null && !itemDataUniqueMarks.isEmpty()) {
+                if (selectedUniqueMarks == null) {
+                    selectedUniqueMarks = new HashSet<>(itemDataUniqueMarks);
+                }
+                else{
+                    selectedUniqueMarks.addAll(itemDataUniqueMarks);
+                }
+                notifyDataSetChanged();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean markItemDatasSelected(Collection<T> itemDatas) {
+        if (curAdapterMode == MODE_MULTY_CHOICE) {
+            if (itemDatas != null) {
+                ArrayList<Object> itemDataUniqueMarks = null;
+                for (T itemData : itemDatas) {
+                    Object uniqueMarkOfItemData = toJudgeItemDataUniqueMark(itemData);
+                    if (uniqueMarkOfItemData != null) {
+                        if (itemDataUniqueMarks == null) {
+                            itemDataUniqueMarks = new ArrayList<>(itemDatas.size());
+                        }
+                        itemDataUniqueMarks.add(uniqueMarkOfItemData);
+                    }
+                }
+                if (itemDataUniqueMarks != null && !itemDataUniqueMarks.isEmpty()) {
+                   return markSelected(itemDataUniqueMarks);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 标记某个item data 不要被选中
+     * 注：只适用多选模式下
+     * @param itemDataUniqueMark Item data 用来标记是否选中的唯一标识
+     * @return true: 取消被选中生效；false:未操作
+     */
+    public boolean markUnSelected(Object itemDataUniqueMark) {
+        if (curAdapterMode == MODE_MULTY_CHOICE) {
+            if (selectedUniqueMarks != null) {
+               boolean isEffected = selectedUniqueMarks.remove(itemDataUniqueMark);
+                if (isEffected) {
+                    notifyDataSetChanged();
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean markUnSelectedItemData(T itemData) {
+        if (itemData != null) {
+            Object uniqueMarkOfItemData = toJudgeItemDataUniqueMark(itemData);
+            if (uniqueMarkOfItemData != null) {
+                return markUnSelected(uniqueMarkOfItemData);
+            }
+        }
+        return false;
+    }
+
     protected IChooseCallback callback;
     protected void callbackSelectedCase() {
         if (callback != null) {
