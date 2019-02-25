@@ -27,9 +27,17 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
     protected HashSet<Object> selectedUniqueMarks;
 
     protected int curAdapterMode = MODE_NORMAL;
-
+    /**
+     * 模式：正常模式
+     */
     public static final int MODE_NORMAL = 0;
+    /**
+     * 模式：单选模式
+     */
     public static final int MODE_SINGLE_CHOICE = MODE_NORMAL + 1;
+    /**
+     * 模式：多选模式
+     */
     public static final int MODE_MULTY_CHOICE = MODE_SINGLE_CHOICE + 1;
 
     public AbsSelectableAdapter(@Nullable List<T> data) {
@@ -124,25 +132,55 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         if (curAdapterMode != MODE_MULTY_CHOICE) {
             return;
         }
-        if (selectedUniqueMarks == null) {
-            selectedUniqueMarks = new HashSet<>();
-        }
-        if (!toSelectAll) {//取消全选
-            selectedUniqueMarks.clear();
-        }
-        else{//全选
+        boolean effected = false;
+        if (toSelectAll) {
+            if (selectedUniqueMarks == null) {
+                selectedUniqueMarks = new HashSet<>();
+            }
             for (T itemData : mData) {
                 selectedUniqueMarks.add(toJudgeItemDataUniqueMark(itemData));
             }
+            effected = true;
         }
-        notifyDataSetChanged();
+        else{
+            if (selectedUniqueMarks != null && !selectedUniqueMarks.isEmpty()) {
+                selectedUniqueMarks.clear();
+                effected = true;
+            }
+        }
+//        if (selectedUniqueMarks == null) {
+//            selectedUniqueMarks = new HashSet<>();
+//        }
+//        if (!toSelectAll) {//取消全选
+//            selectedUniqueMarks.clear();
+//        }
+//        else{//全选
+//            for (T itemData : mData) {
+//                selectedUniqueMarks.add(toJudgeItemDataUniqueMark(itemData));
+//            }
+//        }
+        if (effected) {
+            notifyDataSetChanged();
+        }
         callbackSelectedCase();
     }
 
-    public void markItemDataSelected(T itemData) {
-        if (itemData != null) {
-            markSelected(toJudgeItemDataUniqueMark(itemData));
+    public boolean markItemDataSelectedOrNot(boolean isSelectOrNot,T itemData) {
+        if (itemData == null) {
+            return false;
         }
+        if (curAdapterMode != MODE_NORMAL) {
+            if (!isSelectOrNot) {
+                if (curAdapterMode == MODE_SINGLE_CHOICE) {
+                    return false;
+                }
+            }
+            if (isSelectOrNot) {
+                return markSelected(toJudgeItemDataUniqueMark(itemData));
+            }
+            return markUnSelected(toJudgeItemDataUniqueMark(itemData));
+        }
+        return false;
     }
     /**
      *  根据item data数据的惟一标识，来标记一个数据应该被选中了
@@ -166,20 +204,46 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         }
         return false;
     }
-
     /**
-     * 标记多个数据应该选中
-     * 注：只适全多选模式
-     * @param itemDataUniqueMarks
+     * 标记某个item data 不要被选中
+     * 注：只适用多选模式下
+     * @param itemDataUniqueMark Item data 用来标记是否选中的唯一标识
+     * @return true: 取消被选中生效；false:未操作
      */
-    public boolean markSelected(Collection<Object> itemDataUniqueMarks) {
+    public boolean markUnSelected(Object itemDataUniqueMark) {
+        if (curAdapterMode == MODE_MULTY_CHOICE) {
+            if (selectedUniqueMarks != null) {
+                boolean isEffected = selectedUniqueMarks.remove(itemDataUniqueMark);
+                if (isEffected) {
+                    notifyDataSetChanged();
+                }
+                return isEffected;
+            }
+        }
+        return false;
+    }
+    /**
+     * 根据T itemData的(选中唯一标识)来标记被选中或者移除选中
+     * @param isToSelectOrNot true:要标记为选中状态；false:移除选中状态
+     * @param itemDataUniqueMarks 要选中/取消选中的 itemDatas 的标识
+     * @return true:操作了(更新列表); false: do nothing
+     */
+    public boolean markSelectedOrNot(boolean isToSelectOrNot,Collection<Object> itemDataUniqueMarks) {
         if (curAdapterMode == MODE_MULTY_CHOICE) {
             if (itemDataUniqueMarks != null && !itemDataUniqueMarks.isEmpty()) {
                 if (selectedUniqueMarks == null) {
+                    if (!isToSelectOrNot) {
+                        return false;
+                    }
                     selectedUniqueMarks = new HashSet<>(itemDataUniqueMarks);
                 }
                 else{
-                    selectedUniqueMarks.addAll(itemDataUniqueMarks);
+                    if (isToSelectOrNot) {
+                        selectedUniqueMarks.addAll(itemDataUniqueMarks);
+                    }
+                    else{
+                        selectedUniqueMarks.removeAll(itemDataUniqueMarks);
+                    }
                 }
                 notifyDataSetChanged();
                 return true;
@@ -188,8 +252,13 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         return false;
     }
 
-    public boolean markItemDatasSelected(Collection<T> itemDatas) {
+    public boolean markItemDatasSelectedOrNot(boolean isToSelectOrNot,Collection<T> itemDatas) {
         if (curAdapterMode == MODE_MULTY_CHOICE) {
+            if (!isToSelectOrNot) {
+                if (selectedUniqueMarks == null || selectedUniqueMarks.isEmpty()) {
+                    return false;
+                }
+            }
             if (itemDatas != null) {
                 ArrayList<Object> itemDataUniqueMarks = null;
                 for (T itemData : itemDatas) {
@@ -202,36 +271,8 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
                     }
                 }
                 if (itemDataUniqueMarks != null && !itemDataUniqueMarks.isEmpty()) {
-                   return markSelected(itemDataUniqueMarks);
+                    return markSelectedOrNot(isToSelectOrNot, itemDataUniqueMarks);
                 }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 标记某个item data 不要被选中
-     * 注：只适用多选模式下
-     * @param itemDataUniqueMark Item data 用来标记是否选中的唯一标识
-     * @return true: 取消被选中生效；false:未操作
-     */
-    public boolean markUnSelected(Object itemDataUniqueMark) {
-        if (curAdapterMode == MODE_MULTY_CHOICE) {
-            if (selectedUniqueMarks != null) {
-               boolean isEffected = selectedUniqueMarks.remove(itemDataUniqueMark);
-                if (isEffected) {
-                    notifyDataSetChanged();
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean markUnSelectedItemData(T itemData) {
-        if (itemData != null) {
-            Object uniqueMarkOfItemData = toJudgeItemDataUniqueMark(itemData);
-            if (uniqueMarkOfItemData != null) {
-                return markUnSelected(uniqueMarkOfItemData);
             }
         }
         return false;
@@ -240,8 +281,11 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
     protected IChooseCallback callback;
     protected void callbackSelectedCase() {
         if (callback != null) {
-            int hasSelectedCount = selectedUniqueMarks.size();
+            int hasSelectedCount = selectedUniqueMarks == null ? 0 : selectedUniqueMarks.size();
             boolean isAllSelected = hasSelectedCount == getJustDataCount();
+            if (hasSelectedCount == 0) {
+                isAllSelected = false;
+            }
             callback.onSelected(this,hasSelectedCount, isAllSelected);
         }
     }
