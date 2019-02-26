@@ -36,8 +36,8 @@
 
         <TextView
             style="@style/common_tv_style"
-            android:layout_width="@dimen/dp_118"
-            android:layout_height="@dimen/dp_38"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_40"
             android:text="@string/cancel_no_gap"
             android:id="@+id/tv_btn_dialog_cancel"
             android:textSize="@dimen/sp_16"
@@ -49,8 +49,8 @@
 
         <TextView
             style="@style/common_tv_style"
-            android:layout_width="@dimen/dp_118"
-            android:layout_height="@dimen/dp_38"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_40"
             android:text="@string/confirm_no_gap"
             android:id="@+id/tv_btn_dialog_commit"
             android:textSize="@dimen/sp_16"
