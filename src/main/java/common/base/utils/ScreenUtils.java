@@ -272,4 +272,8 @@ public class ScreenUtils {
         }
         return oriDesc;
     }
+
+    public static String getDevInfos() {
+        return " windowWidth:" + windowWidth + " windowHeight:" + windowHeight + " density:" + density;
+    }
 }
