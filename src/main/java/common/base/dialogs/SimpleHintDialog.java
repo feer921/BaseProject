@@ -2,8 +2,10 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import common.base.R;
@@ -21,7 +23,7 @@ import common.base.utils.CheckUtil;
  */
 public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     private TextView tvTitle,tvHint,tvBtnCancel,tvBtnCommit;
-
+    private ImageView ivBtnClose;
 
     public SimpleHintDialog(Context context) {
         this(context, R.style.common_dialog_bg_dim);
@@ -55,6 +57,8 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             if (tvBtnCommit != null) {
                 tvBtnCommit.setOnClickListener(this);
             }
+            ivBtnClose = dialogView.findViewById(R.id.ivbtn_dialog_close);
+            ivBtnClose.setOnClickListener(this);
         }
     }
     @Override
@@ -64,6 +68,10 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             dismiss();
         } else if (v == tvBtnCommit) {
             curClickedBtnType = DialogInterface.BUTTON_POSITIVE;
+        }
+        else if (v == ivBtnClose) {
+            dismiss();
+            curClickedBtnType = DialogInterface.BUTTON_NEUTRAL;
         }
         if(dialogClickListener != null){
             dialogClickListener.onClick(this, curClickedBtnType);
@@ -146,6 +154,20 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             tvBtnCommit.setText(commitBtnTextResId);
         }
         return self();
+    }
+
+    public SimpleHintDialog withCloseIcon(@DrawableRes int closeIconRes) {
+        if (ivBtnClose != null) {
+            ivBtnClose.setImageResource(closeIconRes);
+        }
+        return this;
+    }
+
+    public SimpleHintDialog withCloseIconVisible(boolean visible) {
+        if (ivBtnClose != null) {
+            ivBtnClose.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+        return this;
     }
     @Override
     public TextView getDialogTitleView() {

@@ -492,7 +492,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             this.mLayoutResId = layoutResId;
         }
         //add
-        else{
+        else{//这里可以不要先去赋值一遍
             this.mLayoutResId = providedContentViewResId();
         }
     }
@@ -1020,9 +1020,16 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     protected K onCreateDefViewHolder(ViewGroup parent, int viewType) {
-        int layoutId = mLayoutResId;
+        int layoutId = 0;
         if (mMultiTypeDelegate != null) {
             layoutId = mMultiTypeDelegate.getLayoutId(viewType);
+        }
+        //added by fee 2019-03-02:在这里处理默认的layoutId
+        else{
+            if (mLayoutResId == 0) {
+                mLayoutResId = providedContentViewResId();
+            }
+            layoutId = mLayoutResId;
         }
         return createBaseViewHolder(parent, layoutId);
     }
