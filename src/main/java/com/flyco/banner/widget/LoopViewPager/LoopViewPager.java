@@ -4,12 +4,13 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoopViewPager extends ViewPager {
-
+    private boolean canScroll = true;
     private static final boolean DEFAULT_BOUNDARY_CASHING = false;
 
     //    OnPageChangeListener mOuterPageChangeListener;
@@ -212,5 +213,32 @@ public class LoopViewPager extends ViewPager {
             }
         }
     };
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        // return false;//可行,不拦截事件,
+        // return true;//不行,孩子无法处理事件
+        //return super.onInterceptTouchEvent(ev);//不行,会有细微移动
+        if (canScroll){
+            return super.onInterceptTouchEvent(ev);
+        }else{
+            return false;
+        }
+    }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        //return false;// 可行,不消费,传给父控件
+        //return true;// 可行,消费,拦截事件
+        //super.onTouchEvent(ev); //不行,
+        //虽然onInterceptTouchEvent中拦截了,
+        //但是如果viewpage里面子控件不是viewgroup,还是会调用这个方法.
+        if (canScroll){
+            return super.onTouchEvent(ev);
+        }else {
+            return true;// 可行,消费,拦截事件
+        }
+    }
+    public void setScrollable(boolean scroll) {
+        canScroll = scroll;
+    }
 }

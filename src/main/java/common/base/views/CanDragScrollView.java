@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.ScrollView;
 
+import common.base.utils.CommonLog;
+
 /**
  * 可以拖动内部布局的ScrollView
  *
@@ -30,12 +32,22 @@ public class CanDragScrollView extends ScrollView {
 
 	@Override
 	protected void onFinishInflate() {
-		if (getChildCount() > 0) {
-			inner = getChildAt(0);
-		}
-	}
+        super.onFinishInflate();
+        if (getChildCount() > 0) {
+            inner = getChildAt(0);
+        }
+    }
 
-	@SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        int action = ev.getAction();
+        boolean intercepted = super.onInterceptTouchEvent(ev);
+
+//        CommonLog.sysOut("event: action = " + MotionEvent.actionToString(action) + " intercepted = " + intercepted);
+        return intercepted;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		if (inner == null) {
@@ -43,7 +55,9 @@ public class CanDragScrollView extends ScrollView {
 		} else {
 			commOnTouchEvent(ev);
 		}
-		return super.onTouchEvent(ev);
+        boolean isConsumed = super.onTouchEvent(ev);
+//        CommonLog.sysErr("event: action = " + MotionEvent.actionToString(ev.getAction()) + " isConsumed = " + isConsumed);
+        return isConsumed;
 	}
 
 	public void commOnTouchEvent(MotionEvent ev) {

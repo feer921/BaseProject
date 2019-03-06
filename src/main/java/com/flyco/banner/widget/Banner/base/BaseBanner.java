@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.flyco.banner.widget.LoopViewPager.FixedSpeedScroller;
 import com.flyco.banner.widget.LoopViewPager.LoopViewPager;
+import com.flyco.banner.widget.ScrollableViewPager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -122,6 +123,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         float scale = ta.getFloat(R.styleable.BaseBanner_bb_scale, -1);
 
         boolean isLoopEnable = ta.getBoolean(R.styleable.BaseBanner_bb_isLoopEnable, true);
+        boolean isScrollable = ta.getBoolean(R.styleable.BaseBanner_bb_isScrollable, true);
         mDelay = ta.getInt(R.styleable.BaseBanner_bb_delay, 5);
         mPeriod = ta.getInt(R.styleable.BaseBanner_bb_period, 5);
         mIsAutoScrollEnable = ta.getBoolean(R.styleable.BaseBanner_bb_isAutoScrollEnable, true);
@@ -180,7 +182,8 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
 //        mViewPager = isLoopEnable ? new LoopViewPager(context) : new ViewPager(context);
         //added by fee 2017-04-29: 由于需要随时切换两种ViewPager，而分别构造出来
         loopViewPager = new LoopViewPager(context);
-        commonViewPager = new ViewPager(context);
+//        commonViewPager = new ViewPager(context);
+        commonViewPager = new ScrollableViewPager(context);
         mViewPager = isLoopEnable ? loopViewPager : commonViewPager;
         LayoutParams lp = new LayoutParams(mItemWidth, mItemHeight);
         addView(mViewPager, lp);
@@ -295,6 +298,23 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         return (T) this;
     }
 
+    /**
+     * 设置ViewPager是否可以手动滑动
+     * 注：一般是不需要该功能
+     * @param scrollable
+     * @return
+     */
+    public T setViewPagerScrollable(boolean scrollable) {
+        if (mViewPager != null) {
+            if (mViewPager instanceof ScrollableViewPager) {
+                ((ScrollableViewPager) mViewPager).setScrollable(scrollable);
+            }
+            else if (mViewPager instanceof LoopViewPager) {
+                ((LoopViewPager) mViewPager).setScrollable(scrollable);
+            }
+        }
+        return (T) this;
+    }
     /** 设置页面切换动画 */
     public T setTransformerClass(Class<? extends ViewPager.PageTransformer> transformerClass) {
         this.mTransformerClass = transformerClass;
@@ -344,7 +364,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     }
 
     /** 滚动到下一个item */
-    private void scrollToNextItem(int position) {
+    public void scrollToNextItem(int position) {
         position++;
         mViewPager.setCurrentItem(position);
     }

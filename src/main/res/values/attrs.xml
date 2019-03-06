@@ -87,6 +87,8 @@
     <attr name="bb_isTitleShow" format="boolean"/>
     <!-- 设置是否显示显示器,默认true  -->
     <attr name="bb_isIndicatorShow" format="boolean"/>
+    <!-- 设置是否手动滑动ViewPager -->
+    <attr name="bb_isScrollable" format="boolean" />
     <!-- 设置显示器位置.默认Gravity.CENTER.Gravity.CENTER时文字不显示-->
     <attr name="bb_indicatorGravity">
         <enum name="CENTER" value="17"/>
@@ -136,6 +138,7 @@
         <attr name="bb_isTitleShow"/>
         <attr name="bb_isIndicatorShow"/>
         <attr name="bb_indicatorGravity"/>
+        <attr name="bb_isScrollable"/>
     </declare-styleable>
 
     <declare-styleable name="BaseIndicatorBanner">
