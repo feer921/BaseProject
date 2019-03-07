@@ -50,8 +50,8 @@ dependencies {
 
 //    Glide v4 need a minimum API level of 14.
 //    Glide v4 requires you to compile against API 26 or later
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     //建议使用implementation，这样的好处是编译速度会加快。如果需要提供外部访问的时候，使用api即可
-    api 'com.github.bumptech.glide:glide:4.8.0'
-    implementation "com.github.bumptech.glide:okhttp3-integration:4.8.0"
+    api 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation "com.github.bumptech.glide:okhttp3-integration:4.9.0"
 }
