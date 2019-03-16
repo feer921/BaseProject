@@ -1,5 +1,6 @@
 package common.base.utils;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -31,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
@@ -545,6 +547,27 @@ public class ViewUtil{
     public static void setTextViewTextSizeWithPixelValue(TextView tv, int pixelValue) {
         if (tv != null) {
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,pixelValue);
+        }
+    }
+
+    public static ObjectAnimator animView(View toAnimView, String propertyName,int...values) {
+        ObjectAnimator animator = ObjectAnimator.ofInt(toAnimView, propertyName, values);
+        return animator;
+    }
+
+    public static void animProgressBar(ProgressBar pb, int fromValue, int toValue) {
+        if (pb != null) {
+            if (fromValue == -1) {
+                fromValue = pb.getProgress();
+            }
+            int maxProgress = pb.getMax();
+            if (toValue == -1 || toValue > maxProgress) {
+                toValue = maxProgress;
+            }
+            animView(pb, "progress", fromValue, toValue)
+                    .setDuration(2000)
+                    .start()
+            ;
         }
     }
 }

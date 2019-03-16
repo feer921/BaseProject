@@ -194,7 +194,7 @@ public class PackageManagerUtil {
     }
 
     /**
-     * 检查apk版本
+     * 获取APP的version code
      * 
      * @param context
      * @param packageName
@@ -324,6 +324,9 @@ public class PackageManagerUtil {
     public static String getProcessNameByPid(Context context, final int pid) {
         String processName = null;
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return "";
+        }
         List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         if (appProcesses != null) {
             for (RunningAppProcessInfo appProcess : appProcesses) {
@@ -346,6 +349,9 @@ public class PackageManagerUtil {
     public static boolean checkTheProcess(final Context context, String endProcessName) {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         int myPid = android.os.Process.myPid();
+        if (activityManager == null) {
+            return false;
+        }
         List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         if (appProcesses != null) {
             for (RunningAppProcessInfo appProcess : appProcesses) {
@@ -371,7 +377,14 @@ public class PackageManagerUtil {
     @Deprecated
     public static ComponentName getTheProcessBaseActivity(final Context context) {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        RunningTaskInfo task = activityManager.getRunningTasks(1).get(0);
+        if (activityManager == null) {
+            return null;
+        }
+        List<RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1);//这里有可能返回的为list size为0
+        if (runningTaskInfos == null || runningTaskInfos.isEmpty()) {
+            return null;
+        }
+        RunningTaskInfo task = runningTaskInfos.get(0);
         if (task.numActivities > 0) {
             CommonLog.d(TAG, "runningActivity topActivity=" + task.topActivity.getClassName());
             CommonLog.d(TAG, "runningActivity baseActivity=" + task.baseActivity.getClassName());
@@ -385,7 +398,7 @@ public class PackageManagerUtil {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {
             List<RunningTaskInfo> runningTaskInfos = activityManager.getRunningTasks(1);
-            if (runningTaskInfos != null) {
+            if (runningTaskInfos != null && runningTaskInfos.size() > 0) {
                 RunningTaskInfo topRunningTask = runningTaskInfos.get(0);
                 if (topRunningTask != null) {
                     if (topRunningTask.numActivities > 0) {
@@ -393,8 +406,8 @@ public class PackageManagerUtil {
                                 + "  base:" + topRunningTask.baseActivity
                         );
                         ComponentName[] topAndBaseComponents = {
-                          topRunningTask.topActivity,
-                          topRunningTask.baseActivity
+                                topRunningTask.topActivity,
+                                topRunningTask.baseActivity
                         };
                         return topAndBaseComponents;
                     }
