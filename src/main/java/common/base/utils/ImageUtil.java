@@ -190,7 +190,6 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
             return;
         }
         RequestBuilder<GifDrawable> gifDrawableBuilder = Glide.with(context).asGif()
-
                 ;
         if (defHolderPicRes != 0) {
             gifDrawableBuilder.placeholder(defHolderPicRes)
