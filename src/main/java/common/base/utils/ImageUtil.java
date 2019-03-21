@@ -179,9 +179,16 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         Glide.with(context).asBitmap().load(model).into(target);
     }
 
-    public static void loadGif(Context context, int gifDrawableResId, ImageView ivTarget, final int needPlayTime) {
+    public static void loadGif(Context context, int gifDrawableResId, ImageView ivTarget, int needPlayTime) {
+        loadGifModel(context, gifDrawableResId, ivTarget, needPlayTime);
+    }
+
+    public static void loadGifModel(Context context, Object mayBeGifModel, ImageView ivTarget, final int needPlayTime) {
+        if (mayBeGifModel == null) {
+            return;
+        }
+        RequestBuilder<GifDrawable> gifDrawableBuilder = Glide.with(context).asGif();
         RequestListener<GifDrawable> loadGifDrawableListener = null;
-        RequestBuilder<GifDrawable> requestBuilder = Glide.with(context).asGif().load(gifDrawableResId);
         if (needPlayTime >= 1) {
             loadGifDrawableListener = new RequestListener<GifDrawable>() {
                 @Override
@@ -195,9 +202,21 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
                     return false;
                 }
             };
-            requestBuilder.listener(loadGifDrawableListener);
+            gifDrawableBuilder.listener(loadGifDrawableListener);
         }
-        requestBuilder.into(ivTarget);
+        if (mayBeGifModel instanceof Integer) {//还有:load(Bitmap xx);load(byte[]xxx);loadDrawable(Drawable xx);有差异
+            Integer gifResId = (Integer) mayBeGifModel;
+            if (gifResId != 0) {
+                gifDrawableBuilder.load(gifResId);
+            }
+            else {
+                return;
+            }
+        }
+        else{
+            gifDrawableBuilder.load(mayBeGifModel);
+        }
+        gifDrawableBuilder.into(ivTarget);
     }
     public static ColorDrawable createDefHolderColorDrawable(int theColor) {
         if (theColor <= 0) {

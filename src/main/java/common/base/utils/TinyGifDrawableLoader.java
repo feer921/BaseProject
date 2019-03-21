@@ -65,7 +65,8 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
         RequestBuilder<GifDrawable> requestBuilder =
                 Glide.with(context.getApplicationContext())
                         .asGif()
-                        .load(gifDrawableResId);
+//                        .load(gifDrawableResId)
+                ;
         if (
 //                playTimes >= 1 &&
                 loadCallback != null) {
@@ -74,9 +75,39 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
         }
         RequestOptions options = new RequestOptions();
         options.diskCacheStrategy(DiskCacheStrategy.RESOURCE);
-        requestBuilder.apply(options);
+        requestBuilder.apply(options)
 //        listener(this)
-        requestBuilder.into(iv);
+                .load(gifDrawableResId)
+                .into(iv)
+        ;
+    }
+
+    /**
+     * 加载不一定是本地图片资源
+     * (即也可以是网络资源)
+     * 并且也可以不是gif图片
+     * @param context
+     * @param model
+     * @param iv
+     * @param playTimes
+     */
+    public void loadMaybeGifDrawable(Context context,Object model,ImageView iv,int playTimes) {
+        if (context == null || iv == null) {
+            return;
+        }
+        this.playTimes = playTimes;
+        RequestBuilder builder = Glide.with(context.getApplicationContext())
+                .asGif()
+                ;
+        if (loadCallback != null) {
+            builder.listener(this);
+        }
+        RequestOptions options = new RequestOptions();
+        options.diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+        builder.apply(options)
+                .load(model)
+                .into(iv)
+        ;
     }
     private WeakHandler mHandler;
     public void startPlay(boolean rePlay) {
