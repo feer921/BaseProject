@@ -11,7 +11,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RawRes;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -180,14 +182,20 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
     }
 
     public static void loadGif(Context context, int gifDrawableResId, ImageView ivTarget, int needPlayTime) {
-        loadGifModel(context, gifDrawableResId, ivTarget, needPlayTime);
+        loadGifModel(context, gifDrawableResId,0, ivTarget, needPlayTime);
     }
 
-    public static void loadGifModel(Context context, Object mayBeGifModel, ImageView ivTarget, final int needPlayTime) {
+    public static void loadGifModel(Context context, Object mayBeGifModel, @RawRes @DrawableRes int defHolderPicRes, ImageView ivTarget, final int needPlayTime) {
         if (mayBeGifModel == null) {
             return;
         }
-        RequestBuilder<GifDrawable> gifDrawableBuilder = Glide.with(context).asGif();
+        RequestBuilder<GifDrawable> gifDrawableBuilder = Glide.with(context).asGif()
+
+                ;
+        if (defHolderPicRes != 0) {
+            gifDrawableBuilder.placeholder(defHolderPicRes)
+                    .error(defHolderPicRes);
+        }
         RequestListener<GifDrawable> loadGifDrawableListener = null;
         if (needPlayTime >= 1) {
             loadGifDrawableListener = new RequestListener<GifDrawable>() {
