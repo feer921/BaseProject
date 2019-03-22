@@ -225,6 +225,16 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         }
         gifDrawableBuilder.into(ivTarget);
     }
+
+    public static <AsX> void loadImageIntoTarget(Context context, String imageDataUrl, int defPicRes, Class<AsX> resourseClassType, Target<AsX> target) {
+        Glide.with(context)
+                .as(resourseClassType)
+                .load(imageDataUrl)
+                .error(defPicRes)
+                .placeholder(defPicRes)
+                .into(target)
+                ;
+    }
     public static ColorDrawable createDefHolderColorDrawable(int theColor) {
         if (theColor <= 0) {
             theColor = Color.parseColor("#555555");
