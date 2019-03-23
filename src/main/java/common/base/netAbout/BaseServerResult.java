@@ -2,12 +2,9 @@ package common.base.netAbout;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
-
 import common.base.utils.CommonLog;
 import common.base.utils.JsonUtil;
 import common.base.utils.Util;
@@ -119,16 +116,60 @@ public class BaseServerResult {
     public JSONObject dataJson;
 
     public Object peekValueInData(String key) {
-        if (dataJson == null) {
+        if (dataJson == null || dataJson.length() < 1) {
             try {
                 dataJson = new JSONObject(getDataStr());
             } catch (Exception e) {
                 e.printStackTrace();
+                dataJson = new JSONObject();
             }
         }
-        if (dataJson != null) {
-            return dataJson.opt(key);
-        }
-        return null;
+//        if (dataJson != null) {
+//            return dataJson.opt(key);
+//        }
+        return dataJson.opt(key);
     }
+//    public Object peekValueInData(String key) {
+//        if (dataJson == null) {
+//            try {
+//                dataJson = new JSONObject(getDataStr());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        if (dataJson != null) {
+//            return dataJson.opt(key);
+//        }
+//        return null;
+//    }
+
+//    public <V> V peekValueInDataWithDefValue(String keyInData, V defValue) {
+//        if (dataJson == null) {
+//            try {
+//                dataJson = new JSONObject(getDataStr());
+//            } catch (Exception ignore) {
+//                ignore.printStackTrace();
+//            }
+//        }
+//        if (dataJson != null && dataJson.has(keyInData)) {
+//            if (defValue != null) {
+//                try {
+//                    V result = defValue;
+//                    if (defValue instanceof String) {
+//                        result = (V) dataJson.optString(keyInData);
+//                    } else if (defValue instanceof Integer) {
+//                        Integer value = dataJson.optInt(keyInData);
+//                        result = (V) value;
+//                    } else if (defValue instanceof Double) {
+//
+//                    }
+//                    return result;
+//                } catch (Exception ignore) {
+//                    //类型转换异常
+//                    ignore.printStackTrace();
+//                }
+//            }
+//        }
+//        return defValue;
+//    }
 }
