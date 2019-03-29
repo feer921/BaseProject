@@ -292,6 +292,18 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return retryCount;
     }
 
+    /**
+     * 设置本次请求的重试次数，会覆盖全局的重试次数
+     * @param retryCount
+     */
+    public R retryCount(int retryCount) {
+        if (retryCount < 0) {
+            retryCount = 0;
+        }
+        this.retryCount = retryCount;
+        return (R) this;
+    }
+
     public Request getRequest() {
         return mRequest;
     }

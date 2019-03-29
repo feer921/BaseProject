@@ -526,6 +526,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     @Override
     public void dismiss() {
+        CommonLog.i(TAG, "-->dismiss()");
         clearShowHoldTaskInfo();
         super.dismiss();
     }
@@ -545,6 +546,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             return null;
         }
         return (T) dialogView.findViewById(viewId);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        CommonLog.i(TAG, "--> onDetachedFromWindow()");
     }
 
     public int[] screenWhInfos() {

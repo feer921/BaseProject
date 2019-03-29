@@ -42,6 +42,20 @@ public class BaseOkgoApi extends BaseApi {
         buildCommonRequestParams(getRequest, appendKeys, keyValues);
         excute(getRequest, callback);
     }
+
+    /**
+     * 仅仅构建携带请求参数的Get请求，excute()自行完成(可同步/异步)
+     * @param wholeApiUrl 完整APi 请求地址
+     * @param appendKeys keys
+     * @param keyValues values
+     * @return GetRequest
+     */
+    public static GetRequest justGetRequestWithParams(String wholeApiUrl, String[] appendKeys, String... keyValues) {
+        GetRequest getRequest = OkGo.get(wholeApiUrl);
+        buildCommonRequestParams(getRequest, appendKeys, keyValues);
+        return getRequest;
+    }
+
     /**
      * @param request
      * @param appendKeys keys
@@ -52,8 +66,12 @@ public class BaseOkgoApi extends BaseApi {
         if (appendKeys != null && values != null) {//如果有外部传入的参数
             int keysLen = appendKeys.length;
             int valuesLen = values.length;
-            if (keysLen > 0 && valuesLen > 0 && valuesLen >= keysLen) {
-                for (int keyIndex = 0; keyIndex < keysLen; keyIndex++) {
+            int minLen = keysLen;
+            if (valuesLen < keysLen) {
+                minLen = valuesLen;
+            }
+            if (minLen > 0) {
+                for (int keyIndex = 0; keyIndex < minLen; keyIndex++) {
                     String curKey = appendKeys[keyIndex];
                     String curValue = values[keyIndex];
                     request.params(curKey, curValue);
@@ -62,8 +80,8 @@ public class BaseOkgoApi extends BaseApi {
         }
         return request;
     }
-    public static BaseRequest getRequest(String wholeUrl) {
-        return createRequest(wholeUrl, GET);
+    public static GetRequest getRequest(String wholeUrl) {
+        return (GetRequest) createRequest(wholeUrl, GET);
     }
 
     /**
@@ -101,6 +119,18 @@ public class BaseOkgoApi extends BaseApi {
     }
     public static PostRequest postRequest(String wholeUrl) {
         return (PostRequest) createRequest(wholeUrl, POST);
+    }
+    /**
+     * 仅仅为构建携带请求参数的Post请求，excute()自行完成(可同步/异步)
+     * @param wholeApiUrl 完整APi 请求地址
+     * @param appendKeys keys
+     * @param keyValues values
+     * @return PostRequest
+     */
+    public static PostRequest justPostRequestWithParams(String wholeApiUrl, String[] appendKeys, String... keyValues) {
+        PostRequest postRequest = OkGo.post(wholeApiUrl);
+        buildCommonRequestParams(postRequest, appendKeys, keyValues);
+        return postRequest;
     }
     public static void postWithType(String apiUrl, AbsCallback callback, int requestType) {
         if (!Util.isEmpty(URL_HOST)) {//表示URL_HOST已赋值

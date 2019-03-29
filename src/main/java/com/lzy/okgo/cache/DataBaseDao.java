@@ -96,10 +96,11 @@ public abstract class DataBaseDao<T> {
 
     /** 按条件查询对象并返回集合 */
     public List<T> get(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
-        SQLiteDatabase database = openReader();
+        SQLiteDatabase database = null;
         List<T> list = new ArrayList<>();
         Cursor cursor = null;
         try {
+            database = openReader();
             database.beginTransaction();
             cursor = database.query(getTableName(), columns, selection, selectionArgs, groupBy, having, orderBy, limit);
             while (!cursor.isClosed() && cursor.moveToNext()) {
@@ -109,7 +110,9 @@ public abstract class DataBaseDao<T> {
         } catch (Exception e) {
             OkLogger.e(e);
         } finally {
-            database.endTransaction();
+            if (database != null) {
+                database.endTransaction();
+            }
             closeDatabase(database, cursor);
         }
         return list;
@@ -134,8 +137,11 @@ public abstract class DataBaseDao<T> {
         } catch (Exception e) {
             OkLogger.e(e);
         } finally {
-            database.endTransaction();
-            closeDatabase(database, null);
+            try {
+                database.endTransaction();
+                closeDatabase(database, null);
+            } catch (Exception ignore) {
+            }
         }
         return 0;
     }
