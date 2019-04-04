@@ -18,7 +18,10 @@ import common.base.utils.CommonLog;
 @RequiresApi(api = 14)
 public class TheActivityLifeCycleCallback implements Application.ActivityLifecycleCallbacks {
     protected final String TAG = getClass().getSimpleName();
-    protected volatile int theActivityCount = 0;
+    /**
+     * 在前台的Activity数量
+     */
+    protected volatile int theForegroundActivityCount = 0;
     protected boolean LIFE_CIRCLE_DEBUG = true;
 
     protected volatile Activity theAppTopActivity;
@@ -36,7 +39,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
 
     @Override
     public void onActivityStarted(Activity activity) {
-        theActivityCount++;
+        theForegroundActivityCount++;
         theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStarted() activity = " + activity );
@@ -59,7 +62,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
 
     @Override
     public void onActivityStopped(Activity activity) {
-        theActivityCount--;
+        theForegroundActivityCount--;
         if (LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStopped() activity = " + activity);
         }
@@ -86,7 +89,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      * @return true:没有Activity在前台了;false:有Activity有前台
      */
     public boolean isNoActivityInForeground() {
-        return theActivityCount <= 0;
+        return theForegroundActivityCount <= 0;
     }
 
     /**
@@ -95,6 +98,10 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      */
     public boolean isNoActivitiesExist() {
         return existActivityCount <= 0;
+    }
+
+    public int getExistActivityCount() {
+        return existActivityCount;
     }
     /**
      * 获取app当前在栈顶的Activity
