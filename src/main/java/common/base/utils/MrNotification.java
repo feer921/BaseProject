@@ -125,6 +125,41 @@ public class MrNotification {
         return send(tag, theLastNotificationId + 1, notification);
     }
 
+    public void cancelAll() {
+        if (notifyManager != null) {
+            notifyManager.cancelAll();
+            if (notifiesIdMapTags != null) {
+                notifiesIdMapTags.clear();
+            }
+        }
+    }
+
+    /**
+     * @param toCancelNotificationId 不用考虑该id可能是外部自己定的id
+     */
+    public void cancel(int toCancelNotificationId) {
+        if (notifyManager != null) {
+            String tag = queryMapNotificationIdTag(toCancelNotificationId);
+            if (tag != null) {//
+                notifyManager.cancel(tag, toCancelNotificationId);
+            }
+            else {
+                notifyManager.cancel(toCancelNotificationId);
+            }
+        }
+    }
+    public void cancel(String notificationTag,int theId) {
+        if (notifyManager != null) {
+            notifyManager.cancel(notificationTag, theId);
+        }
+    }
+
+    public String queryMapNotificationIdTag(int theId) {
+        if (notifiesIdMapTags != null) {
+            return notifiesIdMapTags.get(theId);
+        }
+        return null;
+    }
     public class NotificationBuilder extends NotificationCompat.Builder {
 //        private Context mContext;
         /**
