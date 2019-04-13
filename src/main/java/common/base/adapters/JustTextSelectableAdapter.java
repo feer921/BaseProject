@@ -1,7 +1,12 @@
 package common.base.adapters;
 
 
+import android.support.annotation.CallSuper;
+import android.view.View;
+
 import com.chad.library.adapter.base.BaseViewHolder;
+
+import common.base.R;
 import common.base.beans.IHasTextData;
 
 
@@ -38,8 +43,29 @@ public class JustTextSelectableAdapter<T extends IHasTextData,VH extends BaseVie
      * @param viewHolder A fully initialized viewHolder.
      * @param item       The item that needs to be displayed.
      */
+    @CallSuper
     @Override
     protected void convert(VH viewHolder, T item) {
+        View itemView = viewHolder.itemView;
+        if (itemView != null) {//因为本Adapter默认没有item layout,而是交由子类提供，所以这里做一下重新设置itemview的回调处理
+            Object relayoutTag = itemView.getTag(R.id.view_common_tag_id);
+            if (relayoutTag == null || "".equals(relayoutTag.toString())) {//没有重置itemView
+                itemView.setTag(R.id.view_common_tag_id,relayoutItemView(itemView));
+            }
+        }
+    }
 
+    /**
+     * 重新设置item view的布局
+     * @param itemView
+     * @return 如果设置了，则返回任意的非空的字符串
+     */
+    protected String relayoutItemView(View itemView//, Object relayoutTag
+                                       ) {
+        return "";
+    }
+
+    protected String relayoutItemView(VH viewHolder) {
+        return "";
     }
 }

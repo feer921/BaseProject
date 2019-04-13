@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
@@ -37,7 +38,7 @@ import common.base.utils.ViewUtil;
 public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog implements View.OnClickListener{
     protected final String TAG = getClass().getSimpleName();
     protected DialogInterface.OnClickListener dialogClickListener;
-    public static final String HIDE_FLAG = "HiDe";
+    public static final String HIDE_FLAG = "HIdE";
     /**
      * 对话框的布局视图
      */
@@ -98,14 +99,16 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     public BaseDialog(Context context, int theme) {
         super(context, theme);
+        mContext = context;//提前到这里来，以避免下面的空指针
         if (getDialogViewResID() > 0) {
             dialogView = getLayoutInflater().inflate(getDialogViewResID(), null);
         }
         else{
             dialogView = getDialogView();
         }
-        mContext = context;
-        initViews(dialogView);
+        if (dialogView != null) {
+            initViews(dialogView);
+        }
     }
 
     public void setDialogWindowBgColor(@ColorInt int dialogWindowBgColor) {
@@ -590,5 +593,12 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
          * @param theDialog
          */
         void onDialogViewCreated(BaseDialog theDialog);
+    }
+
+    protected int dimenRes2PixValue(@DimenRes int dimenResId) {
+        if (mContext != null) {
+           return mContext.getResources().getDimensionPixelSize(dimenResId);
+        }
+        return 0;
     }
 }

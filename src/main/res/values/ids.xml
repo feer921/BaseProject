@@ -7,4 +7,5 @@
     <item name="BaseQuickAdapter_dragging_support" type="id"/>
     <item name="BaseQuickAdapter_databinding_support" type="id"/>
     <item name="tv_custom_extra_himt" type="id"/>
+    <item name="view_common_tag_id" type="id"/>
 </resources>
