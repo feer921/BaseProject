@@ -12,7 +12,16 @@
         android:scaleType="fitXY"
         android:contentDescription="@null"
         />
-
+    <TextView
+        style="@style/common_tv_style"
+        android:text="跳过"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:padding="@dimen/dp_5"
+        android:layout_margin="@dimen/dp_5"
+        android:id="@+id/tvbtn_jump_over"
+        android:visibility="invisible"
+        />
     <TextView
         android:id="@+id/tv_jump_over"
         android:layout_width="wrap_content"
