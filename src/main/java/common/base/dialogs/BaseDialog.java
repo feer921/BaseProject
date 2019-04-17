@@ -70,7 +70,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     public int curDialogInCase;
 
-
+    /**
+     * added by fee 2019-04-17: 经常dialog的弹出与某个数据有关
+     */
+    protected Object tempLinkedData;
 
     protected float dialogBgBehindAlpha = -1;
     /**
@@ -529,6 +532,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
     @Override
     public void dismiss() {
+        tempLinkedData = null;
         CommonLog.i(TAG, "-->dismiss()");
         clearShowHoldTaskInfo();
         super.dismiss();
@@ -600,5 +604,14 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
            return mContext.getResources().getDimensionPixelSize(dimenResId);
         }
         return 0;
+    }
+
+    public I linkCurData(Object linkTheData) {
+        this.tempLinkedData = linkTheData;
+        return self();
+    }
+
+    public Object theLinkedData() {
+        return tempLinkedData;
     }
 }
