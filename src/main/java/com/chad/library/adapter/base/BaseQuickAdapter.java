@@ -73,6 +73,10 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  */
 public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends RecyclerView.Adapter<K> {
 
+    /** 外部指定的item的宽度 **/
+    protected int theAssignItemWidth;
+    /** 外部指定的item的高度 **/
+    protected int theAssignItemHeight;
     //load more
     /**
      * 是否可以加载下一页
@@ -2197,5 +2201,13 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
             return mContext.getResources().getDimensionPixelSize(dimenResId);
         }
         return 0;
+    }
+
+    public void setTheAssignItemWidth(int theAssignItemWidth) {
+        this.theAssignItemWidth = theAssignItemWidth;
+    }
+
+    public void setTheAssignItemHeight(int theAssignItemHeight) {
+        this.theAssignItemHeight = theAssignItemHeight;
     }
 }
