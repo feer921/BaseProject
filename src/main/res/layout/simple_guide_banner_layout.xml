@@ -35,11 +35,11 @@
         />
     <TextView
         android:id="@+id/tv_jump_over"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/dp_190"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="15dp"
+        android:layout_marginBottom="@dimen/dp_33"
         android:background="@drawable/rounded_black_bg"
         android:paddingBottom="8dp"
         android:paddingLeft="30dp"
@@ -47,7 +47,8 @@
         android:paddingTop="8dp"
         android:text="立即体验"
         android:textColor="#ffffff"
-        android:textSize="15sp"
+        android:textSize="@dimen/sp_15"
+        android:gravity="center"
         />
 
 </RelativeLayout>
