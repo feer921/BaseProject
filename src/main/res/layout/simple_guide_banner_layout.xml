@@ -22,6 +22,17 @@
         android:id="@+id/tvbtn_jump_over"
         android:visibility="invisible"
         />
+    <ImageView
+        style="@style/common_iv_style"
+        android:contentDescription="@null"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:id="@+id/ivbtn_jump_over"
+        android:visibility="invisible"
+        />
     <TextView
         android:id="@+id/tv_jump_over"
         android:layout_width="wrap_content"
