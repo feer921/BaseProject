@@ -11,7 +11,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 11
+        minSdkVersion 14//11-->14 due to minSdkVersion 11 cannot be smaller than version 14 declared in library [com.android.support:design:27.1.1]
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
