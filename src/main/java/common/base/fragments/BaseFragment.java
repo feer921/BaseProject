@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import common.base.R;
+import common.base.WeakHandler;
 import common.base.activitys.IProxyCallback;
 import common.base.activitys.UIHintAgent;
 import common.base.interfaces.ICommonUiHintActions;
@@ -29,7 +31,8 @@ public abstract class BaseFragment extends Fragment implements
                                 View.OnClickListener,
                                 IProxyCallback,
                                 DialogInterface.OnClickListener,
-                                ICommonUiHintActions{
+                                ICommonUiHintActions,
+                                WeakHandler.Handleable {
     protected final String TAG = getClass().getSimpleName();
     protected LayoutInflater mLayoutInflater;
     protected Context context;
@@ -507,8 +510,28 @@ public abstract class BaseFragment extends Fragment implements
     public void popupHint(int hintMsgResID) {
         popupHint(getString(hintMsgResID));
     }
+    protected WeakHandler mHandler;
+    /**
+     * 各子类按需决定是否需要Handler
+     */
+    protected void initHandler() {
+        if (mHandler == null) {
+            mHandler = new WeakHandler<>(this);
+        }
+    }
 
-    protected void i(String tag,Object... logBodys) {
+    /**
+     * 处理消息
+     *
+     * @param msg
+     * @return 被处理了的MessageId
+     */
+    @Override
+    public int handleMessage(Message msg) {
+        return 0;
+    }
+
+    protected void i(String tag, Object... logBodys) {
         if (tag == null) {
             tag = TAG + "[" + extraInfoInLifeDebug + "]";
         }

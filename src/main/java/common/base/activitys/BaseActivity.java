@@ -25,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                                                              View.OnClickListener,
                                                              IProxyCallback,
                                                              DialogInterface.OnClickListener,
-                                        WeakHandler.Handleable{
+                                                             WeakHandler.Handleable{
     protected final String TAG = getClass().getSimpleName();
     protected boolean LIFE_CIRCLE_DEBUG = false;
     /**
