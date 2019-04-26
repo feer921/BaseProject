@@ -57,6 +57,8 @@ public class BaseOkgoApi extends BaseApi {
     }
 
     /**
+     * 注：如果APP项目有对参数进行整体加密的需求，则本类不统一处理
+     * 而采取把本类直接复制到APP项目下，并且其他的xxApi继承之，来作统一处理
      * @param request
      * @param appendKeys keys
      * @param values values 要一一对应到key的值

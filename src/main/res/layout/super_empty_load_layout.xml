@@ -55,7 +55,6 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@null"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_launcher"
                 />
 
             <TextView

@@ -11,14 +11,12 @@ import android.os.Message;
 import android.view.Gravity;
 import android.view.View;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import common.base.R;
 import common.base.dialogs.BaseDialog;
 import common.base.dialogs.CommonMdDialog;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
-import common.base.utils.Util;
 import common.base.views.HintPopuWindow;
 
 
@@ -69,9 +67,7 @@ public class UIHintAgent {
      * add by fee 2017-10-21
      */
     private float hintDialogBgAlpha = -1;
-    //added by fee 2016-07-28
-    private SweetAlertDialog sweetAlertDialog;
-    private SweetAlertDialog sweetLoadingDialog;
+
     public void setProxyCallback(IProxyCallback curProxyOwner){
         mProxyCallback = curProxyOwner;
     }
@@ -136,9 +132,9 @@ public class UIHintAgent {
         if(hintDialog != null){
             hintDialog.setCancelable(cancelable);
         }
-        if (sweetAlertDialog != null) {
-            sweetAlertDialog.setCancelable(cancelable);
-        }
+//        if (sweetAlertDialog != null) {
+//            sweetAlertDialog.setCancelable(cancelable);
+//        }
         setUpHintDialogCancelListenerInfo();
     }
 
@@ -151,10 +147,10 @@ public class UIHintAgent {
         if (hintDialog != null) {
             hintDialog.setCanceledOnTouchOutside(hintDialogCancelable);
         }
-        //added 2016-10-31
-        if (sweetAlertDialog != null) {
-            sweetAlertDialog.setCanceledOnTouchOutside(hintDialogCancelable);
-        }
+//        //added 2016-10-31
+//        if (sweetAlertDialog != null) {
+//            sweetAlertDialog.setCanceledOnTouchOutside(hintDialogCancelable);
+//        }
     }
     /**
      * 开关 : 加载对话框 是否可按back键取消
@@ -166,10 +162,10 @@ public class UIHintAgent {
 //            //而中间想改变是否可取消的值时，如果不主动调用一次，则会无效,故凡是临时改变Dialog的是否可取消的状态值时都需要主动再调用一次
 //            loadingDialog.setCancelable(cancelable);
 //        }
-        //added 2016-10-31
-        if (null != sweetLoadingDialog) {
-            sweetLoadingDialog.setCancelable(cancelable);
-        }
+//        //added 2016-10-31
+//        if (null != sweetLoadingDialog) {
+//            sweetLoadingDialog.setCancelable(cancelable);
+//        }
         setUpLoadingDialogCancelListenerInfo();
     }
     public void onClickInDialog(DialogInterface dialog, int which) {
@@ -251,9 +247,10 @@ public class UIHintAgent {
 //        if (loadingDialog != null) {
 //            loadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
 //        }
-        if (sweetLoadingDialog != null) {
-            sweetLoadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
-        }
+
+//        if (sweetLoadingDialog != null) {
+//            sweetLoadingDialog.setOnCancelListener(isLoadingDialogCancelable ? loadingDialogCancelListener : null);
+//        }
     }
 
     /**
@@ -269,9 +266,10 @@ public class UIHintAgent {
         if (hintDialog != null) {
             hintDialog.setOnCancelListener(isNeedToConfigCancelListener ? hintDialogCancelListener : null);
         }
-        if (sweetAlertDialog != null) {
-            sweetAlertDialog.setOnCancelListener(isNeedToConfigCancelListener ? hintDialogCancelListener : null);
-        }
+
+//        if (sweetAlertDialog != null) {
+//            sweetAlertDialog.setOnCancelListener(isNeedToConfigCancelListener ? hintDialogCancelListener : null);
+//        }
     }
     /**
      * @deprecated 目前loading dialog已经可以取消
@@ -287,10 +285,11 @@ public class UIHintAgent {
 //        if (loadingDialog != null) {
 //            loadingDialog.dismiss();
 //        }
-        //added by fee 2016-07-28
-        if (sweetLoadingDialog != null) {
-            sweetLoadingDialog.dismissWithAnimation();
-        }
+
+//        //added by fee 2016-07-28
+//        if (sweetLoadingDialog != null) {
+//            sweetLoadingDialog.dismissWithAnimation();
+//        }
     }
 
     public void dismissLoadingDialog() {
@@ -377,12 +376,12 @@ public class UIHintAgent {
         }
         mHandler = null;
 
-        if (sweetAlertDialog != null) {
-            sweetAlertDialog.dismiss();
-        }
-        if (sweetLoadingDialog != null) {
-            sweetLoadingDialog.dismiss();
-        }
+//        if (sweetAlertDialog != null) {
+//            sweetAlertDialog.dismiss();
+//        }
+//        if (sweetLoadingDialog != null) {
+//            sweetLoadingDialog.dismiss();
+//        }
     }
 
     public int getHintDialogInCase() {
@@ -444,50 +443,39 @@ public class UIHintAgent {
      * 提示性Dialog当前显示show时所处的哪种(提示性)情况
      */
     private int hintDialogInWhichCase = 0;
-    public void sweetLoading(String loadhintMsg) {
-        if (sweetLoadingDialog == null) {
-            sweetLoadingDialog = new SweetAlertDialog(mContext);
-            sweetLoadingDialog.setCancelable(isLoadingDialogCancelable);
-            sweetLoadingDialog.changeAlertType(SweetAlertDialog.PROGRESS_TYPE);
-            setUpLoadingDialogCancelListenerInfo();
-        }
-        sweetLoadingDialog.setTitleText(loadhintMsg);
-        if (!sweetLoadingDialog.isShowing()) {
-            sweetLoadingDialog.show();
-        }
-    }
 
-    public void sweetHintSuc(String successInfo,String confimInfo,int sweetDialogInCase) {
-        sweetDialogHint(successInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
-    }
 
-    public void sweetHintFail(String failHintInfo, String confimInfo, int sweetDialogInCase) {
-        sweetDialogHint(failHintInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
-    }
-    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String confimInfo, int curDialogInCase,int sweetDialogContentCase) {
-        if (!isOwnerVisible) {
-            return;
-        }
-        hintDialogInWhichCase = curDialogInCase;
-        initSweetAlertDialog();
-//        sweetAlertDialog.setOnCancelListener(null);
-        sweetAlertDialog.setTitleText(titleInfo)
-                .setContentText(hintInfo)
-                .setCancelText(cancelInfo)
-                .setConfirmText(confimInfo)
-                .setConfirmClickListener(comfimBtnClickListener)
-                .changeAlertType(sweetDialogContentCase);
-        sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));
-        sweetAlertDialog.showContentText(!Util.isEmpty(hintInfo));
-        sweetAlertDialog.show();
-    }
-    private void initSweetAlertDialog() {
-        if (sweetAlertDialog == null) {
-            sweetAlertDialog = new SweetAlertDialog(mContext);
-            sweetAlertDialog.setCancelable(isHintDialogCancelable);
-            sweetAlertDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
-        }
-    }
+//    public void sweetHintSuc(String successInfo,String confimInfo,int sweetDialogInCase) {
+//        sweetDialogHint(successInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
+//    }
+//
+//    public void sweetHintFail(String failHintInfo, String confimInfo, int sweetDialogInCase) {
+//        sweetDialogHint(failHintInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
+//    }
+//    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String confimInfo, int curDialogInCase,int sweetDialogContentCase) {
+//        if (!isOwnerVisible) {
+//            return;
+//        }
+//        hintDialogInWhichCase = curDialogInCase;
+//        initSweetAlertDialog();
+////        sweetAlertDialog.setOnCancelListener(null);
+//        sweetAlertDialog.setTitleText(titleInfo)
+//                .setContentText(hintInfo)
+//                .setCancelText(cancelInfo)
+//                .setConfirmText(confimInfo)
+//                .setConfirmClickListener(comfimBtnClickListener)
+//                .changeAlertType(sweetDialogContentCase);
+//        sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));
+//        sweetAlertDialog.showContentText(!Util.isEmpty(hintInfo));
+//        sweetAlertDialog.show();
+//    }
+//    private void initSweetAlertDialog() {
+//        if (sweetAlertDialog == null) {
+//            sweetAlertDialog = new SweetAlertDialog(mContext);
+//            sweetAlertDialog.setCancelable(isHintDialogCancelable);
+//            sweetAlertDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
+//        }
+//    }
 
     /**
      * Loading类的Dialog被取消显示(在设置了可被取消,一般按back键)时的回调监听
@@ -516,12 +504,12 @@ public class UIHintAgent {
             }
         }
     }
-    private SweetAlertDialog.OnSweetClickListener comfimBtnClickListener = new SweetAlertDialog.OnSweetClickListener() {
-        @Override
-        public void onClick(SweetAlertDialog sweetAlertDialog) {
-            if (mClickListenerForDialog != null) {
-                mClickListenerForDialog.onClick(sweetAlertDialog,DialogInterface.BUTTON_POSITIVE);
-            }
-        }
-    };
+//    private SweetAlertDialog.OnSweetClickListener comfimBtnClickListener = new SweetAlertDialog.OnSweetClickListener() {
+//        @Override
+//        public void onClick(SweetAlertDialog sweetAlertDialog) {
+//            if (mClickListenerForDialog != null) {
+//                mClickListenerForDialog.onClick(sweetAlertDialog,DialogInterface.BUTTON_POSITIVE);
+//            }
+//        }
+//    };
 }
