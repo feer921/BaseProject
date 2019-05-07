@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import common.base.R;
@@ -438,6 +439,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * 注：该方法为主动调用方法，不在Activity的生命周期流程中
      * 则需要注意：如果Activity是自动结束(如，屏幕旋转等)的，因不会走finish()而导致在此方法内作的释放不执行
      */
+    @CallSuper
     @Override
     public void finish() {
         isResumeFinish = true;

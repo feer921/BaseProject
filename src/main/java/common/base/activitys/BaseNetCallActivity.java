@@ -1,5 +1,7 @@
 package common.base.activitys;
 
+import android.support.annotation.CallSuper;
+
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.OkgoNetCallback;
 
@@ -139,7 +141,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
 
     }
 
-
+    @CallSuper
     @Override
     public void finish() {
         //added by fee 2016-8-19 test now
