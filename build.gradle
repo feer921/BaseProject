@@ -45,8 +45,6 @@ dependencies {
 
     api 'com.squareup.retrofit2:retrofit:2.5.0'
     api 'com.squareup.retrofit2:converter-jackson:2.5.0'
-    //    compile 'com.squareup.picasso:picasso:2.5.2'
-//    implementation 'cn.pedant.sweetalert:library:1.3' //removed by fee 2019-04-26: 移除掉不再需要
 
 //    Glide v4 need a minimum API level of 14.
 //    Glide v4 requires you to compile against API 26 or later
