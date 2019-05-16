@@ -90,7 +90,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
             existActivityCount--;
         }
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "-->onActivityDestroyed() activity = " + activity + " existActivityCount = " + existActivityCount);
+            CommonLog.i(TAG, "-->onActivityDestroyed() activity = " + activity + " existActivityCount = " + existActivityCount +" isMarkedFinish = "+isMarkedFinish);
         }
     }
 
@@ -128,7 +128,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      * 更准确一点
      */
     public void onActivityFinish(Activity activity) {
-        Intent intentFlag = activity.getIntent();
+        Intent intentFlag = activity.getIntent();//一般不为null
         boolean needAdd = false;
         if (intentFlag == null) {
             intentFlag = new Intent();
@@ -140,8 +140,19 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         }
         existActivityCount--;
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "-->onActivityFinish() activity = " + theAppTopActivity);
+            CommonLog.i(TAG, "-->onActivityFinish() activity = " + activity);
         }
         theAppTopActivity = null;
+    }
+    /**
+     * added by fee 2019-05-16:由于{@link android.app.Application.ActivityLifecycleCallbacks}该接口中没有onRestart()
+     * 的回调，则主动加一个
+     */
+    public void onActivityRestart(Activity activity) {
+        theAppTopActivity = activity;
+        theForegroundActivityCount++;
+        if (LIFE_CIRCLE_DEBUG) {
+            CommonLog.i(TAG, "-->onActivityRestart() activity = " + activity);
+        }
     }
 }
