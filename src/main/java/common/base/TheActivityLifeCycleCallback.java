@@ -2,6 +2,7 @@ package common.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import common.base.utils.CommonLog;
@@ -12,6 +13,8 @@ import common.base.utils.CommonLog;
  * Date: 2018/10/27<br>
  * Time: 15:45<br>
  * <P>DESC:
+ * 针对APP内所有Activity的生命周期的回调
+ * 扩展做些处理，可以直接继承再扩展相关功能
  * </p>
  * ******************(^_^)***********************
  */
@@ -78,9 +81,16 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        existActivityCount--;
+        boolean isMarkedFinish = false;
+        Intent theFlagIntent = activity.getIntent();
+        if (theFlagIntent != null) {
+            isMarkedFinish = theFlagIntent.getBooleanExtra("onActivityFinish", false);
+        }
+        if (!isMarkedFinish) {
+            existActivityCount--;
+        }
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "-->onActivityDestroyed() activity = " + activity);
+            CommonLog.i(TAG, "-->onActivityDestroyed() activity = " + activity + " existActivityCount = " + existActivityCount);
         }
     }
 
@@ -109,5 +119,29 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      */
     public Activity getTheAppTopActivity() {
         return theAppTopActivity;
+    }
+
+    /**
+     * added by fee 2019-05-16:由于{#android.app.Application.ActivityLifecycleCallbacks}该接口中没有finish()
+     * 的回调，则主动加一个
+     * 另由于Activity的onDestroy()方法回调不及时，会导致本类统计的existActivityCount 不准确，所以在finish()方法中统计
+     * 更准确一点
+     */
+    public void onActivityFinish(Activity activity) {
+        Intent intentFlag = activity.getIntent();
+        boolean needAdd = false;
+        if (intentFlag == null) {
+            intentFlag = new Intent();
+            needAdd = true;
+        }
+        intentFlag.putExtra("onActivityFinish", true);
+        if (needAdd) {
+            activity.setIntent(intentFlag);
+        }
+        existActivityCount--;
+        if (LIFE_CIRCLE_DEBUG) {
+            CommonLog.i(TAG, "-->onActivityFinish() activity = " + theAppTopActivity);
+        }
+        theAppTopActivity = null;
     }
 }
