@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.RequiresApi;
 import common.base.utils.CommonLog;
 
@@ -24,33 +25,45 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     /**
      * 在前台的Activity数量
      */
-    protected volatile int theForegroundActivityCount = 0;
+    protected int theForegroundActivityCount = 0;
     protected boolean LIFE_CIRCLE_DEBUG = true;
-
-    protected volatile Activity theAppTopActivity;
+    /**
+     * 栈顶Activity
+     */
+    protected Activity theAppTopActivity;
     /**
      * APP进程内存在Activity的数量统计
      */
     protected int existActivityCount = 0;
+
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        existActivityCount ++;
+        existActivityCount++;
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityCreated() activity = " + activity);
         }
     }
 
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityStarted(Activity activity) {
-        theForegroundActivityCount++;
-        theAppTopActivity = activity;
+//        theForegroundActivityCount++;
+//        theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStarted() activity = " + activity );
         }
     }
 
+    /**
+     * todo ???要验证一下是否，代码主动调用Activity的onResume()会不会也执行该回调
+     * @param activity
+     */
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityResumed(Activity activity) {
+        theForegroundActivityCount++;
+        theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity + " theAppTopActivity = " + theAppTopActivity);
         }
@@ -63,13 +76,16 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         }
     }
 
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityStopped(Activity activity) {
         theForegroundActivityCount--;
         if (LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStopped() activity = " + activity);
         }
-        theAppTopActivity = null;
+        if (activity == theAppTopActivity) {
+            theAppTopActivity = null;
+        }
     }
 
     @Override
@@ -79,6 +95,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         }
     }
 
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityDestroyed(Activity activity) {
         boolean isMarkedFinish = false;
@@ -127,6 +144,7 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      * 另由于Activity的onDestroy()方法回调不及时，会导致本类统计的existActivityCount 不准确，所以在finish()方法中统计
      * 更准确一点
      */
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     public void onActivityFinish(Activity activity) {
         Intent intentFlag = activity.getIntent();//一般不为null
         boolean needAdd = false;
@@ -142,12 +160,17 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityFinish() activity = " + activity);
         }
-        theAppTopActivity = null;
+        if (activity == theAppTopActivity) {
+            theAppTopActivity = null;
+        }
     }
+
     /**
      * added by fee 2019-05-16:由于{@link android.app.Application.ActivityLifecycleCallbacks}该接口中没有onRestart()
      * 的回调，则主动加一个
+     * 该回调更能精确的认为当前栈顶的Activity,不回调这个方法前，使用{@link #onActivityResumed(Activity)}
      */
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     public void onActivityRestart(Activity activity) {
         theAppTopActivity = activity;
         theForegroundActivityCount++;
