@@ -8,7 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Picture;
-import android.graphics.Rect;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.KeyCharacterMap;
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
  * 工具类
@@ -51,7 +52,24 @@ public class ScreenUtils {
         if (defDisplay == null) {
             return;
         }
-        defDisplay.getMetrics(displayMetrics);
+        if (Build.VERSION.SDK_INT >= 17) {//但是android4.0之后有了虚拟按键，有虚拟按键的系统调用上面的方法尺寸会减去虚拟按键的尺寸
+            defDisplay.getRealMetrics(displayMetrics);
+        }
+        else {
+            boolean useDefResolve = true;
+            Class c;
+            try {
+                c = Class.forName("android.view.Display");
+                Method method = c.getMethod("getRealMetrics", DisplayMetrics.class);
+                method.invoke(defDisplay, displayMetrics);
+                useDefResolve = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (useDefResolve) {
+                defDisplay.getMetrics(displayMetrics);
+            }
+        }
         //note here :宽、高的获取是会根据当前屏幕的方向来定义的，如果是竖屏,则宽的值为最短边，如果是横屏，宽为最长边
         //note here : 因而可能会出现初始化时是竖屏的宽，但实际在Activity(横屏)时想获取屏幕宽，却没有获取到所要的最长边的值，所以需要使用本类提供的
         //getScreenCurWidth(boolean needLandscapeScreenWidth)
@@ -105,6 +123,7 @@ public class ScreenUtils {
 
     /**
      * 获取系统导航栏(如底部的虚拟导航栏)
+     * 好像任何手机都有值?????
      * @return 导航栏高度
      */
     public static int getNavigationBarHeight(){

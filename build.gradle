@@ -18,8 +18,8 @@ android {
     }
     buildTypes {
         release {
-//            minifyEnabled false
-//            consumerProguardFile 'proguard-rules.pro' //暂时不用吧
+            minifyEnabled true
+            consumerProguardFile 'proguard-rules.pro' //暂时不用吧
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
