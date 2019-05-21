@@ -34,6 +34,11 @@ public class ScreenUtils {
     private static int windowHeight;
     private static float density;
     private static int statusBarHeight = 10;
+    /**
+     * 手机的导航栏(虚拟)
+     * 横屏时：为宽
+     * 竖屏时：为高
+     */
     private static int navigationBarHeight = 10;
     public static void init(Context context) {
         sContext = context.getApplicationContext();
@@ -76,10 +81,20 @@ public class ScreenUtils {
         windowWidth = displayMetrics.widthPixels;
         windowHeight = displayMetrics.heightPixels;
         density = displayMetrics.density;
+        int displayWidth = defDisplay.getWidth();
+        int displayHeight = defDisplay.getHeight();
         int swdp = context.getResources().getConfiguration().smallestScreenWidthDp;
-        CommonLog.sysErr("ScreenUtils:    " + displayMetrics + "  display width :" + defDisplay.getWidth()
+        CommonLog.sysErr("ScreenUtils:    " + displayMetrics + "  display width :" + displayWidth
+                + " display height :" + displayHeight
                 + "  swdp = " + swdp
         );
+        boolean isLandscape = windowWidth > windowHeight;
+        if (isLandscape) {
+            navigationBarHeight = windowWidth - displayWidth;
+        }
+        else {
+            navigationBarHeight = windowHeight - displayHeight;
+        }
     }
 
 //    public static int getScreenWidth() {
@@ -127,17 +142,17 @@ public class ScreenUtils {
      * @return 导航栏高度
      */
     public static int getNavigationBarHeight(){
-        if (navigationBarHeight == 10 && sContext != null) {
-            int result = 0;
-            Resources res = sContext.getResources();
-            int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
-            if (resourceId > 0) {
-                result = res.getDimensionPixelSize(resourceId);
-            }
-            if (result > 0) {
-                navigationBarHeight = result;
-            }
-        }
+//        if (navigationBarHeight == 10 && sContext != null) {
+//            int result = 0;
+//            Resources res = sContext.getResources();
+//            int resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android");
+//            if (resourceId > 0) {
+//                result = res.getDimensionPixelSize(resourceId);
+//            }
+//            if (result > 0) {
+//                navigationBarHeight = result;
+//            }
+//        }
         return navigationBarHeight;
     }
 
