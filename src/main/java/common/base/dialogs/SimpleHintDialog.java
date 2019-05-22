@@ -22,8 +22,8 @@ import common.base.utils.CheckUtil;
  * ******************(^_^)***********************
  */
 public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
-    private TextView tvTitle,tvHint,tvBtnCancel,tvBtnCommit;
-    private ImageView ivBtnClose;
+    protected TextView tvTitle,tvHint,tvBtnCancel,tvBtnCommit;
+    protected ImageView ivBtnClose;
 
     public SimpleHintDialog(Context context) {
         this(context, R.style.common_dialog_bg_dim);

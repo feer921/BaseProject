@@ -42,7 +42,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     /**
      * 对话框的布局视图
      */
-    View dialogView;
+    protected View dialogView;
 //    protected int contentLayoutResId;
 
     protected Context mContext;
@@ -373,6 +373,16 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 
     public I setCanceledOnTouchOut(boolean cancelableOutSide) {
         setCanceledOnTouchOutside(cancelableOutSide);
+        return self();
+    }
+
+    /**
+     * 设置按返回键是否可以dismiss 本dialog
+     * @param cancelable true:可以取消; false:不可取消
+     * @return self
+     */
+    public I setCanCancel(boolean cancelable) {
+        setCancelable(cancelable);
         return self();
     }
     /**
