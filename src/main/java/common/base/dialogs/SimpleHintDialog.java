@@ -144,6 +144,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             commitBtnText = getStrFromResId(R.string.confirm_no_gap);
         }
         if (tvBtnCommit != null) {
+            if (HIDE_FLAG.equals(commitBtnText.toString())) {
+                tvBtnCommit.setVisibility(View.GONE);
+            }
+            else {
+                tvBtnCommit.setVisibility(View.VISIBLE);
+            }
             tvBtnCommit.setText(commitBtnText);
         }
         return self();

@@ -1,5 +1,6 @@
 package common.base.utils;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -499,6 +500,24 @@ public class PackageManagerUtil {
             systeInfos = collectSysInfos(context).toString();
         }
         return systeInfos;
+    }
+
+    @SuppressLint("MissingPermission")
+    public static void moveAppTaskToFront(Context context) {
+        /**获取ActivityManager*/
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return;
+        }
+        /**获得当前运行的task(任务)*/
+        List<ActivityManager.RunningTaskInfo> taskInfoList = activityManager.getRunningTasks(100);
+        for (ActivityManager.RunningTaskInfo taskInfo : taskInfoList) {
+            /**找到本应用的 task，并将它切换到前台*/
+            if (taskInfo.topActivity.getPackageName().equals(context.getPackageName())) {
+                activityManager.moveTaskToFront(taskInfo.id, 0);
+                break;
+            }
+        }
     }
 
 }
