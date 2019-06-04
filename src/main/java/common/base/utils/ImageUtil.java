@@ -189,8 +189,18 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         if (mayBeGifModel == null) {
             return;
         }
-        RequestBuilder<GifDrawable> gifDrawableBuilder = Glide.with(context).asGif()
-                ;
+        RequestBuilder<GifDrawable> gifDrawableBuilder = null;
+        try {
+              gifDrawableBuilder = Glide.with(context).asGif()
+                    ;
+        } catch (Exception e) {
+            //java.lang.IllegalArgumentException You cannot start a load for a destroyed activity
+            gifDrawableBuilder = null;
+            e.printStackTrace();
+        }
+        if (gifDrawableBuilder == null) {
+            return;
+        }
         if (defHolderPicRes != 0) {
             gifDrawableBuilder.placeholder(defHolderPicRes)
                     .error(defHolderPicRes);

@@ -6,6 +6,8 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
+import java.util.HashSet;
+
 /**
  * ******************(^_^)***********************<br>
  * User: 11776610771@qq.com<br>
@@ -93,5 +95,37 @@ public abstract class BaseReceiver<I extends BaseReceiver<I>> extends BroadcastR
     protected final I self() {
         return (I) this;
     }
+    protected HashSet<String> ignoreActions;
+    /**
+     * 添加要忽略的Action
+     * @param willIgnoreActions 将要忽略的广播Action
+     */
+    public void ignoreActions(String... willIgnoreActions) {
+        if (willIgnoreActions != null && willIgnoreActions.length > 0) {
+            if (ignoreActions == null) {
+                ignoreActions = new HashSet<>();
+            }
+            for (String willIgnoreAction : willIgnoreActions) {
+                if (ignoreActions.contains(willIgnoreAction)) {
+                    continue;
+                }
+                ignoreActions.add(willIgnoreAction);
+            }
+        }
+    }
+
+    public boolean isActionIgnored(String theAction) {
+        return ignoreActions != null && ignoreActions.contains(theAction);
+    }
+
+//    public static void main(String[] args) {
+//        HashSet<String> a = new HashSet<>(3);
+//        a.add("a");
+//        a.add("a");
+//        a.add("c");
+//        for (String s : a) {
+//            System.out.println(s);
+//        }
+//    }
 
 }

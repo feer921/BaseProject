@@ -8,6 +8,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import common.base.R;
 import common.base.WeakHandler;
 import common.base.dialogs.HintDialog;
+import common.base.utils.CommonLog;
 import common.base.utils.MrNotification;
 import common.base.utils.Util;
 import common.base.utils.ViewUtil;
@@ -204,7 +206,17 @@ public class OkToast {
 
     private Toast newToast(View toastView) {
         Toast mToast = new Toast(mAppContext);
-        mToast.setView(toastView);
+        if (toastView != null) {
+            ViewGroup parentView = (ViewGroup) toastView.getParent();
+            if (parentView != null) {
+                parentView.removeView(toastView);
+            }
+            mToast.setView(toastView);//changed by fee 2019-06-04:21:05 != null时才设置
+        }
+//        if (toastView != null) {//changed by fee 2019-06-04:21:05
+//            mToast.setView(toastView);
+//        }
+//        mToast.setView(toastView);
         if (defToastGravity == 0) {
             defToastGravity = mToast.getGravity();
             defXOffset = mToast.getXOffset();
@@ -268,7 +280,8 @@ public class OkToast {
         }
         else{
             if (mToast != null) {
-                if (mToast.getView() != llToastRootView) {
+                boolean isToastViewSame = mToast.getView() == llToastRootView;
+                if (!isToastViewSame) {
                     mToast = null;
                 }
             }
@@ -292,6 +305,8 @@ public class OkToast {
             theGravity = showGravity;
         }
         int oldGravity = mToast.getGravity();
+        int a = Gravity.TOP;
+        CommonLog.i("info", "-->show() oldGravity = " + oldGravity + " theGravity = " + theGravity + " a = " + a);
         if (theGravity != oldGravity) {//处理Gravity不同的情况时
             mToast.cancel();//cancel之后 是show不出来的
             View toastView = mToast.getView();
