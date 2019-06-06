@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -207,9 +208,11 @@ public class OkToast {
     private Toast newToast(View toastView) {
         Toast mToast = new Toast(mAppContext);
         if (toastView != null) {
-            ViewGroup parentView = (ViewGroup) toastView.getParent();
-            if (parentView != null) {
-                parentView.removeView(toastView);
+            ViewParent viewParent = toastView.getParent();
+            if (viewParent != null) {
+                if (viewParent instanceof ViewGroup) {
+                    ((ViewGroup) viewParent).removeView(toastView);
+                }
             }
             mToast.setView(toastView);//changed by fee 2019-06-04:21:05 != null时才设置
         }
