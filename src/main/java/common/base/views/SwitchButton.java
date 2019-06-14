@@ -16,12 +16,10 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewParent;
-import android.widget.CheckBox;
-
 import common.base.R;
 
 
-public class SwitchButton extends CheckBox {
+public class SwitchButton extends android.support.v7.widget.AppCompatCheckBox {
     private Paint mPaint;
 
     private ViewParent mParent;

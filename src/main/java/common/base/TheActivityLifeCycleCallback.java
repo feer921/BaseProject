@@ -48,8 +48,6 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityStarted(Activity activity) {
-//        theForegroundActivityCount++;
-//        theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStarted() activity = " + activity );
         }
@@ -67,25 +65,34 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity + " theAppTopActivity = " + theAppTopActivity);
         }
+        onForegroundActivityCountCallback(theForegroundActivityCount);
     }
-
+    @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityPaused(Activity activity) {
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityPaused() activity = " + activity);
         }
+        theForegroundActivityCount--;//这里只记录把数量减，但不回调
+//        if (activity == theAppTopActivity) {
+//            theAppTopActivity = null;
+//        }
+//        onForegroundActivityCountCallback(theForegroundActivityCount);
     }
 
     @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityStopped(Activity activity) {
-        theForegroundActivityCount--;
+        //removed by fee 2019-06-14: 数量的记录移至 onActivityPaused()方法，因为有些场景下(比如当前Activity被半透明的Activity遮住
+        // 并不会调用 onStop(),但是半透明的Activity销毁后下面的Activity却仍会执行onResume()造成多记录了次数，所以需要 onPause()时减，然后成对的onResume()时+)
+//        theForegroundActivityCount--;
         if (LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStopped() activity = " + activity);
         }
         if (activity == theAppTopActivity) {
             theAppTopActivity = null;
         }
+        onForegroundActivityCountCallback(theForegroundActivityCount);
     }
 
     @Override
@@ -177,5 +184,16 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityRestart() activity = " + activity);
         }
+        onForegroundActivityCountCallback(theForegroundActivityCount);
+    }
+
+    /**
+     * 回调当前APP内 在前台的Activity的数量
+     * 注：此处为空实现，子类可以实现用来，满足要关注当前APP 已经退出到后台运行的功能
+     * eg.: 类似一些APP提示"当前应用已在后台运行"
+     * @param theForegroundActivityCounts 当前前台Activity的数量
+     */
+    protected void onForegroundActivityCountCallback(int theForegroundActivityCounts) {
+
     }
 }

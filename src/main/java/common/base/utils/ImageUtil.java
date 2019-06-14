@@ -14,6 +14,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.annotation.WorkerThread;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -602,7 +603,7 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         }
         return false;
     }
-
+    @WorkerThread
     public static File downloadAndCopyToTarget(Context context, String fileUrl, String targetDirPath, String targetFileName, boolean deleteSrcFile) {
         File downloadResultFile = download(context, fileUrl);
         if (downloadResultFile == null) {
