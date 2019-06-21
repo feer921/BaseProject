@@ -41,6 +41,7 @@
         android:layout_marginTop="@dimen/dp_23"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
+        android:id="@+id/ll_bottom_btns"
         >
 
         <TextView

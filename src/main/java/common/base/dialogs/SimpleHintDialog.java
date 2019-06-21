@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import common.base.R;
@@ -25,6 +27,7 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     protected TextView tvTitle,tvHint,tvBtnCancel,tvBtnCommit;
     protected ImageView ivBtnClose;
 
+    protected LinearLayout llBottomBtns;
     public SimpleHintDialog(Context context) {
         this(context, R.style.common_dialog_bg_dim);
     }
@@ -172,6 +175,30 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     public SimpleHintDialog withCloseIconVisible(boolean visible) {
         if (ivBtnClose != null) {
             ivBtnClose.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+        return this;
+    }
+
+    public SimpleHintDialog visibleBottomBtns(boolean visible) {
+        if (llBottomBtns == null) {
+            if (dialogView != null) {
+                llBottomBtns = dialogView.findViewById(R.id.ll_bottom_btns);
+            }
+        }
+        if (llBottomBtns != null) {
+            llBottomBtns.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+        return this;
+    }
+
+    public SimpleHintDialog appendViews(View toAppendView) {
+        if (toAppendView != null) {
+            if (toAppendView.getParent() == null) {
+                if (dialogView != null) {
+                    ViewGroup viewGroup = (ViewGroup) dialogView;
+                    viewGroup.addView(toAppendView);
+                }
+            }
         }
         return this;
     }

@@ -134,12 +134,20 @@ public class PackageManagerUtil {
 
     /**
      * 程序是否在前台
-     * 
+     * @deprecated 注：如果对于APP启动后有常驻Service，也判断为了前台(也不准)
      * @param context
      */
+    @Deprecated
     public static boolean isAppOnForeground(final Context context) {
-        ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        String packageName = context.getApplicationContext().getPackageName();
+        if (context == null) {
+            return false;
+        }
+        Context appContext = context.getApplicationContext();
+        ActivityManager activityManager = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) {
+            return false;
+        }
+        String packageName = appContext.getPackageName();
         List<RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
         if (appProcesses != null) {
             for (RunningAppProcessInfo appProcess : appProcesses) {
@@ -241,7 +249,6 @@ public class PackageManagerUtil {
                 result.add(packageInfo);
             }
         }
-
         return result;
     }
 
@@ -370,12 +377,11 @@ public class PackageManagerUtil {
 
     /**
      * 获取当前堆栈中的第一个activity
-     * @param context
-     * @return
-     * @deprecated https://blog.csdn.net/u011386173/article/details/79095757 Andorid4.0系列可以，5.0以上机器不行	Android5.0此方法被废弃
-     * 对第三方APP无效,但对于获取本应用内
+     * @param context Context
+     * @return 本APP当前运行的栈底组件(Activity)
+     * https://blog.csdn.net/u011386173/article/details/79095757 Andorid4.0系列可以，5.0以上机器不行	Android5.0此方法被废弃
+     * 对第三方APP无效,但对于获取本应用内的信息是有效的
      */
-    @Deprecated
     public static ComponentName getTheProcessBaseActivity(final Context context) {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) {
@@ -395,6 +401,11 @@ public class PackageManagerUtil {
         return null;
     }
 
+    /**
+     * 只能获取APP范围内的
+     * @param context
+     * @return
+     */
     public static ComponentName[] getAppTopAndBaseActivitys(Context context) {
         ActivityManager activityManager = (ActivityManager) context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {
@@ -403,7 +414,7 @@ public class PackageManagerUtil {
                 RunningTaskInfo topRunningTask = runningTaskInfos.get(0);
                 if (topRunningTask != null) {
                     if (topRunningTask.numActivities > 0) {
-                        CommonLog.e(TAG, "---> getAppTopAndBaseActivitys() top:" + topRunningTask.topActivity.getPackageName()
+                        CommonLog.e(TAG, "---> getAppTopAndBaseActivitys() top:" + topRunningTask.topActivity/*.getPackageName()*/
                                 + "  base:" + topRunningTask.baseActivity
                         );
                         ComponentName[] topAndBaseComponents = {
@@ -414,7 +425,6 @@ public class PackageManagerUtil {
                     }
                 }
             }
-
         }
         return null;
     }
@@ -438,10 +448,12 @@ public class PackageManagerUtil {
     /**
      * 判断某个指定的包名的app是否在前台
      * 判断依据为：在top(前台)
+     * @deprecated  在Android 5.1之后是判断不出来的
      * @param context
      * @param classPackageName app 包名
      * @return true:在前台; false: 在非前台
      */
+    @Deprecated
     public static boolean isAppActivitysForeground(Context context, String classPackageName) {
         ComponentName[] topAndBaseActivities = getAppTopAndBaseActivitys(context);
         if (topAndBaseActivities != null && topAndBaseActivities.length > 0) {

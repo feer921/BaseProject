@@ -27,10 +27,10 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      */
     protected int theForegroundActivityCount = 0;
     protected boolean LIFE_CIRCLE_DEBUG = true;
-    /**
-     * 栈顶Activity
-     */
-    protected Activity theAppTopActivity;
+//    /**
+//     * 栈顶Activity
+//     */
+//    protected Activity theAppTopActivity;
     /**
      * APP进程内存在Activity的数量统计
      */
@@ -54,16 +54,16 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     }
 
     /**
-     * todo ???要验证一下是否，代码主动调用Activity的onResume()会不会也执行该回调
+     * 要验证一下是否，代码主动调用Activity的onResume()会不会也执行该回调 经验证：如果代码主动调用onResume()会回调本方法
      * @param activity
      */
     @CallSuper //基类有逻辑处理，则需要调用本基类
     @Override
     public void onActivityResumed(Activity activity) {
         theForegroundActivityCount++;
-        theAppTopActivity = activity;
+//        theAppTopActivity = activity;
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity + " theAppTopActivity = " + theAppTopActivity);
+            CommonLog.i(TAG, "-->onActivityResumed() activity = " + activity /*+ " theAppTopActivity = " + theAppTopActivity*/);
         }
         onForegroundActivityCountCallback(theForegroundActivityCount);
     }
@@ -89,9 +89,9 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         if (LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG, "-->onActivityStopped() activity = " + activity);
         }
-        if (activity == theAppTopActivity) {
-            theAppTopActivity = null;
-        }
+//        if (activity == theAppTopActivity) {
+//            theAppTopActivity = null;
+//        }
         onForegroundActivityCountCallback(theForegroundActivityCount);
     }
 
@@ -137,13 +137,13 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
     public int getExistActivityCount() {
         return existActivityCount;
     }
-    /**
-     * 获取app当前在栈顶的Activity
-     * @return
-     */
-    public Activity getTheAppTopActivity() {
-        return theAppTopActivity;
-    }
+//    /**
+//     * 获取app当前在栈顶的Activity
+//     * @return
+//     */
+//    public Activity getTheAppTopActivity() {
+//        return theAppTopActivity;
+//    }
 
     /**
      * added by fee 2019-05-16:由于{#android.app.Application.ActivityLifecycleCallbacks}该接口中没有finish()
@@ -167,25 +167,25 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG, "-->onActivityFinish() activity = " + activity);
         }
-        if (activity == theAppTopActivity) {
-            theAppTopActivity = null;
-        }
+//        if (activity == theAppTopActivity) {
+//            theAppTopActivity = null;
+//        }
     }
 
-    /**
-     * added by fee 2019-05-16:由于{@link android.app.Application.ActivityLifecycleCallbacks}该接口中没有onRestart()
-     * 的回调，则主动加一个
-     * 该回调更能精确的认为当前栈顶的Activity,不回调这个方法前，使用{@link #onActivityResumed(Activity)}
-     */
-    @CallSuper //基类有逻辑处理，则需要调用本基类
-    public void onActivityRestart(Activity activity) {
-        theAppTopActivity = activity;
-        theForegroundActivityCount++;
-        if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "-->onActivityRestart() activity = " + activity);
-        }
-        onForegroundActivityCountCallback(theForegroundActivityCount);
-    }
+//    /**
+//     * added by fee 2019-05-16:由于{@link android.app.Application.ActivityLifecycleCallbacks}该接口中没有onRestart()
+//     * 的回调，则主动加一个
+//     * 该回调更能精确的认为当前栈顶的Activity,不回调这个方法前，使用{@link #onActivityResumed(Activity)}
+//     */
+//    @CallSuper //基类有逻辑处理，则需要调用本基类
+//    public void onActivityRestart(Activity activity) {
+//        theAppTopActivity = activity;
+//        theForegroundActivityCount++;
+//        if (LIFE_CIRCLE_DEBUG) {
+//            CommonLog.i(TAG, "-->onActivityRestart() activity = " + activity);
+//        }
+//        onForegroundActivityCountCallback(theForegroundActivityCount);
+//    }
 
     /**
      * 回调当前APP内 在前台的Activity的数量
@@ -195,5 +195,9 @@ public class TheActivityLifeCycleCallback implements Application.ActivityLifecyc
      */
     protected void onForegroundActivityCountCallback(int theForegroundActivityCounts) {
 
+    }
+
+    public void enableLog(boolean enable) {
+        LIFE_CIRCLE_DEBUG = enable;
     }
 }
