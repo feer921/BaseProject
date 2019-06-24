@@ -44,8 +44,8 @@ dependencies {
     api "com.android.support:recyclerview-v7:${supportVersion}"
     api "com.android.support:support-vector-drawable:${supportVersion}"
     implementation "com.android.support:cardview-v7:${supportVersion}"
-    api 'com.squareup.retrofit2:retrofit:2.5.0'
-    api 'com.squareup.retrofit2:converter-jackson:2.5.0'
+    api 'com.squareup.retrofit2:retrofit:2.6.0'
+    api 'com.squareup.retrofit2:converter-jackson:2.6.0'
 
 //    Glide v4 need a minimum API level of 14.
 //    Glide v4 requires you to compile against API 26 or later
