@@ -1,10 +1,11 @@
-package common.base.beans;
+package common.base;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import common.base.utils.Util;
@@ -22,6 +23,41 @@ import common.base.utils.Util;
  * ******************(^_^)***********************
  */
 public class StarterIntent extends Intent {
+
+    /**
+     * Create an empty intent.
+     */
+    public StarterIntent() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param o
+     */
+    public StarterIntent(Intent o) {
+        super(o);
+    }
+
+
+    public StarterIntent(String action) {
+        super(action);
+    }
+
+
+    public StarterIntent(String action, Uri uri) {
+        super(action, uri);
+    }
+
+
+    public StarterIntent(Context packageContext, Class<?> cls) {
+        super(packageContext, cls);
+    }
+
+
+    public StarterIntent(String action, Uri uri, Context packageContext, Class<?> cls) {
+        super(action, uri, packageContext, cls);
+    }
 
     public void startActivity(Context context) {
         startActivity(context,false,-1,null);
