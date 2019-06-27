@@ -438,6 +438,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     public void setEnableLoadMore(boolean enable) {
         int oldLoadMoreCount = getLoadMoreViewCount();
         mLoadMoreEnable = enable;
+        mNextLoadEnable = enable;//added by fee 2019-06-26: enable时该变量也要为true
         int newLoadMoreCount = getLoadMoreViewCount();
         CommonLog.e("info", " setEnableLoadMore() oldLoadMoreCount = " + oldLoadMoreCount + " newLoadMoreCount= " + newLoadMoreCount);
         if (oldLoadMoreCount == 1) {//之前LoadMore View数量为1
@@ -1477,7 +1478,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (mLoadMoreView.getLoadMoreStatus() != LoadMoreView.STATUS_DEFAULT) {
             return;
         }
-        Log.e("info", this + "--> trigger load more the pos = " + position);
+        Log.e("rrrr", this + "--> trigger load more the pos = " + position);
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mLoading) {
             mLoading = true;

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -52,6 +54,29 @@ public abstract class BaseFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
         if (LIFE_DEBUG) {
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onActivityCreated() savedInstanceState = " + savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onViewStateRestored() savedInstanceState = " + savedInstanceState);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onSaveInstanceState() outState = " + outState);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onConfigurationChanged() newConfig = " + newConfig);
         }
     }
 
