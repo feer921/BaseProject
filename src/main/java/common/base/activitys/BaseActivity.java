@@ -29,6 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                                                              WeakHandler.Handleable{
     protected final String TAG = getClass().getSimpleName();
     protected boolean LIFE_CIRCLE_DEBUG = false;
+    protected boolean PRINT_TASK_ID = false;
     /**
      * 一些简单交互类的通用UI；如：Loading类的Dialog；提示性带取消、确定按钮的Dialog
      * 以及一个提示性的PopupWindow，由于一般在进行耗时操作的时候都会有Loading类的交互UI展示，所以当开发的APP有在Loading状态时即允许用户取消请求的话，则该UI代理者
@@ -48,7 +49,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(LIFE_CIRCLE_DEBUG){
-            CommonLog.i(TAG,"---> onCreate()");
+            CommonLog.i(TAG, "---> onCreate() " + (PRINT_TASK_ID ?  " taskId: "+ getTaskId() : ""));
         }
         appContext = getApplicationContext();
         mContext = this;
