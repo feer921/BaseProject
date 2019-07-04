@@ -79,8 +79,8 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
 
     /**
      * 统一处理适配器中的可选择数据的点击、选择操作
-     * @param clickedPos
-     * @return
+     * @param clickedPos 当前点击的item位置
+     * @return true:当前位置的item数据选中了; false:未选择/取消选中
      */
     public boolean theItemClicked(int clickedPos) {
         if (curAdapterMode == MODE_NORMAL) {
@@ -118,7 +118,8 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
             else{
                 selectedUniqueMarks.remove(theUniqueMarkOfData);
             }
-            notifyItemChanged(clickedPos);
+            refreshNotifyItemChanged(clickedPos);//modified by fee 2019-07-04: 修正可能存在的headerView 导致的不position位置不对的问题
+//            notifyItemChanged(clickedPos);
         }
         //回调选中信息
         callbackSelectedCase();
@@ -322,5 +323,9 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
     }
     public interface IChooseCallback{
         void onSelected(AbsSelectableAdapter curAdapter,int selectedCount, boolean isAllSelected);
+    }
+
+    public HashSet<Object> getSelectedUniqueMarks() {
+        return selectedUniqueMarks;
     }
 }

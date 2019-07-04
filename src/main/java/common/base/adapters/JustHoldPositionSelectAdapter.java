@@ -81,7 +81,8 @@ public abstract class JustHoldPositionSelectAdapter<T, VH extends BaseViewHolder
             else{
                 selectedUniqueMarks.remove(clickedPos);
             }
-            notifyItemChanged(clickedPos);
+//            notifyItemChanged(clickedPos);
+            refreshNotifyItemChanged(clickedPos);
         }
         //回调选中信息
         callbackSelectedCase();
