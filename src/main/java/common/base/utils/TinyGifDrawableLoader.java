@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
+import android.support.graphics.drawable.Animatable2Compat;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -35,7 +36,7 @@ import common.base.WeakHandler;
  * </p>
  * ******************(^_^)***********************
  */
-public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakHandler.Handleable{
+public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback implements RequestListener<GifDrawable>,WeakHandler.Handleable{
     private final String TAG = "TinyGifDrawableLoader";
     /**
      * 播放次数
@@ -48,6 +49,7 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
     protected GifDrawable curGifDrawable;
     /**
      * gif 播放的总时长
+     * 表示外部可以指定要播放gif动画多长的时间
      * 单位：毫秒
      */
     private int playTotalDuration = 0;
@@ -139,6 +141,9 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
     public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target, DataSource dataSource, boolean isFirstResource) {
         GifDrawable loadedDrawable = resource;
         if (loadedDrawable != null) {
+            if (loadCallback != null) {
+                loadedDrawable.registerAnimationCallback(this);
+            }
             //默认是循环播放的
             if (playTimes >= 1) {
                 loadedDrawable.setLoopCount(playTimes);
@@ -222,10 +227,34 @@ public class TinyGifDrawableLoader implements RequestListener<GifDrawable>,WeakH
             Glide.with(theLoadGifImageView).clear(theLoadGifImageView);
         }
         if (curGifDrawable != null) {
+            curGifDrawable.unregisterAnimationCallback(this);
             curGifDrawable.recycle();
         }
         this.loadCallback = null;
     }
+
+    /**
+     * Called when the animation starts.
+     *
+     * @param drawable The drawable started the animation.
+     */
+    @Override
+    public void onAnimationStart(Drawable drawable) {
+    }
+
+    /**
+     * Called when the animation ends.
+     *
+     * @param drawable The drawable finished the animation.
+     */
+    @Override
+    public void onAnimationEnd(Drawable drawable) {
+        if (mHandler != null) {
+            mHandler.removeMessages(WHAT_NOTIFY_PLAY_FINISH);
+        }
+        loadCallback(true,true,drawable,playTotalDuration,null);
+    }
+
     public interface GifLoadCallback {
         /**
          * @param isLoadSuc      是否加载成功
