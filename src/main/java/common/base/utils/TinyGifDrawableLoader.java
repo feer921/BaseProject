@@ -76,6 +76,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         if (context == null || iv == null) {
             return;
         }
+        iv.setVisibility(View.VISIBLE);
         theDisPlayImageView = new WeakReference<>(iv);//added by fee 2019-07-08: 将当前要显示的ImageView控件引用起来，但不适用本类用于给不同的ImageView加载
         this.playTimes = playTimes;
         //注：如果不是gif资源，则在asGif()时会抛异常
@@ -112,6 +113,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         if (context == null || iv == null) {
             return;
         }
+        iv.setVisibility(View.VISIBLE);
         theDisPlayImageView = new WeakReference<>(iv);
         this.playTimes = playTimes;
         RequestBuilder builder = Glide.with(context.getApplicationContext())
@@ -288,6 +290,9 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         loadCallback(true,true,drawable,playTotalDuration,null);
     }
 
+    public boolean isGifPlaing() {
+        return curGifDrawable != null && curGifDrawable.isRunning();
+    }
     public interface GifLoadCallback {
         /**
          * @param isLoadSuc      是否加载成功
