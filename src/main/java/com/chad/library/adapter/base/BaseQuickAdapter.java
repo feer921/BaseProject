@@ -2120,6 +2120,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     public int getJustDataCount() {
         return mData == null ? 0 : mData.size();
     }
+
+    public boolean isEmptyData() {
+        return getJustDataCount() == 0;
+    }
     /**
      * 子类提供的默认item的内容布局资源ID
      * @return

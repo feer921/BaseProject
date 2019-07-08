@@ -263,7 +263,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         }
         if (curGifDrawable != null) {
             curGifDrawable.unregisterAnimationCallback(this);
-            curGifDrawable.recycle();
+//            curGifDrawable.recycle();
         }
         this.loadCallback = null;
     }
