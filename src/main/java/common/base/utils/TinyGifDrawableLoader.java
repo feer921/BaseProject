@@ -86,8 +86,8 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
 //                        .load(gifDrawableResId)
                 ;
         if (
-//                playTimes >= 1 &&
-                loadCallback != null) {
+                playTimes >= 1 ||
+                loadCallback != null) {//指定了播放次数，则需要监听动画执行的结束
             requestBuilder.listener(this)
             ;
         }
@@ -119,7 +119,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         RequestBuilder builder = Glide.with(context.getApplicationContext())
                 .asGif()
                 ;
-        if (loadCallback != null) {
+        if (loadCallback != null || playTimes >=1) {//指定了播放次数，则需要监听动画执行的结束
             builder.listener(this);
         }
         RequestOptions options = new RequestOptions();
@@ -159,7 +159,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
     public boolean onResourceReady(GifDrawable resource, Object model, Target<GifDrawable> target, DataSource dataSource, boolean isFirstResource) {
         GifDrawable loadedDrawable = resource;
         if (loadedDrawable != null) {
-            if (loadCallback != null) {
+            if (loadCallback != null || playTimes >= 1) {//指定了播放次数，则需要监听动画执行的结束
                 loadedDrawable.registerAnimationCallback(this);
             }
             //默认是循环播放的
