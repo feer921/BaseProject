@@ -7,6 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.RawRes;
 import android.support.graphics.drawable.Animatable2Compat;
+import android.view.View;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -17,6 +18,8 @@ import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -50,10 +53,21 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
     /**
      * gif 播放的总时长
      * 表示外部可以指定要播放gif动画多长的时间
+     * 注：根据实测不一定准确
      * 单位：毫秒
      */
     private int playTotalDuration = 0;
-
+    /**
+     * 是否需要使用指定的播放时长来主观判断是否播放完成
+     * def:false;
+     */
+    private boolean isToJudgePlayEndWithPlayDuration;
+    private WeakReference<ImageView> theDisPlayImageView;
+    /**
+     * 是否将自动隐藏ImageView控件当gif动画播放完成
+     * def: false;
+     */
+    private boolean isWillHideViewWhenPlayEnd;
     public void loadGifDrawable(Context context, @RawRes @DrawableRes int gifDrawableResId, ImageView iv) {
         loadGifDrawable(context, gifDrawableResId, iv, playTimes);
     }
@@ -62,6 +76,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         if (context == null || iv == null) {
             return;
         }
+        theDisPlayImageView = new WeakReference<>(iv);//added by fee 2019-07-08: 将当前要显示的ImageView控件引用起来，但不适用本类用于给不同的ImageView加载
         this.playTimes = playTimes;
         //注：如果不是gif资源，则在asGif()时会抛异常
         RequestBuilder<GifDrawable> requestBuilder =
@@ -97,6 +112,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         if (context == null || iv == null) {
             return;
         }
+        theDisPlayImageView = new WeakReference<>(iv);
         this.playTimes = playTimes;
         RequestBuilder builder = Glide.with(context.getApplicationContext())
                 .asGif()
@@ -113,7 +129,7 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
     }
     private WeakHandler mHandler;
     public void startPlay(boolean rePlay) {
-        if (playTotalDuration > 0) {
+        if (playTotalDuration > 0 && isToJudgePlayEndWithPlayDuration) {
             if (mHandler == null) {
                 mHandler = new WeakHandler<>(this);
             }
@@ -147,34 +163,36 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
             //默认是循环播放的
             if (playTimes >= 1) {
                 loadedDrawable.setLoopCount(playTimes);
-                if (0 == playTotalDuration) {
-                    //计算出播放的总时长
-                    try {
-                        Field gifStateField = GifDrawable.class.getDeclaredField("state");
-                        gifStateField.setAccessible(true);
-                        Class gifStateClass = Class.forName("com.bumptech.glide.load.resource.gif.GifDrawable$GifState");
-                        Field gifFrameLoaderField = gifStateClass.getDeclaredField("frameLoader");
-                        gifFrameLoaderField.setAccessible(true);
-                        Class gifFrameLoaderClass = Class.forName("com.bumptech.glide.load.resource.gif.GifFrameLoader");
-                        Field gifDecoderField = gifFrameLoaderClass.getDeclaredField("gifDecoder");
-                        gifDecoderField.setAccessible(true);
-                        Class gifDecoderClass = Class.forName("com.bumptech.glide.gifdecoder.GifDecoder");
-                        Object gifDecoder = gifDecoderField.get(gifFrameLoaderField.get(gifStateField.get(loadedDrawable)));
-                        Method getDelayMethod = gifDecoderClass.getDeclaredMethod("getDelay", int.class);
-                        getDelayMethod.setAccessible(true);
-                        int frameCount = loadedDrawable.getFrameCount();
-                        int framePlayDelay = 0;
-                        for (int frame = 0; frame < frameCount; frame++) {
-                            framePlayDelay += (int) getDelayMethod.invoke(gifDecoder, frame);
-                        }
-                        playTotalDuration = this.playTimes * framePlayDelay;
+                if (isToJudgePlayEndWithPlayDuration) {
+                    if (playTotalDuration == 0) {
+                        //计算出播放的总时长
+                        try {
+                            Field gifStateField = GifDrawable.class.getDeclaredField("state");
+                            gifStateField.setAccessible(true);
+                            Class gifStateClass = Class.forName("com.bumptech.glide.load.resource.gif.GifDrawable$GifState");
+                            Field gifFrameLoaderField = gifStateClass.getDeclaredField("frameLoader");
+                            gifFrameLoaderField.setAccessible(true);
+                            Class gifFrameLoaderClass = Class.forName("com.bumptech.glide.load.resource.gif.GifFrameLoader");
+                            Field gifDecoderField = gifFrameLoaderClass.getDeclaredField("gifDecoder");
+                            gifDecoderField.setAccessible(true);
+                            Class gifDecoderClass = Class.forName("com.bumptech.glide.gifdecoder.GifDecoder");
+                            Object gifDecoder = gifDecoderField.get(gifFrameLoaderField.get(gifStateField.get(loadedDrawable)));
+                            Method getDelayMethod = gifDecoderClass.getDeclaredMethod("getDelay", int.class);
+                            getDelayMethod.setAccessible(true);
+                            int frameCount = loadedDrawable.getFrameCount();
+                            int framePlayDelay = 0;
+                            for (int frame = 0; frame < frameCount; frame++) {
+                                framePlayDelay += (int) getDelayMethod.invoke(gifDecoder, frame);
+                            }
+                            playTotalDuration = this.playTimes * framePlayDelay;
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 //计时
-                if (playTotalDuration > 0) {
+                if (playTotalDuration > 0 && isToJudgePlayEndWithPlayDuration) {
                     startPlay(false);
                 }
             }
@@ -188,6 +206,15 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
         CommonLog.i(TAG, "-->loadCallback() isLoadSuc = " + isLoadSuc + " isPlayFinish = " + isPlayFinish + " playDuration = " + playDuration);
         if (loadCallback != null) {
             loadCallback.onLoadCallback(isLoadSuc,isPlayFinish, loadedDrawable, playDuration, extraInfo);
+        }
+        //added by fee 2019-07-08: 播放完成后来隐藏当前显示的ImageView控件
+        if (isPlayFinish && isWillHideViewWhenPlayEnd) {
+            if (theDisPlayImageView != null) {
+                ImageView iv = theDisPlayImageView.get();
+                if (iv != null) {
+                    iv.setVisibility(View.GONE);
+                }
+            }
         }
     }
 
@@ -206,6 +233,12 @@ public class TinyGifDrawableLoader extends Animatable2Compat.AnimationCallback i
 
     public TinyGifDrawableLoader withPlayDuration(int willPlayDuration) {
         this.playTotalDuration = willPlayDuration;
+        isToJudgePlayEndWithPlayDuration = willPlayDuration > 0;
+        return this;
+    }
+
+    public TinyGifDrawableLoader withWillHideViewWhenPlayEnd(boolean willHideViewWhenPlayEnd) {
+        this.isWillHideViewWhenPlayEnd = willHideViewWhenPlayEnd;
         return this;
     }
     @Override
