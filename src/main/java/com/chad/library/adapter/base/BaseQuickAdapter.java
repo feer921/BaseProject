@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import common.base.R;
 import common.base.utils.CommonLog;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -2214,5 +2215,52 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     public void setTheAssignItemHeight(int theAssignItemHeight) {
         this.theAssignItemHeight = theAssignItemHeight;
+    }
+
+    /**
+     * added by fee 2019-07-11:
+     * 为了满足某些场景下，需要通过外部来重新指定item view的宽、高，则在{convert(xx,xx)}
+     * 需要重新设置item view的布局参数
+     * @param assignTagId 所指定的给 theItemView setTag()用于标记已经relayout过的
+     * @param theItemView 当前的item 视图
+     */
+    protected void relayoutTheItemView(@IdRes int assignTagId, View theItemView) {
+        if (theAssignItemHeight == 0 && theAssignItemWidth == 0) {
+            return;
+        }
+        if (theItemView == null) {
+            return;
+        }
+        Object relayoutTag = theItemView.getTag(assignTagId);
+        if (relayoutTag != null) {//已经relayout了当前的item view,则不进行relayout了
+            return;
+        }
+        ViewGroup.LayoutParams vlp = theItemView.getLayoutParams();
+        if (vlp == null) {
+            vlp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        }
+        if (theAssignItemWidth > 0) {
+            vlp.width = theAssignItemWidth;
+        }
+        if (theAssignItemHeight > 0) {
+            vlp.height = theAssignItemHeight;
+        }
+        theItemView.setTag(assignTagId, "relayouted");
+        theItemView.setLayoutParams(vlp);
+    }
+
+    protected void relayoutTheItemView(ViewGroup.LayoutParams customLayoutParams, @IdRes int assignTagId, View theItemView) {
+        if (customLayoutParams == null || theItemView == null) {
+            return;
+        }
+        Object relayoutTag = theItemView.getTag(assignTagId);
+        if (relayoutTag != null) {//已经relayout了当前的item view,则不进行relayout了
+            return;
+        }
+        theItemView.setTag(assignTagId,"relayouted");
+        theItemView.setLayoutParams(customLayoutParams);
+    }
+    protected void relayoutTheItemView(View theItemView) {
+        relayoutTheItemView(R.id.view_relayout_tag_id,theItemView);
     }
 }

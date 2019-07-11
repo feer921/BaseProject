@@ -8,4 +8,6 @@
     <item name="BaseQuickAdapter_databinding_support" type="id"/>
     <item name="tv_custom_extra_himt" type="id"/>
     <item name="view_common_tag_id" type="id"/>
+    <!-- 专门给需要重新layout view的标记tag id -->
+    <item name="view_relayout_tag_id" type="id"/>
 </resources>
