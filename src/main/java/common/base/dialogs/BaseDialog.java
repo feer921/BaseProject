@@ -90,6 +90,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * def: true
      */
     protected boolean needCareActivityImmersion = true;
+    protected boolean isAttachedToWindowManager = false;
     public BaseDialog(Context context) {
 //        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
         this(context, R.style.common_dialog_bg_dim);
@@ -499,7 +500,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         int what = msg.what;
         switch (what) {
             case MSG_TYPE_DISMISS:
-                if (isShowing()) {
+                if (isShowing() && isAttachedToWindowManager) {
                     dismiss();
                 }
                 break;
@@ -543,7 +544,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     @Override
     public void dismiss() {
         tempLinkedData = null;
-        CommonLog.i(TAG, "-->dismiss()");
+        CommonLog.i(TAG, "-->dismiss() isAttachedToWindowManager = " + isAttachedToWindowManager);
         clearShowHoldTaskInfo();
         super.dismiss();
     }
@@ -566,7 +567,14 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
     @Override
+    public void onAttachedToWindow() {
+        isAttachedToWindowManager = true;
+        super.onAttachedToWindow();
+    }
+
+    @Override
     public void onDetachedFromWindow() {
+        isAttachedToWindowManager = false;
         super.onDetachedFromWindow();
         CommonLog.i(TAG, "--> onDetachedFromWindow()");
     }
