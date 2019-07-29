@@ -310,4 +310,22 @@ public class ScreenUtils {
     public static String getDevInfos() {
         return " windowWidth:" + windowWidth + " windowHeight:" + windowHeight + " density:" + density;
     }
+
+    public static int[] getCurScreenWidthHeight(Context context) {
+        int resultWidth = 0;
+        int resultHeight = 0;
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        if (windowManager != null) {
+            Display display = windowManager.getDefaultDisplay();
+            if (display != null) {
+                int w = display.getWidth();
+                int h = display.getHeight();
+                CommonLog.sysErr("ScreenUtils: w = " + w + " h = " + h);
+                boolean isLandscape = w > h;
+                resultWidth = getScreenCurWidth(isLandscape);
+                resultHeight = getScreenCurHeight(isLandscape);
+            }
+        }
+        return new int[]{resultWidth,resultHeight};
+    }
 }
