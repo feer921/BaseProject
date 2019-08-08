@@ -109,6 +109,15 @@ public abstract class BaseFragment extends Fragment implements
         }
     }
 
+    /**
+     * 非原生生命周期方法，
+     * Activity中可以主动调用一下
+     */
+    public void onReStart() {
+        if (LIFE_DEBUG) {
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onReStart() ");
+        }
+    }
     @Override
     public void onResume() {
         super.onResume();
@@ -340,10 +349,13 @@ public abstract class BaseFragment extends Fragment implements
      *               {@link DialogInterface#BUTTON1}) or the position
      */
     @Override
-    public void onClick(DialogInterface dialog, int which) {
+    public final void onClick(DialogInterface dialog, int which) {
 
     }
 
+    protected void onClickInDialog(DialogInterface dialog, int which) {
+
+    }
     //一些工具性质的方法
     /**
      * 从xml文件中找到一个Viwe控件的通配方法，将使用方需要的强制转换通用实现
@@ -568,5 +580,49 @@ public abstract class BaseFragment extends Fragment implements
             tag = TAG + "[" + extraInfoInLifeDebug + "]";
         }
         CommonLog.e(tag, logBodys);
+    }
+
+    /**
+     * 本Fragment是否需要处理返回键事件
+     * 如果有需要的话外部Activity直接调用该方法来处理
+     * def false
+     * @return true:需要处理；false:不需要处理
+     */
+    public boolean onHandleBackPressed(){
+        return false;
+    }
+
+    protected void letHostActivityFinish() {
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
+    }
+
+    protected void sendBroadcast(Intent actionIntent) {
+        if (getActivity() != null) {
+            getActivity().sendBroadcast(actionIntent);
+        }
+    }
+
+    protected void finishHost(boolean needTransAnim) {
+        if (mFragmentHost != null) {
+            mFragmentHost.finishHost(needTransAnim);
+        }
+    }
+
+    protected void onFragmentShow() {
+        if (mFragmentHost != null) {
+            mFragmentHost.onFragmentShow(this);
+        }
+    }
+    protected IFragmentHost mFragmentHost;
+
+    /**
+     * 定义一个当前Fragment宿主的接口
+     */
+    public interface IFragmentHost{
+        void onFragmentShow(BaseFragment curFragment);
+
+        void finishHost(boolean needTransAnim);
     }
 }
