@@ -358,6 +358,12 @@ public class UIHintAgent {
     public boolean isOwnerVisible() {
         return isOwnerVisible;
     }
+
+    public void dismissHintDialog() {
+        if (hintDialog != null && hintDialog.isShowing()) {
+            hintDialog.dismiss();
+        }
+    }
     /**
      * 结束代理UI交互
      */
