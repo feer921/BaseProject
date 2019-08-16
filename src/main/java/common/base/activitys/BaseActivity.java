@@ -553,4 +553,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void w(String logTag, Object... logBody) {
         CommonLog.w(null == logTag ? TAG : logTag, logBody);
     }
+
+    public void onFragmentOptReq(String reqOpt) {
+        //here do nothing...
+    }
 }

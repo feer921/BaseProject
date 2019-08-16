@@ -618,11 +618,26 @@ public abstract class BaseFragment extends Fragment implements
     protected IFragmentHost mFragmentHost;
 
     /**
+     * 有一些场景，Fragment可能需要请求宿主Activity做某些动作
+     * @param optType 操作类型
+     */
+    protected void onFragmentReqHostOpt(String optType) {
+        if (mFragmentHost != null) {
+            mFragmentHost.onFragmentOptReq(optType);
+        }
+    }
+
+    public static final String OPT_TYPE_HIDE_HINT_DIALOG = "req_hide_hint_dialog";
+
+
+    /**
      * 定义一个当前Fragment宿主的接口
      */
     public interface IFragmentHost{
         void onFragmentShow(BaseFragment curFragment);
 
         void finishHost(boolean needTransAnim);
+
+        void onFragmentOptReq(String optTypeInFragment);
     }
 }
