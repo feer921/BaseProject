@@ -81,4 +81,8 @@ public class TextChangeWatcher implements TextWatcher{
             iTextWatcher.onAfterTextChanged(this.curEditText);
         }
     }
+
+    public void setTextWatcher(ITextWatcher iTextWatcher) {
+        this.iTextWatcher = iTextWatcher;
+    }
 }
