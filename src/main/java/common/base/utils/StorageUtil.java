@@ -173,7 +173,11 @@ public final class StorageUtil {
             //没有SD卡的情况下
             return context.getFilesDir();
         }
-        return context.getExternalCacheDir();
+        File externalCacheDir = context.getExternalCacheDir();
+        if (externalCacheDir == null) {//有些系统可能获取到的是null???
+            externalCacheDir = context.getFilesDir();
+        }
+        return externalCacheDir;
     }
 
     public static File getFileInExternalCacheDir(Context context, String fileName) {
@@ -225,8 +229,9 @@ public final class StorageUtil {
      */
     public static File createFileIfNotExisted(File mayNeedCreatedFile) {
         if (mayNeedCreatedFile != null) {
-            if (!mayNeedCreatedFile.getParentFile().exists()) {
-                mayNeedCreatedFile.getParentFile().mkdirs();
+            File itsParentFile = mayNeedCreatedFile.getParentFile();
+            if (!itsParentFile.exists()) {
+                boolean mkOk = itsParentFile.mkdirs();
             }
             if (!mayNeedCreatedFile.exists()) {
                 try {
