@@ -2223,18 +2223,20 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      * 需要重新设置item view的布局参数
      * @param assignTagId 所指定的给 theItemView setTag()用于标记已经relayout过的
      * @param theItemView 当前的item 视图
+     * @return true:重置了itemview布局
      */
-    protected void relayoutTheItemView(@IdRes int assignTagId, View theItemView) {
+    protected boolean relayoutTheItemView(@IdRes int assignTagId, View theItemView) {
         if (theAssignItemHeight == 0 && theAssignItemWidth == 0) {
-            return;
+            return false;
         }
         if (theItemView == null) {
-            return;
+            return false;
         }
         Object relayoutTag = theItemView.getTag(assignTagId);
         if (relayoutTag != null) {//已经relayout了当前的item view,则不进行relayout了
-            return;
+            return false;
         }
+        startRelayoutItemView(theItemView);
         ViewGroup.LayoutParams vlp = theItemView.getLayoutParams();
         if (vlp == null) {
             vlp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
@@ -2247,20 +2249,27 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         }
         theItemView.setTag(assignTagId, "relayouted");
         theItemView.setLayoutParams(vlp);
+        return true;
     }
 
-    protected void relayoutTheItemView(ViewGroup.LayoutParams customLayoutParams, @IdRes int assignTagId, View theItemView) {
+    protected boolean relayoutTheItemView(ViewGroup.LayoutParams customLayoutParams, @IdRes int assignTagId, View theItemView) {
         if (customLayoutParams == null || theItemView == null) {
-            return;
+            return false;
         }
         Object relayoutTag = theItemView.getTag(assignTagId);
         if (relayoutTag != null) {//已经relayout了当前的item view,则不进行relayout了
-            return;
+            return false;
         }
+        startRelayoutItemView(theItemView);
         theItemView.setTag(assignTagId,"relayouted");
         theItemView.setLayoutParams(customLayoutParams);
+        return true;
     }
-    protected void relayoutTheItemView(View theItemView) {
-        relayoutTheItemView(R.id.view_relayout_tag_id,theItemView);
+    protected boolean relayoutTheItemView(View theItemView) {
+        return relayoutTheItemView(R.id.view_relayout_tag_id,theItemView);
+    }
+
+    protected void startRelayoutItemView(View theItemView) {
+        //here do nothing...
     }
 }
