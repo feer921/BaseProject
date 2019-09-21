@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources >
+
+    <declare-styleable name="FocusShowTextView">
+        <!-- 要显示文本的控件个数 -->
+        <attr name="showTextViewCount" format="integer" />
+        <attr name="showTextViewWidth" format="dimension" />
+        <attr name="showTextViewHeight" format="dimension" />
+        <!-- 显示文本控件间的间距 -->
+        <attr name="showTextViewGapWidth" format="dimension" />
+        <attr name="showTextSize" format="dimension" />
+        <attr name="showTextColor" format="reference|color" />
+        <attr name="showTextViewBackground" format="reference|color" />
+        <!-- 是否显示出内部EditText输入的文本 -->
+        <attr name="showDebugInputText" format="boolean" />
+
+        <!-- 内部的输入控件的背景 -->
+        <attr name="editTextBg" format="reference|color" />
+        <attr name="android:inputType"/>
+        <!--  可以指定内部输入控件的输入法的options  -->
+        <attr name="android:imeOptions"/>
+        <attr name="android:imeActionId"/>
+        <attr name="android:imeActionLabel"/>
+    </declare-styleable>
+</resources>
