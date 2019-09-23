@@ -9,6 +9,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -325,7 +326,7 @@ public class FocusShowTextView extends FrameLayout implements TextWatcher, Input
      */
     @Override
     public void afterTextChanged(Editable s) {
-        String inputtedText = s.toString();
+        String inputtedText = s == null ? "" : s.toString();
         //只能在这里处理了
         showTextOnShowTextView(inputtedText);
         if (tvDebugInputInfo != null && isDebugShowInputText) {
@@ -341,7 +342,12 @@ public class FocusShowTextView extends FrameLayout implements TextWatcher, Input
             if (i < inputtedText.length()) {
                 char charAtIndex = inputtedText.charAt(i);
                 textAtIndex = String.valueOf(charAtIndex);
-
+                if (mReplaceShowText != null) {
+                    CharSequence willReplaceShowText = mReplaceShowText.onShowTextWillReplace(textAtIndex);
+                    if (!TextUtils.isEmpty(willReplaceShowText)) {
+                        textAtIndex = willReplaceShowText.toString();
+                    }
+                }
             }
             else {
                 textAtIndex = "";
@@ -499,4 +505,24 @@ public class FocusShowTextView extends FrameLayout implements TextWatcher, Input
         void onInputEvent(CharSequence inputtedText, boolean isComplete);
     }
 
+    private IWillReplaceShowText mReplaceShowText;
+
+    public void setNeedReplaceShowText(IWillReplaceShowText needReplaceShowText) {
+        this.mReplaceShowText = needReplaceShowText;
+    }
+
+    /**
+     * 可用来替换当前所输入的文本,而显示所替换的文本
+     * 如：作为密码输入时，用户实际上输入明文，实现此接口后，可以替换成“*”
+     */
+    public interface IWillReplaceShowText {
+
+        /**
+         * 给实现者一个机会把将要显示的文本给替换成自己想要怎么显示的文本
+         * 如：作为密码显示的时候，用户实际上输入了明文，但需要被替换显示成"*"
+         * @param theInputtedIndexText 当前index下所输入的原文本
+         * @return 要替换显示成想要的文本
+         */
+        CharSequence onShowTextWillReplace(CharSequence theInputtedIndexText);
+    }
 }
