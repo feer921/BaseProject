@@ -485,6 +485,14 @@ public class FocusShowTextView extends FrameLayout implements TextWatcher, Input
         }
     }
 
+    /**
+     * 清除显示的文本
+     */
+    public void clearShowTexts() {
+        if (innerEditText != null) {
+            innerEditText.setText("");
+        }
+    }
     private IInputEventListener inputEventListener;
 
     public void setInputEventListener(IInputEventListener l) {
