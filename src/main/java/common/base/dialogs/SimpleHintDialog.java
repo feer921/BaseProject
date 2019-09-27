@@ -221,4 +221,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     public TextView getDialogHintView() {
         return tvHint;
     }
+
+    @Override
+    public SimpleHintDialog toggleCancelBtnVisibility(boolean hideCancelBtn) {
+        if (tvBtnCancel != null) {
+            tvBtnCancel.setVisibility(hideCancelBtn ? View.GONE : View.VISIBLE);
+        }
+        return self();
+    }
 }

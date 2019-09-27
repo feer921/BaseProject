@@ -158,7 +158,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected void onStart() {
         super.onStart();
         if (needCareActivityImmersion) {
-            ViewUtil.hideNavigationBar(getWindow());
+            ViewUtil.hideNavigation(getWindow());
         }
     }
 
@@ -538,6 +538,11 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
     public void showInCase(int curDialogInCase) {
+        this.curDialogInCase = curDialogInCase;
+        show();
+    }
+
+    public void show(int curDialogInCase) {
         this.curDialogInCase = curDialogInCase;
         show();
     }

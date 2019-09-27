@@ -116,17 +116,17 @@ public class SimpleDialogLoading extends android.app.ProgressDialog implements D
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ViewUtil.hideNavigationBar(getWindow());
+        ViewUtil.hideNavigation(getWindow());
         initView();
         setContentView(contentView);
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (hasFocus) {
-            ViewUtil.hideNavigationBar(getWindow());
-        }
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        if (hasFocus) {
+//            ViewUtil.hideNavigationBar(getWindow());
+//        }
+//    }
 
     private void showAnim() {
         if (loadingView != null) {

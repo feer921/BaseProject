@@ -30,8 +30,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -279,40 +277,41 @@ public class ViewUtil{
         return need2PreVent;
     }
 
-    /**
-     * 依据ListView的Chilc Views 计算所需要绘制的高度
-     * @param listView
-     */
-    public static void resolveListViewWholeH(ListView listView) {
-        if (listView == null || listView.getAdapter() == null) {
-            return;
-        }
-        ListAdapter listAdapter = listView.getAdapter();
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-
-            View listItem = listAdapter.getView(i, null, listView);
-
-            listItem.measure(0, 0);
-
-            totalHeight += listItem.getMeasuredHeight();
-
-        }
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-
-        // params.height += 5;// if without this statement,the listview will be
-
-        // a
-
-        // little short
-
-        // listView.getDividerHeight()获取子项间分隔符占用的高度
-
-        // params.height最后得到整个ListView完整显示需要的高度
-
-        listView.setLayoutParams(params);
-    }
+//    /**
+//     * 依据ListView的Chilc Views 计算所需要绘制的高度
+//     * @param listView
+//     */
+//    @Deprecated
+//    public static void resolveListViewWholeH(ListView listView) {
+//        if (listView == null || listView.getAdapter() == null) {
+//            return;
+//        }
+//        ListAdapter listAdapter = listView.getAdapter();
+//        int totalHeight = 0;
+//        for (int i = 0; i < listAdapter.getCount(); i++) {
+//
+//            View listItem = listAdapter.getView(i, null, listView);
+//
+//            listItem.measure(0, 0);
+//
+//            totalHeight += listItem.getMeasuredHeight();
+//
+//        }
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+//
+//        // params.height += 5;// if without this statement,the listview will be
+//
+//        // a
+//
+//        // little short
+//
+//        // listView.getDividerHeight()获取子项间分隔符占用的高度
+//
+//        // params.height最后得到整个ListView完整显示需要的高度
+//
+//        listView.setLayoutParams(params);
+//    }
 
     /**
      * 获取一个Activity中所在的window中的用来填充该activity布局的容器视图
@@ -520,24 +519,54 @@ public class ViewUtil{
         }
         return false;
     }
-    public static void hideNavigationBar(Window w) {
-        if (w == null) {
-            return;
-        }
-        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
 
-        if (android.os.Build.VERSION.SDK_INT >= 19) {
-            uiFlags |= 0x00001000;    //SYSTEM_UI_FLAG_IMMERSIVE_STICKY: hide navigation bars - compatibility: building API level is lower thatn 19, use magic number directly for higher API target level
-        } else {
-            uiFlags |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+    public static void hideNavigation(Window curWindow) {
+        if (curWindow != null && Build.VERSION.SDK_INT >= 19) {
+            //隐藏Navigation bar
+            WindowManager.LayoutParams layoutParams = curWindow.getAttributes();
+            layoutParams.systemUiVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            ;
+//        layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            curWindow.setAttributes(layoutParams);
+//            View decorView = curWindow.getDecorView();
+//            if (decorView != null) {
+//                int oldUiFlags = decorView.getSystemUiVisibility();
+//                int uiFlags =
+//                        oldUiFlags |
+//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+////                            | WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+//                                | View.SYSTEM_UI_FLAG_IMMERSIVE
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+////                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+////                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+//                decorView.setSystemUiVisibility(uiFlags);
+//            }
         }
-
-        w.getDecorView().setSystemUiVisibility(uiFlags);
     }
+
+//    @Deprecated
+//    public static void hideNavigationBar(Window w) {
+//        if (w == null) {
+//            return;
+//        }
+//        int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+//                | View.SYSTEM_UI_FLAG_FULLSCREEN; // hide status bar
+//
+//        if (android.os.Build.VERSION.SDK_INT >= 19) {
+//            uiFlags |= 0x00001000;    //SYSTEM_UI_FLAG_IMMERSIVE_STICKY: hide navigation bars - compatibility: building API level is lower thatn 19, use magic number directly for higher API target level
+//        } else {
+//            uiFlags |= View.SYSTEM_UI_FLAG_LOW_PROFILE;
+//        }
+//
+//        w.getDecorView().setSystemUiVisibility(uiFlags);
+//    }
 
     /**
      * 使用像素来设置TextView的文本大小
@@ -568,6 +597,69 @@ public class ViewUtil{
                     .setDuration(2000)
                     .start()
             ;
+        }
+    }
+
+    /**
+     * 代码的方式来设置沉浸式界面
+     * @param curActivity 当前Activity
+     * @param needFullScreen 是否需要全屏：一般为false
+     * @param translucentNavBar 是否需要透明导航栏：一般为true
+     * @param hideNavigation 是否要隐藏导航栏： 一般为true
+     * @param drawStatusBarBg 是否需要在Android 5.0及以上 接管状态栏背景绘制，用于指定 状态栏背景颜色
+     * @param statusBarColor 想要的状态栏颜色
+     * @param isLightStatusBar 是否需要在Android 6.0及以上 启用状态栏的灰色文字和图标
+     */
+    public static void immersiveScreen(Activity curActivity,boolean needFullScreen,
+                                       boolean translucentNavBar,boolean hideNavigation,
+                                       boolean drawStatusBarBg, int statusBarColor,boolean isLightStatusBar) {
+        if (curActivity != null) {
+            Window window = curActivity.getWindow();
+            if (window != null) {
+                WindowManager.LayoutParams windowParams = window.getAttributes();
+                if (windowParams != null) {
+                    //已经存在的 可见性参数
+                    int mayExistVisibility = windowParams.systemUiVisibility;
+//                    int mayExistFlags = windowParams.flags;
+                    int curSdkInt = Build.VERSION.SDK_INT;
+                    if (needFullScreen) {
+//                        mayExistFlags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+                        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    }
+
+                    if (curSdkInt >= 19) {//Android 4.4后才有沉浸式
+                        if (translucentNavBar) {
+//                            mayExistFlags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+                            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+                        }
+                        //默认的实现沉浸式flag
+                        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+                        if (curSdkInt >= 21) {
+                            if (drawStatusBarBg) {//如果需要 代替绘制状态栏的背景,则需要清除 FLAG_TRANSLUCENT_STATUS
+                                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                            }
+                            if (statusBarColor != -1) {
+                                window.setStatusBarColor(statusBarColor);
+                            }
+                            if (curSdkInt >= 23) {//Android 6.0以上 实现状态栏字色和图标浅黑色
+                                if (isLightStatusBar) {
+                                    mayExistVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                                }
+                            }
+                        }
+                        if (hideNavigation) {//隐藏导航栏
+                            mayExistVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                    ;
+                            windowParams.systemUiVisibility = mayExistVisibility;
+                            window.setAttributes(windowParams);
+                        }
+                    }//curSdkInt >= 19 end
+                }
+            }
         }
     }
 }
