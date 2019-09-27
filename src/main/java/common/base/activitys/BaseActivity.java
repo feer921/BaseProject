@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import common.base.R;
 import common.base.WeakHandler;
+import common.base.dialogs.SimpleHintDialogWithTopIcon;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
 import common.base.utils.CommonLog;
@@ -45,6 +46,28 @@ public abstract class BaseActivity extends AppCompatActivity implements
      * def: false
      */
     protected boolean isLetDialogCareAboutVisible = false;
+
+    protected SimpleHintDialogWithTopIcon simpleHintDialogWithTopIcon;
+    protected boolean isUseSimpleHintDialogReplace = false;
+
+    protected void needSimpleHintDialogWithTopIcon() {
+        if (simpleHintDialogWithTopIcon == null) {
+            simpleHintDialogWithTopIcon = new SimpleHintDialogWithTopIcon(this);
+            simpleHintDialogWithTopIcon.setDialogClickListener(this);
+            extraInitSimpleHintDialogWithTopIcon();
+        }
+    }
+
+    protected void extraInitSimpleHintDialogWithTopIcon() {
+        if (simpleHintDialogWithTopIcon != null) {
+            if (isUseSimpleHintDialogReplace) {
+                if (uiHintAgent != null) {
+                    uiHintAgent.setExistHintDialog(simpleHintDialogWithTopIcon);
+                }
+            }
+            //
+        }
+    }
     /**
      * 会自动调用：
      * initViews();-->initData();

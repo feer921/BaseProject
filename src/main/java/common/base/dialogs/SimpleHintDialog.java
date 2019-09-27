@@ -3,6 +3,7 @@ package common.base.dialogs;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.ViewGroup;
@@ -228,5 +229,42 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             tvBtnCancel.setVisibility(hideCancelBtn ? View.GONE : View.VISIBLE);
         }
         return self();
+    }
+
+//        hintDialog.setCancleBtnName(cancleBtnName);
+//        hintDialog.setCommitBtnName(sureBtnName);
+
+
+    @Override
+    public void setTitle(@Nullable CharSequence title) {
+        if (tvTitle != null) {
+            tvTitle.setText(title);
+        }
+    }
+
+    @Override
+    public SimpleHintDialog setHintMsg(String hintMsg) {
+        if (tvHint != null) {
+            tvHint.setText(hintMsg);
+        }
+        return self();
+    }
+
+    @Override
+    public SimpleHintDialog setHintMsgGravity(int gravity) {
+        if (tvHint != null) {
+            tvHint.setGravity(gravity);
+        }
+        return self();
+    }
+
+    @Override
+    public SimpleHintDialog setCancleBtnName(String cancleBtnName) {
+        return withCancelBtnText(cancleBtnName);
+    }
+
+    @Override
+    public SimpleHintDialog setCommitBtnName(String commitBtnName) {
+        return withCommitBtnText(commitBtnName);
     }
 }
