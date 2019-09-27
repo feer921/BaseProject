@@ -41,6 +41,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected NetRequestLifeMarker netRequestLifeMarker = new NetRequestLifeMarker();
 
     /**
+     * 是否让dialog关心当前界面的可见性
+     * def: false
+     */
+    protected boolean isLetDialogCareAboutVisible = false;
+    /**
      * 会自动调用：
      * initViews();-->initData();
      * @param savedInstanceState
@@ -377,7 +382,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onResume()");
         }
         //added by fee 2016-07-23
-        uiHintAgent.setOwnerVisibility(true);
+        if (isLetDialogCareAboutVisible) {
+            uiHintAgent.setOwnerVisibility(true);
+        }
     }
 
     @Override
@@ -386,7 +393,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (LIFE_CIRCLE_DEBUG) {
             CommonLog.i(TAG,"--> onNewIntent() intent = " + intent);
         }
-        uiHintAgent.setOwnerVisibility(true);
+        if (isLetDialogCareAboutVisible) {
+            uiHintAgent.setOwnerVisibility(true);
+        }
     }
 
     @Override
@@ -404,7 +413,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             CommonLog.i(TAG,"---> onPause()");
         }
         //added by fee 2016-07-23
-        uiHintAgent.setOwnerVisibility(false);
+        if (isLetDialogCareAboutVisible) {
+            uiHintAgent.setOwnerVisibility(false);
+        }
     }
     @Override
     protected void onStop() {
@@ -482,7 +493,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if(LIFE_CIRCLE_DEBUG){
             CommonLog.i(TAG,"---> onActivityResult() requestCode = " + requestCode +" resultCode = " + resultCode + " data = " + data);
         }
-        uiHintAgent.setOwnerVisibility(true);
+        if (isLetDialogCareAboutVisible) {
+            uiHintAgent.setOwnerVisibility(true);
+        }
     }
     @Override
     public void onBackPressed() {

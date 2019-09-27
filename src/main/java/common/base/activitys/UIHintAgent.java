@@ -43,12 +43,12 @@ public class UIHintAgent {
      */
     private boolean isOwnerVisible = true;
     /**
-     * 提示性对象框Dialog显示show时是否按back键可取消
+     * 提示性对话框Dialog显示show时是否按back键可取消
      * 默认为可取消
      */
     private boolean isHintDialogCancelable = true;
     /**
-     * 提示性对象框Dialog显示show时是否可点击外部取消
+     * 提示性对话框Dialog显示show时是否可点击外部取消
      * 默认为点击外部不可取消
      */
     private boolean isHintDialogCancelableOutSide = false;
@@ -444,44 +444,12 @@ public class UIHintAgent {
             mHandler.removeCallbacksAndMessages(null);
         }
     }
-    //added sweetAlertDialog codes by fee 2016-07-28
+
     /**
      * 提示性Dialog当前显示show时所处的哪种(提示性)情况
      */
     private int hintDialogInWhichCase = 0;
 
-
-//    public void sweetHintSuc(String successInfo,String confimInfo,int sweetDialogInCase) {
-//        sweetDialogHint(successInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.SUCCESS_TYPE);
-//    }
-//
-//    public void sweetHintFail(String failHintInfo, String confimInfo, int sweetDialogInCase) {
-//        sweetDialogHint(failHintInfo, null, null, confimInfo, sweetDialogInCase, SweetAlertDialog.ERROR_TYPE);
-//    }
-//    public void sweetDialogHint(String titleInfo, String hintInfo, String cancelInfo, String confimInfo, int curDialogInCase,int sweetDialogContentCase) {
-//        if (!isOwnerVisible) {
-//            return;
-//        }
-//        hintDialogInWhichCase = curDialogInCase;
-//        initSweetAlertDialog();
-////        sweetAlertDialog.setOnCancelListener(null);
-//        sweetAlertDialog.setTitleText(titleInfo)
-//                .setContentText(hintInfo)
-//                .setCancelText(cancelInfo)
-//                .setConfirmText(confimInfo)
-//                .setConfirmClickListener(comfimBtnClickListener)
-//                .changeAlertType(sweetDialogContentCase);
-//        sweetAlertDialog.showCancelButton(!Util.isEmpty(cancelInfo));
-//        sweetAlertDialog.showContentText(!Util.isEmpty(hintInfo));
-//        sweetAlertDialog.show();
-//    }
-//    private void initSweetAlertDialog() {
-//        if (sweetAlertDialog == null) {
-//            sweetAlertDialog = new SweetAlertDialog(mContext);
-//            sweetAlertDialog.setCancelable(isHintDialogCancelable);
-//            sweetAlertDialog.setCanceledOnTouchOutside(isHintDialogCancelableOutSide);
-//        }
-//    }
 
     /**
      * Loading类的Dialog被取消显示(在设置了可被取消,一般按back键)时的回调监听
@@ -510,12 +478,4 @@ public class UIHintAgent {
             }
         }
     }
-//    private SweetAlertDialog.OnSweetClickListener comfimBtnClickListener = new SweetAlertDialog.OnSweetClickListener() {
-//        @Override
-//        public void onClick(SweetAlertDialog sweetAlertDialog) {
-//            if (mClickListenerForDialog != null) {
-//                mClickListenerForDialog.onClick(sweetAlertDialog,DialogInterface.BUTTON_POSITIVE);
-//            }
-//        }
-//    };
 }

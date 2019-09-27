@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_white_shape"
+        android:minWidth="@dimen/dp_290"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_57"
+        android:layout_marginTop="@dimen/dp_50"
+        android:id="@+id/ll_contaner_view"
+        android:layout_alignTop="@+id/iv_hint_top_icon"
+        >
+
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            style="@style/common_tv_style"
+            android:text="我是标题"
+            android:textColor="@color/txt_black"
+            android:textSize="@dimen/sp_17" />
+
+        <TextView
+            android:id="@+id/tv_dialog_sub_title"
+            style="@style/common_tv_style"
+            android:text="我是副标题"
+            android:textColor="@color/color_999"
+            android:textSize="@dimen/sp_12"
+            android:layout_marginBottom="@dimen/dp_13"
+            android:layout_marginTop="@dimen/dp_1"
+            android:visibility="invisible"
+            />
+
+        <TextView
+            android:id="@+id/tv_dialog_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="我是提示消息"
+            android:textColor="@color/txt_gray"
+            android:textSize="@dimen/sp_14" />
+
+        <LinearLayout
+            android:id="@+id/ll_bottom_btns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_23"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_btn_dialog_cancel"
+                style="@style/common_tv_style"
+                android:layout_width="@dimen/dp_120"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:layout_marginRight="@dimen/dp_15"
+                android:background="@drawable/sel_4_rounded_stroke"
+                android:minHeight="@dimen/dp_40"
+                android:text="@string/cancel_no_gap"
+                android:textColor="@color/color_999"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_btn_dialog_commit"
+                style="@style/common_tv_style"
+                android:layout_width="@dimen/dp_120"
+                android:background="@drawable/sel_4_rounded_stroke"
+                android:minHeight="@dimen/dp_40"
+                android:text="@string/confirm_no_gap"
+                android:textSize="@dimen/sp_16" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivbtn_dialog_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@null"
+        android:src="@drawable/hint_info_pink_icon"
+        android:layout_alignTop="@+id/ll_contaner_view"
+        android:layout_alignRight="@+id/ll_contaner_view"
+        android:layout_alignEnd="@+id/ll_contaner_view"
+        android:layout_marginTop="-8dp"
+        android:layout_marginRight="-8dp"
+        android:layout_marginEnd="-8dp"
+        android:visibility="invisible"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@null"
+        android:id="@+id/iv_hint_top_icon"
+        android:src="@drawable/message_icon"
+        android:layout_centerHorizontal="true"
+        android:minHeight="@dimen/dp_88"
+        android:minWidth="@dimen/dp_88"
+        />
+</RelativeLayout>

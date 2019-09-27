@@ -46,7 +46,11 @@ public abstract class BaseFragment extends Fragment implements
     protected String extraInfoInLifeDebug = "";
     protected UIHintAgent someUiHintAgent;
     protected NetRequestLifeMarker netRequestLifeMarker = new NetRequestLifeMarker();
-
+    /**
+     * 是否让dialog关心当前界面的可见性
+     * def: false
+     */
+    protected boolean isLetDialogCareAboutVisible = false;
     //生命周期方法
 
     @Override
@@ -124,7 +128,7 @@ public abstract class BaseFragment extends Fragment implements
         if (LIFE_DEBUG) {
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onResume() ");
         }
-        if (someUiHintAgent != null) {
+        if (someUiHintAgent != null && isLetDialogCareAboutVisible) {
             someUiHintAgent.setOwnerVisibility(true);
         }
         if (needUpdateData) {
@@ -147,7 +151,7 @@ public abstract class BaseFragment extends Fragment implements
         if (LIFE_DEBUG) {
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onStop() ");
         }
-        if (someUiHintAgent != null) {
+        if (someUiHintAgent != null && isLetDialogCareAboutVisible) {
             someUiHintAgent.setOwnerVisibility(false);
         }
     }
