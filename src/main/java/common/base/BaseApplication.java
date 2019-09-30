@@ -2,6 +2,7 @@ package common.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.annotation.DimenRes;
 
 import common.base.utils.CommonLog;
 import common.base.utils.PreferVisitor;
@@ -80,5 +81,9 @@ public class BaseApplication<E extends BaseApplication> extends Application{
 
     protected void e(String logTag, Object... logInfo) {
         CommonLog.e(logTag == null ? TAG : logTag, logInfo);
+    }
+
+    public int dimenResPxValue(@DimenRes int dimenResId){
+        return getResources().getDimensionPixelSize(dimenResId);
     }
 }

@@ -25,26 +25,26 @@ public class SelectorUtil {
      * 替代drawable下的selector.xml文件
      * 颜色值的格式为 "#AARRGGBB"的样式
      * @param viewToConfig 要配置的View
-     * @param radiusPx 圆角半径像素值 =0为矩形；注意是像素值
+     * @param radiusDip 圆角半径像素值 =0为矩形；注意是dip值 框架内被转化成px值
      * @param defBgColor 默认背景颜色
      * @param disableBgColor  不能操作时的背景颜色
      * @param pressedBgColor 点击时的背景颜色
      * @param focusBgColor 获得焦点时的背景颜色，一般不需要
      */
-    public static void shapeSelector(View viewToConfig, int radiusPx, String defBgColor,
+    public static void shapeSelector(View viewToConfig, int radiusDip, String defBgColor,
                                      String disableBgColor, String pressedBgColor,
                                      String focusBgColor){
 
-        shapeSelector(radiusPx,defBgColor,disableBgColor,pressedBgColor,focusBgColor)
+        shapeSelector(radiusDip,defBgColor,disableBgColor,pressedBgColor,focusBgColor)
                 .into(viewToConfig);
     }
 
-    public static ShapeSelector shapeSelector(int radiusPx, String defBgColor,
+    public static ShapeSelector shapeSelector(int radiusDip, String defBgColor,
                                 String disableBgColor, String pressedBgColor,
                                 String focusBgColor){
         ShapeSelector shapeSelector = XSelector.shapeSelector();
-        if (radiusPx > 0) {
-            shapeSelector.radius(radiusPx);
+        if (radiusDip > 0) {
+            shapeSelector.radius(radiusDip);
         }
         if (!CheckUtil.isEmpty(defBgColor)) {
             shapeSelector.defaultBgColor(defBgColor);

@@ -8,8 +8,10 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.CallSuper;
+import android.support.annotation.DimenRes;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
 import common.base.R;
 import common.base.WeakHandler;
 import common.base.dialogs.SimpleHintDialogWithTopIcon;
@@ -592,5 +594,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     public void onFragmentOptReq(String reqOpt) {
         //here do nothing...
+    }
+    /**
+     * 将dimen资源id,转换为系统中的px值
+     * @param dimenResId 定义的dimen 资源 ID
+     * @return px像素值
+     */
+    protected int dimenResPxValue(@DimenRes int dimenResId) {
+        return getResources().getDimensionPixelSize(dimenResId);
     }
 }

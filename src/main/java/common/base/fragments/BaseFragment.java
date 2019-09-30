@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -643,5 +644,14 @@ public abstract class BaseFragment extends Fragment implements
         void finishHost(boolean needTransAnim);
 
         void onFragmentOptReq(String optTypeInFragment);
+    }
+
+    /**
+     * 将dimen资源id,转换为系统中的px值
+     * @param dimenResId 定义的dimen资源 ID
+     * @return 转化成的像素值
+     */
+    protected int dimenResPxValue(@DimenRes int dimenResId) {
+        return getResources().getDimensionPixelSize(dimenResId);
     }
 }
