@@ -3,6 +3,7 @@ package common.base.adapters;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +33,7 @@ public abstract class BaseSelectableMultiItemQuickAdapter<T extends MultiItemEnt
     public BaseSelectableMultiItemQuickAdapter() {
         super(null);
         selectableDelegate = new ASelectableDelegate<>();
-//        selectableDelegate.setCurSelectableMode(curAdapterMode);
+        selectableDelegate.setSelectableObserver(this);
     }
 
     //----------------------------- @接口 ISelectableObserver 的基类可实行方法 start -----
@@ -254,6 +255,16 @@ public abstract class BaseSelectableMultiItemQuickAdapter<T extends MultiItemEnt
     @Override
     public int getCurSelectMode() {
         return curAdapterMode;
+    }
+
+    /**
+     * 操作之：清空已选择的惟一标识
+     */
+    @Override
+    public void clearSelectedUniqMarks() {
+        if (selectableDelegate != null) {
+            selectableDelegate.clearSelectedUniqMarks();
+        }
     }
 
     protected ASelectableDelegate.IChooseCallback chooseCallback;

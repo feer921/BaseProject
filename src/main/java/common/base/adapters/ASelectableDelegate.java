@@ -366,6 +366,15 @@ public class ASelectableDelegate<T> {
         this.selectableObserver = selectableObserver;
     }
 
+    public void setDatasOfSelectable(List<T> datasOfSelectable) {
+        this.datasOfSelectable = datasOfSelectable;
+    }
+
+    public void clearSelectedUniqMarks() {
+        if (selectedUniqueMarks != null) {
+            selectedUniqueMarks.clear();
+        }
+    }
     /**
      * 定义一下关于可选择的操作方法
      * 其实具体的实现还是 ASelectableDelegate
@@ -474,6 +483,11 @@ public class ASelectableDelegate<T> {
          * @return 单选；多选
          */
         int getCurSelectMode();
+
+        /**
+         * 操作之：清空已选择的惟一标识
+         */
+        void clearSelectedUniqMarks();
     }
 
     public interface IChooseCallback{

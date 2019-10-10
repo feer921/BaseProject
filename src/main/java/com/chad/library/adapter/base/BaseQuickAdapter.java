@@ -18,6 +18,7 @@ package com.chad.library.adapter.base;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.support.annotation.DimenRes;
 import android.support.annotation.IdRes;
@@ -2085,6 +2086,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     }
 
     //add some methods by fee
+    protected Resources getResources() {
+        if (mContext != null) {
+            return mContext.getResources();
+        }
+        return null;
+    }
     protected String getStrFromRes(int strResId) {
         if (strResId <= 0) {
             return "";
