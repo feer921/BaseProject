@@ -47,7 +47,7 @@ public abstract class BaseSelectableMultiItemQuickAdapter<T extends MultiItemEnt
     @Override
     public void notifySelectDatasChanged(int selectStateChangeItemPos) {
         if (selectStateChangeItemPos < 0) {
-            notifyDataSetChanged();
+            notifyDataChangedInVisibleScope();
         }
         else {
             refreshNotifyItemChanged(selectStateChangeItemPos);

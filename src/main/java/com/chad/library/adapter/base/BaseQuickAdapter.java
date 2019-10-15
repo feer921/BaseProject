@@ -2279,4 +2279,24 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
     protected void startRelayoutItemView(View theItemView) {
         //here do nothing...
     }
+
+    /**
+     * 通知列表 的可见范围内数据有更新
+     */
+    public void notifyDataChangedInVisibleScope() {
+        Point visiblePos = findOutFirstAndLastVisiblePos();
+        if (visiblePos != null) {
+            int visibleFirstPos = visiblePos.x;
+            int visibleLastPos = visiblePos.y;
+            if (visibleFirstPos == visibleLastPos) {
+                refreshNotifyItemChanged(visibleFirstPos);
+            }
+            else {
+                notifyItemRangeChanged(visibleFirstPos, visibleLastPos - visibleFirstPos,0);
+            }
+        }
+        else {
+            notifyDataSetChanged();
+        }
+    }
 }
