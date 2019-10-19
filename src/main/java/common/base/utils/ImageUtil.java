@@ -92,7 +92,7 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
             .into(targetIv);
 }
     private static void throwCannotException(String reason) {
-        throw new IllegalArgumentException("no " + reason + ",can't loca image pic...");
+        throw new IllegalArgumentException("no " + reason + ",can't load image pic...");
     }
 //    private static RequestCreator loadImageRequest(Context context, String picUrl, File localPicFile,int localPicResId) {
 //        if (Util.isEmpty(picUrl) && null == localPicFile && localPicResId <= 0) {
@@ -252,9 +252,24 @@ public static void loadImage(Context context, String picUrl, int newWidth, int n
         }
         return new ColorDrawable(theColor);
     }
+
+    public static void loadImageOrGif(Context context, String imgUrl, @DrawableRes @RawRes int defPicRes, ImageView imageView,int gifPlayTimes) {
+        if (Util.isEmpty(imgUrl)) {
+            if (imageView != null) {
+                imageView.setImageResource(defPicRes);
+            }
+            return;
+        }
+        if (imgUrl.endsWith(".gif")) {
+            loadGifModel(context,imgUrl,defPicRes,imageView,gifPlayTimes);
+        }
+        else {
+            loadImage(context,imgUrl,defPicRes,defPicRes,imageView);
+        }
+    }
     //and so on 还可以重载出很多加载的方法
 
-    public static final int BLUR_RADIUS = 50;
+    private static final int BLUR_RADIUS = 50;
 
     @Nullable
     public static Bitmap blur(Bitmap sentBitmap) {
