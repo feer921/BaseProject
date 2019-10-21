@@ -270,6 +270,9 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
         return (T) this;
     }
     public E getItemData(int itemPos) {
+        if (mDatas == null || itemPos < 0) {
+            return null;
+        }
         return mDatas.get(itemPos);
     }
 
@@ -676,11 +679,15 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
     }
     OnItemClickListener<E> onItemClickListener;
     public interface OnItemClickListener<E>{
-        void onBannerItemClick(E itemData,int clickPosition);
+        void onBannerItemClick(View theClickView,E itemData,int clickPosition);
     }
 
     public void setOnBannerItemClickListener(OnItemClickListener<E> l) {
         this.onItemClickListener = l;
+    }
+
+    protected PositonClickListener makeItemClickListener(int itemPosition) {
+        return new PositonClickListener(itemPosition);
     }
     private class PositonClickListener implements OnClickListener{
        int curClickPosition;
@@ -695,7 +702,7 @@ public abstract class BaseBanner<E, T extends BaseBanner<E, T>> extends Relative
        @Override
        public void onClick(View v) {
            if (onItemClickListener != null) {
-               onItemClickListener.onBannerItemClick(mDatas.get(curClickPosition),curClickPosition);
+               onItemClickListener.onBannerItemClick(v,getItemData(curClickPosition),curClickPosition);
            }
        }
     }
