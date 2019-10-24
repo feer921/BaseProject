@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:contentDescription="@null"
             android:scaleType="centerCrop"
-            android:src="@drawable/pagefailed_bg"
+            android:src="@drawable/circle_loading"
             android:visibility="gone"
             />
 

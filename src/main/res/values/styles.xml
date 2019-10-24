@@ -20,7 +20,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <!-- 背景是否暗淡 周围变暗 -->
         <item name="android:backgroundDimEnabled">false</item>
-        //就是用来控制灰度的值，当为1时，界面除了我们的dialog内容是高亮显示的，dialog以外的区域是黑色的，完全看不到其他内容，系统的默认值是0.5
+    <!-- 就是用来控制灰度的值，当为1时，界面除了我们的dialog内容是高亮显示的，dialog以外的区域是黑色的，完全看不到其他内容，系统的默认值是0.5-->
         <!--<item name="android:backgroundDimAmount">0.5</item>-->
     </style>
 

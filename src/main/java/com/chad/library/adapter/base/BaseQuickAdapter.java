@@ -2226,6 +2226,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
 
     /**
      * added by fee 2019-07-11:
+     * <P>注：该方法主要是用来relayout适配的itemView布局,依赖的前提条件为外部指定了itemView的宽、高</P>
      * 为了满足某些场景下，需要通过外部来重新指定item view的宽、高，则在{convert(xx,xx)}
      * 需要重新设置item view的布局参数
      * @param assignTagId 所指定的给 theItemView setTag()用于标记已经relayout过的
@@ -2243,7 +2244,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (relayoutTag != null) {//已经relayout了当前的item view,则不进行relayout了
             return false;
         }
-        startRelayoutItemView(theItemView);
+        startRelayoutItemView(theItemView);//这里回调出去主要是为了如果有额外的处理,则给机会处理，然后最后统一setLayoutParams
         ViewGroup.LayoutParams vlp = theItemView.getLayoutParams();
         if (vlp == null) {
             vlp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
@@ -2276,10 +2277,53 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return relayoutTheItemView(R.id.view_relayout_tag_id,theItemView);
     }
 
+    /**
+     * 对适配器中的itemView任何View(含itemView本身)
+     * 进入relayout
+     * @param customLayoutParams 自定义的布局参数
+     * @param assignTagId 指定的要给View标识为是否已经relayout了
+     * @param anyView 要relayout的任何View
+     * @param isTheAdapteItemView 是否为适配器的itemView本身
+     * @return true:relayout了; false:未进行relayout或者已经relayout过了
+     */
+    protected boolean relayoutAnyView(@Nullable ViewGroup.LayoutParams customLayoutParams, @IdRes int assignTagId, View anyView,boolean isTheAdapteItemView) {
+        if (anyView == null) {
+            return false;//代表本次不去relayout了
+        }
+        Object relayoutTag = anyView.getTag(assignTagId);
+        if (relayoutTag != null) {//已经relayout了当前的view,则不进行relayout了
+            return false;//代表本次不去relayout了
+        }
+        // Q:2019/10/24 ??要回调开始relayout了吗？A:还是回调吧，如果有额外的处理,则给机会处理，然后最后统一setLayoutParams
+        startRelayoutAnyView(isTheAdapteItemView,anyView);
+        anyView.setTag(assignTagId, "relayouted");
+        if (customLayoutParams != null) {
+            anyView.setLayoutParams(customLayoutParams);
+        }
+        return true;//代表本次relayout了
+    }
+
+    protected boolean relayoutAnyView(@IdRes int assignTagId, View anyView) {
+        return relayoutAnyView(null, assignTagId, anyView,false);
+    }
+
+    /**
+     * 对适配器中的itemView任何View(含itemView本身)
+     * 进入relayout
+     * @param anyView 要relayout的任何View
+     * @return true:relayout了; false:未进行relayout或者已经relayout过了
+     */
+    protected boolean relayoutAnyView(View anyView) {
+        return relayoutAnyView(R.id.view_relayout_tag_id, anyView);
+    }
+
     protected void startRelayoutItemView(View theItemView) {
         //here do nothing...
     }
 
+    protected void startRelayoutAnyView(boolean isTheItemView,View theViewToRelayout) {
+        //here do nothing...
+    }
     /**
      * 通知列表 的可见范围内数据有更新
      */
