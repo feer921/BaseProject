@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import common.base.R;
 import common.base.utils.CommonLog;
@@ -43,7 +44,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * 对话框的布局视图
      */
     protected View dialogView;
-//    protected int contentLayoutResId;
+    private int contentLayoutResId;
 
     protected Context mContext;
     /**
@@ -97,15 +98,32 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     }
 
     /**
+     * 当子类的dialog是以xml资源的方式提供Dialog布局时，为了保留xml中定义的LayoutParam参数，则使用一个ViewGroup
+     * 来inflate出dialogView
+     */
+    private ViewGroup rootViewToInflateOutDialogView;
+
+    /**
+     * dialogView 的原始LayoutParam 布局参数
+     */
+    private ViewGroup.LayoutParams dialogOldLayoutParams;
+
+    /**
      * 该构造方法下调用了{@link #initViews(View)}
+     * 在super(context,theme)后window已经创建了
      * @param context
      * @param theme
      */
     public BaseDialog(Context context, int theme) {
         super(context, theme);
         mContext = context;//提前到这里来，以避免下面的空指针
-        if (getDialogViewResID() > 0) {
-            dialogView = getLayoutInflater().inflate(getDialogViewResID(), null);
+        contentLayoutResId = getDialogViewResID();
+        if (contentLayoutResId != 0) {
+            rootViewToInflateOutDialogView = new LinearLayout(mContext);
+//            dialogView = getLayoutInflater().inflate(contentLayoutResId, null);//这种 inflater会不保留xml布局中定义的LayoutParam属性
+            getLayoutInflater().inflate(contentLayoutResId, rootViewToInflateOutDialogView);//目的就是为了保留xml布局中定义的LayoutParam属性
+            dialogView = rootViewToInflateOutDialogView.getChildAt(0);
+            dialogOldLayoutParams = dialogView.getLayoutParams();
         }
         else{
             dialogView = getDialogView();
@@ -145,12 +163,31 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         if (mOnDialogPreCreateListener != null) {
             mOnDialogPreCreateListener.onDialogViewCreated(this);
         }
-
         setCanceledOnTouchOutside(cancelableOutSide);
-        setContentView(dialogView);
-        configDialogWindow();
+        if (rootViewToInflateOutDialogView != null) {//如果dialogView已经有父视图了,则移除
+            rootViewToInflateOutDialogView.removeAllViews();
+            rootViewToInflateOutDialogView = null;
+        }
+        howToCreateDialogView();
     }
 
+    protected void howToCreateDialogView() {
+        //isWindowUseContentViewH | isWindowUseContentViewW 情况下,先configDialogWindow()-->setContentView(dialogView)不显示
+        //而 先setContentView(dialogView) -->configDialogWindow()则显示
+//        configDialogWindow();
+
+        setContentView(dialogView);
+        configDialogWindow();
+
+//        if (isWindowUseContentViewW | isWindowUseContentViewH) {
+//            setContentView(dialogView);
+//            configDialogWindow();
+//        }
+//        else {
+//            configDialogWindow();
+//            setContentView(dialogView);
+//        }
+    }
     /**
      * show()-->[onCreate()如果没有创建的话]--->onStart()
      */
@@ -173,28 +210,35 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     protected void configDialogWindow() {
         Window w = getWindow();//该窗口是控制Dialog window窗口的
         if (w != null) {
-            WindowManager.LayoutParams lp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2) //更正：2018-06-06：也不一定是-2，也有-1,初步结论为与dialog的style有关
+            WindowManager.LayoutParams wlp = w.getAttributes();//默认Dialog的Window的width和height都是WRAP_CONTENT(-2) //更正：2018-06-06：也不一定是-2，也有-1,初步结论为与dialog的style有关
             ViewGroup.LayoutParams dialogViewLp =  dialogView.getLayoutParams();
-            CommonLog.e("info", TAG + "--> onCreate() window.lp.height = " + lp.height + "  window.lp.width = " + lp.width + "  dialogViewLp=" + dialogViewLp);
+            if (isWindowUseContentViewW || isWindowUseContentViewH) {//如果子类指定了使用xml布局中的宽高,则赋值dialogView的原始LayoutParam
+                dialogViewLp = dialogOldLayoutParams != null ? dialogOldLayoutParams : dialogView.getLayoutParams();
+            }
+//            ViewGroup.LayoutParams dialogViewLp = dialogOldLayoutParams != null ? dialogOldLayoutParams : dialogView.getLayoutParams();
+            CommonLog.e("info", TAG + "--> onCreate() window.lp.height = " + wlp.height + "  window.lp.width = " + wlp.width + "  dialogViewLp = " + dialogViewLp
+                    + (dialogViewLp != null ? " dialogView.lp.width = " + dialogViewLp.width
+                    + " dialogView.lp.height = " + dialogViewLp.height : "")
+            );
             if(dialogWidth > 0 ){
-                lp.width = dialogWidth;
+                wlp.width = dialogWidth;
             }
             else{
                 //lp.width = WindowManager.LayoutParams.MATCH_PARENT 会使得该Dialog的窗口的宽与手机屏幕的宽相同
                 if (dialogViewLp != null && isWindowUseContentViewW) {
-                    lp.width  = dialogViewLp.width;//hint by fee 2018-06-06:就算在dialogView中指定了宽、高，也还是-1???
-//                    CommonLog.e("info", "---->^^^^^^^^^  " + lp.width +" " +
-//                            " MeasuredWidth= "  + dialogView.getMeasuredWidth()+  // 0
-//                            " getMeasuredHeight =" + dialogView.getMeasuredHeight()); // 0
+                    wlp.width  = dialogViewLp.width;//hint by fee 2018-06-06:就算在dialogView中指定了宽、高，也还是-1???
+                    CommonLog.d("info", "---->^^^^^^^^^  " + wlp.width +" " +
+                            " MeasuredWidth= "  + dialogView.getMeasuredWidth()+  // 0
+                            " getMeasuredHeight =" + dialogView.getMeasuredHeight()); // 0
                 }
             }
             if(dialogHeigth > 0){
-                lp.height = dialogHeigth;
+                wlp.height = dialogHeigth;
             }
             else{
 //                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
                 if (dialogViewLp != null && isWindowUseContentViewH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
-                    lp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT,为什么内容布局里是wrap_content 也是Match_parent
+                    wlp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT,为什么内容布局里是wrap_content 也是Match_parent
 
                 }
             }
@@ -202,24 +246,24 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
                 w.setWindowAnimations(dialogAnimStyle);
             }
             if(dialogShowGravity != 0){
-                lp.gravity = dialogShowGravity;
+                wlp.gravity = dialogShowGravity;
             }
             //add 背景透明度调整 2017-10-21
             if (dialogBgBehindAlpha != -1) {
-                lp.alpha = dialogBgBehindAlpha;
+                wlp.alpha = dialogBgBehindAlpha;
                 //若不显示设置FLAG_DIM_BEHIND参数在大多数手机上也能work，但是在某些手机如华为Mate7上不能正常work，显示设置之后能够适配更多机型。
                 w.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             }
-            lp.x = dialogOffsetX;
-            lp.y = dialogOffsetY;
+            wlp.x = dialogOffsetX;
+            wlp.y = dialogOffsetY;
             if (dialogWindowBgColor != -1) {
                 w.setBackgroundDrawable(new ColorDrawable(dialogWindowBgColor));
             }
-            CommonLog.e("info", TAG + "--> onCreate() lp.height = " + lp.height + " lp.width = " + lp.width
+            CommonLog.e("info", TAG + "--> onCreate() after config: wlp.width = " + wlp.width + " wlp.height = " + wlp.height
                     + " dialogWindowBgColor= " + dialogWindowBgColor
 
             );
-            w.setAttributes(lp);
+            w.setAttributes(wlp);
         }
     }
     /**
