@@ -703,6 +703,11 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         return 1;
     }
 
+    private boolean isJustShowHeaderFootButNoEmpty = false;
+
+    public void setJustShowHeaderFootButNoEmpty(boolean justShowHeaderFootButNoEmpty) {
+        this.isJustShowHeaderFootButNoEmpty = justShowHeaderFootButNoEmpty;
+    }
     /**
      * if show empty view will be return 1 or not will be return 0
      *
@@ -712,6 +717,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (mEmptyLayout == null || mEmptyLayout.getChildCount() == 0) {
             return 0;
         }
+        if ((mHeadAndEmptyEnable || mFootAndEmptyEnable )&& isJustShowHeaderFootButNoEmpty) {
+            return 0;
+        }
+
         if (!mIsUseEmpty) {
             return 0;
         }
@@ -726,10 +735,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         int count;
         if (getEmptyViewCount() == 1) {
             count = 1;
-            if (mHeadAndEmptyEnable && getHeaderLayoutCount() != 0) {
+            if (mHeadAndEmptyEnable && getHeaderLayoutCount() != 0) {//头部和空布局都要显示出来
                 count++;
             }
-            if (mFootAndEmptyEnable && getFooterLayoutCount() != 0) {
+            if (mFootAndEmptyEnable && getFooterLayoutCount() != 0) {//foot布局和空布局都要显示出来
                 count++;
             }
         } else {

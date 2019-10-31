@@ -2,6 +2,9 @@ package common.base.utils;
 
 import android.os.Build;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * ******************(^_^)***********************<br>
  * User: fee(QQ/WeiXin:1176610771)<br>
@@ -49,5 +52,21 @@ public class CheckUtil {
             return true;
         }
         return false;
+    }
+
+    public static boolean isNullObj(Object theObj) {
+        return theObj == null;
+    }
+
+    public static boolean isEmpty(Collection collection) {
+        return isNullObj(collection) || collection.isEmpty();
+    }
+
+    public static boolean isEmpty(Map map) {
+        return isNullObj(map) || map.isEmpty();
+    }
+
+    public static boolean isEmpty(Object[] objArray) {
+        return isNullObj(objArray) || objArray.length == 0;
     }
 }
