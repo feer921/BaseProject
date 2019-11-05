@@ -577,7 +577,7 @@ public abstract class BaseFragment extends Fragment implements
         if (tag == null) {
             tag = TAG + "[" + extraInfoInLifeDebug + "]";
         }
-        CommonLog.i(tag, logBodys);
+        CommonLog.iFullLog(tag, logBodys);
     }
 
     protected void e(String tag, Object... logBodys) {

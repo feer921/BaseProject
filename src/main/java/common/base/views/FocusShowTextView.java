@@ -493,6 +493,10 @@ public class FocusShowTextView extends FrameLayout implements TextWatcher, Input
             innerEditText.setText("");
         }
     }
+
+    public EditText getInnerEditText() {
+        return innerEditText;
+    }
     private IInputEventListener inputEventListener;
 
     public void setInputEventListener(IInputEventListener l) {

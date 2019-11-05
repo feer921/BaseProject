@@ -1,6 +1,7 @@
 package common.base.utils;
 
 
+import android.util.Log;
 import common.base.BuildConfig;
 
 /**
@@ -96,7 +97,7 @@ public final class CommonLog {
         if (objs == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Object object : objs) {
             sb.append(object);
         }
@@ -148,4 +149,61 @@ public final class CommonLog {
         sb.append('\n');
     }
 
+    /**
+     * 由于Android系统对日志长度有限制的，最大长度为4K（注意是字符串的长度），超过这个范围的自动截断，会出现打印不全的情况
+     * @param logLevelFlagChar Log的输出级别字符标志；取值: 'd'; 'i'; 'e'; 'w'; 'v'
+     * @param logTag Log的tag
+     * @param logContent Log的内容
+     */
+    public static void fullLog(char logLevelFlagChar, String logTag, String logContent) {
+        if (ISDEBUG && !CheckUtil.isEmpty(logContent)) {
+            int segmentSize = 3 * 1024;
+            int len = logContent.length();
+            if (len <= segmentSize) {
+                log(logLevelFlagChar,logTag,logContent);
+            }
+            else {
+                while (logContent.length() > segmentSize) {
+                    String suitableLogContent = logContent.substring(0, segmentSize);
+                    log(logLevelFlagChar, logTag, suitableLogContent);
+                    logContent = logContent.substring(segmentSize);
+//                    StringBuilder sb = new StringBuilder(logContent);
+//                    sb.delete(0, segmentSize);
+//                    logContent = sb.toString();
+//                    sb.append(logContent, segmentSize, logContent.length());
+//                    logContent = logContent.replace(logContent, "");//这个效率低
+                }
+                log(logLevelFlagChar, logTag, logContent);
+            }
+        }
+    }
+
+    public static void iFullLog(String logTag, String logContent) {
+        fullLog('i', logTag, logContent);
+    }
+
+    public static void iFullLog(String logTag, Object... logObj) {
+        iFullLog(logTag, getInfo(logObj));
+    }
+    public static void log(char logLevelFlagChar, String logTag, String logContent) {
+        if (ISDEBUG) {
+            switch (logLevelFlagChar) {
+                case 'i':
+                    i(logTag, logContent);
+                    break;
+                case 'e':
+                    e(logTag,logContent);
+                    break;
+                case 'd':
+                    d(logTag,logContent);
+                    break;
+                case 'w':
+                    w(logTag,logContent);
+                    break;
+                case 'v':
+                    Log.v(logTag, logContent);
+                    break;
+            }
+        }
+    }
 }

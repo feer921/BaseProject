@@ -8,22 +8,24 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.DrawableRes;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import com.flyco.banner.anim.BaseAnimator;
 import com.flyco.banner.widget.Banner.base.BaseBanner;
-import java.util.ArrayList;
+
 import common.base.R;
 
 /**
  * 封装好了Indicator布局中以ImageView为承载圆点或者自定义小图标的Banner
- * @param <E>
- * @param <T>
+ * @param <D>
+ * @param <I>
  */
-public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>> extends BaseBanner<E, T> {
+public abstract class BaseIndicatorBanner<D, I extends BaseIndicatorBanner<D, I>> extends BaseBanner<D, I> {
     /**
      * 填充在指示器ImageView上的样式为资源
      */
@@ -33,7 +35,9 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
      */
     public static final int STYLE_CORNER_RECTANGLE = 1;
 
-    private ArrayList<ImageView> mIndicatorViews = new ArrayList<>();
+//    private ArrayList<ImageView> mIndicatorViews = new ArrayList<>();
+
+    private SparseArray<ImageView> mIndicatorViews = new SparseArray<>();
     /**
      * Banner翻页时的指示器样式
      * {@link #STYLE_DRAWABLE_RESOURCE} 图形资源<br>
@@ -123,7 +127,8 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
                     mIndicatorHeight);
             lp.leftMargin = i == 0 ? 0 : mIndicatorGap;
             mLlIndicators.addView(iv, lp);
-            mIndicatorViews.add(iv);
+//            mIndicatorViews.add(iv);
+            mIndicatorViews.put(i,iv);
         }
 
         setCurrentIndicator(mCurrentPositon);
@@ -133,15 +138,18 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
 
     @Override
     public void setCurrentIndicator(int position) {
-        for (int i = 0; i < mIndicatorViews.size(); i++) {
+        int indicatorsCount = mIndicatorViews.size();
+        for (int i = 0; i < indicatorsCount; i++) {
             mIndicatorViews.get(i).setImageDrawable(i == position ? mSelectDrawable : mUnSelectDrawable);
         }
         try {
             if (mSelectAnimClass != null) {
+                ImageView curFocusIv = mIndicatorViews.get(position);
                 if (position == mLastPositon) {
-                    mSelectAnimClass.newInstance().playOn(mIndicatorViews.get(position));
-                } else {
-                    mSelectAnimClass.newInstance().playOn(mIndicatorViews.get(position));
+                    mSelectAnimClass.newInstance().playOn(curFocusIv);
+                }
+                else {
+                    mSelectAnimClass.newInstance().playOn(curFocusIv);
                     if (mUnselectAnimClass == null) {
                         mSelectAnimClass.newInstance().interpolator(new ReverseInterpolator()).playOn(mIndicatorViews.get(mLastPositon));
                     } else {
@@ -155,49 +163,49 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
     }
 
     /** 设置显示样式,STYLE_DRAWABLE_RESOURCE or STYLE_CORNER_RECTANGLE */
-    public T setIndicatorStyle(int indicatorStyle) {
+    public I setIndicatorStyle(int indicatorStyle) {
         this.mIndicatorStyle = indicatorStyle;
-        return (T) this;
+        return self();
     }
 
     /** 设置显示宽度,单位dp,默认6dp */
-    public T setIndicatorWidth(float indicatorWidth) {
+    public I setIndicatorWidth(float indicatorWidth) {
         this.mIndicatorWidth = dp2px(indicatorWidth);
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器高度,单位dp,默认6dp */
-    public T setIndicatorHeight(float indicatorHeight) {
+    public I setIndicatorHeight(float indicatorHeight) {
         this.mIndicatorHeight = dp2px(indicatorHeight);
-        return (T) this;
+        return self();
     }
 
     /** 设置两个显示器间距,单位dp,默认6dp */
-    public T setIndicatorGap(float indicatorGap) {
+    public I setIndicatorGap(float indicatorGap) {
         this.mIndicatorGap = dp2px(indicatorGap);
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器选中颜色(for STYLE_CORNER_RECTANGLE),默认"#ffffff" */
-    public T setIndicatorSelectColor(int selectColor) {
+    public I setIndicatorSelectColor(int selectColor) {
         this.mSelectColor = selectColor;
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器未选中颜色(for STYLE_CORNER_RECTANGLE),默认"#88ffffff" */
-    public T setIndicatorUnselectColor(int unselectColor) {
+    public I setIndicatorUnselectColor(int unselectColor) {
         this.mUnselectColor = unselectColor;
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器圆角弧度(for STYLE_CORNER_RECTANGLE),单位dp,默认3dp */
-    public T setIndicatorCornerRadius(float indicatorCornerRadius) {
+    public I setIndicatorCornerRadius(float indicatorCornerRadius) {
         this.mIndicatorCornerRadius = dp2px(indicatorCornerRadius);
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器选中以及未选中资源(for STYLE_DRAWABLE_RESOURCE) */
-    public T setIndicatorSelectorRes(@DrawableRes int unselectRes, @DrawableRes int selectRes) {
+    public I setIndicatorSelectorRes(@DrawableRes int unselectRes, @DrawableRes int selectRes) {
         try {
             if (mIndicatorStyle == STYLE_DRAWABLE_RESOURCE) {
                 if (selectRes != 0) {
@@ -210,19 +218,19 @@ public abstract class BaseIndicatorBanner<E, T extends BaseIndicatorBanner<E, T>
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
         }
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器选中动画*/
-    public T setSelectAnimClass(Class<? extends BaseAnimator> selectAnimClass) {
+    public I setSelectAnimClass(Class<? extends BaseAnimator> selectAnimClass) {
         this.mSelectAnimClass = selectAnimClass;
-        return (T) this;
+        return self();
     }
 
     /** 设置显示器未选中动画 */
-    public T setUnselectAnimClass(Class<? extends BaseAnimator> unselectAnimClass) {
+    public I setUnselectAnimClass(Class<? extends BaseAnimator> unselectAnimClass) {
         this.mUnselectAnimClass = unselectAnimClass;
-        return (T) this;
+        return self();
     }
 
     private class ReverseInterpolator implements Interpolator {
