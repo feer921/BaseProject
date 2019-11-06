@@ -71,14 +71,18 @@ public class BaseUiHelper{
             View view = activity.getWindow().peekDecorView();
             if (view != null) {
                 InputMethodManager inputmanger = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                if (inputmanger != null) {
+                    inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         }
     }
 
     public static void hideInputMethod(Context context,View theViewRequest) {
         InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputmanger.hideSoftInputFromWindow(theViewRequest.getWindowToken(), 0);
+        if (inputmanger != null) {
+            inputmanger.hideSoftInputFromWindow(theViewRequest.getWindowToken(), 0);
+        }
         //added
 //        1、方法一(如果输入法在窗口上已经显示，则隐藏，反之则显示)
 //        inputmanger.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
@@ -96,7 +100,14 @@ public class BaseUiHelper{
     public static void showInputMethod(Context context,View theViewRequest) {
         InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputmanger != null) {
-            inputmanger.showSoftInput(theViewRequest, InputMethodManager.SHOW_IMPLICIT);
+            inputmanger.showSoftInput(theViewRequest, InputMethodManager.SHOW_FORCED);
+        }
+    }
+
+    public static void toggleSoftInput(Context context) {
+        InputMethodManager inputmanger = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputmanger != null) {
+            inputmanger.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS );
         }
     }
     /**
