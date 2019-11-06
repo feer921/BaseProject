@@ -8,6 +8,7 @@ import com.lzy.okgo.callback.OkgoNetCallback;
 import common.base.netAbout.INetEvent;
 import common.base.netAbout.NetDataAndErrorListener;
 import common.base.netAbout.NetRequestLifeMarker;
+import common.base.utils.CommonLog;
 import common.base.utils.GenericsParamUtil;
 
 /**
@@ -55,7 +56,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
     @Override
     public final void onResponse(int requestDataType, T result) {
         if (LIFE_CIRCLE_DEBUG) {
-            i(null, "--> onResponse() requestDataType = " + requestDataType + " result = " + result);
+            CommonLog.iFullLog(TAG, "--> onResponse() requestDataType = " + requestDataType + " result = " + result);
         }
         if (curRequestCanceled(requestDataType)) {
             return;

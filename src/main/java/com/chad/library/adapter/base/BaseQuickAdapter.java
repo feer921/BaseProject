@@ -75,10 +75,16 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  */
 public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends RecyclerView.Adapter<K> {
 
-    /** 外部指定的item的宽度 **/
+    /** 外部指定的ItemView的宽度 **/
     protected int theAssignItemWidth;
-    /** 外部指定的item的高度 **/
+    /** 外部指定的ItemView的高度 **/
     protected int theAssignItemHeight;
+
+    /** 指定UI设计的ItemView宽占比 **/
+    protected int theAssignUiDesignWidthRatio;
+
+    /** 指定UI设计的ItemView高占比 **/
+    protected int theAssignUiDesignHeightRatio;
     //load more
     /**
      * 是否可以加载下一页
@@ -2233,6 +2239,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         this.theAssignItemHeight = theAssignItemHeight;
     }
 
+    public void setTheAssignUiDesignWHRatio(int uiDesignWidthRatio,int uiDesignHeightRatio) {
+        this.theAssignUiDesignWidthRatio = uiDesignWidthRatio;
+        this.theAssignUiDesignHeightRatio = uiDesignHeightRatio;
+    }
     /**
      * added by fee 2019-07-11:
      * <P>注：该方法主要是用来relayout适配的itemView布局,依赖的前提条件为外部指定了itemView的宽、高</P>
@@ -2258,8 +2268,12 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         if (vlp == null) {
             vlp = new ViewGroup.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         }
-        if (theAssignItemWidth > 0) {
+        if (theAssignItemWidth > 0) {//一般宽较容易确定
             vlp.width = theAssignItemWidth;
+        }
+        if (theAssignUiDesignWidthRatio != 0 && theAssignUiDesignHeightRatio != 0 && theAssignItemWidth > 0) {
+            //h实 = w实 * h设计高占比 /w设计宽占比：即等比缩放itemView宽高
+            theAssignItemHeight = theAssignItemWidth * theAssignUiDesignHeightRatio / theAssignUiDesignWidthRatio;
         }
         if (theAssignItemHeight > 0) {
             vlp.height = theAssignItemHeight;
@@ -2351,5 +2365,23 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
         else {
             notifyDataSetChanged();
         }
+    }
+
+    /**
+     * 已知实际宽的情况下获取等比缩放的实际高
+     * 等比列式:
+     *  w实    w比            w实
+     *  --- =  --- ==> h实 = ---- * h比
+     *  h实    h比            w比
+     * @param widthReal 实际宽
+     * @param hRatio 高比值
+     * @param wRatio 宽比值
+     * @return 等比缩放的实际高
+     */
+    public int getEqualRatioHeight(int widthReal, int hRatio, int wRatio) {
+        if (wRatio > 0) {
+            return widthReal * hRatio / wRatio;
+        }
+        return 0;
     }
 }
