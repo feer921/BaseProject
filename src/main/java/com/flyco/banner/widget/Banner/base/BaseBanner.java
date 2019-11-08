@@ -624,8 +624,10 @@ public abstract class BaseBanner<D, I extends BaseBanner<D, I>> extends Relative
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             View itemView = onCreateItemView(position);
-            itemView.setOnClickListener(new PositonClickListener(position));
-            container.addView(itemView);
+            if (itemView != null) {
+                itemView.setOnClickListener(new PositonClickListener(position));
+                container.addView(itemView);
+            }
             return itemView;
         }
 
