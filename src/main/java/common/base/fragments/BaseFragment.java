@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import common.base.R;
 import common.base.WeakHandler;
+import common.base.activitys.BaseActivity;
 import common.base.activitys.IProxyCallback;
 import common.base.activitys.UIHintAgent;
 import common.base.interfaces.ICommonUiHintActions;
@@ -375,15 +376,17 @@ public abstract class BaseFragment extends Fragment implements
 
     /**
      * 在宿主Activity中根据view id 查找控件
+     *
      * @param viewId
      * @param <T>
      * @return
      */
-    protected <T extends View> T findAviewByIdInHostActivity(int viewId){
-                if (viewId > 0) {
-                    return (T) getActivity().findViewById(viewId);
-                }
-                return null;
+    protected <T extends View> T findAviewByIdInHostActivity(int viewId) {
+        Activity hostActivity = getActivity();
+        if (hostActivity != null) {
+            return hostActivity.findViewById(viewId);
+        }
+        return null;
     }
     /**
      * 在Fragment所加载的视图里查找视图控件
@@ -393,7 +396,7 @@ public abstract class BaseFragment extends Fragment implements
      */
     protected <T extends View> T findLocalViewById(int viewId) {
         if (viewId > 0 && rootView != null) {
-            return (T) rootView.findViewById(viewId);
+            return rootView.findViewById(viewId);
         }
         return null;
     }
@@ -626,12 +629,25 @@ public abstract class BaseFragment extends Fragment implements
      * 有一些场景，Fragment可能需要请求宿主Activity做某些动作
      * @param optType 操作类型
      */
-    protected void onFragmentReqHostOpt(String optType) {
+    protected boolean onFragmentReqHostOpt(String optType,Object reqData) {
+        boolean isRespOpt = false;
         if (mFragmentHost != null) {
-            mFragmentHost.onFragmentOptReq(optType);
+            isRespOpt = mFragmentHost.onFragmentOptReq(this,optType);
         }
+        else {
+            Activity hostActivity = getActivity();
+            if (hostActivity != null) {
+                if (hostActivity instanceof BaseActivity) {
+                    isRespOpt = ((BaseActivity) hostActivity).onFragmentOptReq(this,optType,reqData);
+                }
+            }
+        }
+        return isRespOpt;
     }
 
+    protected boolean onFragmentReqHostOpt(String optType) {
+       return onFragmentReqHostOpt(optType, null);
+    }
     public static final String OPT_TYPE_HIDE_HINT_DIALOG = "req_hide_hint_dialog";
 
 
@@ -643,7 +659,7 @@ public abstract class BaseFragment extends Fragment implements
 
         void finishHost(boolean needTransAnim);
 
-        void onFragmentOptReq(String optTypeInFragment);
+        boolean onFragmentOptReq(Fragment curFragment, String optTypeInFragment);
     }
 
     /**

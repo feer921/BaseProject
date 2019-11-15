@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.CallSuper;
 import android.support.annotation.DimenRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -592,8 +593,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         CommonLog.w(null == logTag ? TAG : logTag, logBody);
     }
 
-    public void onFragmentOptReq(String reqOpt) {
+    public boolean onFragmentOptReq(Fragment curFragment, String reqOpt,Object reqData) {
         //here do nothing...
+        return false;
     }
     /**
      * 将dimen资源id,转换为系统中的px值
