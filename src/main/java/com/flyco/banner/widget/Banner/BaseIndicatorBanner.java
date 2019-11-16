@@ -25,7 +25,7 @@ import common.base.R;
  * @param <D>
  * @param <I>
  */
-public abstract class BaseIndicatorBanner<D, I extends BaseIndicatorBanner<D, I>> extends BaseBanner<D, I> {
+public abstract class BaseIndicatorBanner<D, I extends BaseIndicatorBanner> extends BaseBanner<D,I> {
     /**
      * 填充在指示器ImageView上的样式为资源
      */

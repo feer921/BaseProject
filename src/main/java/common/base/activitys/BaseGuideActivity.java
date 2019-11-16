@@ -13,7 +13,7 @@ import com.flyco.banner.widget.Banner.BaseGuideBanner;
  * DESC: 导航界面基类
  */
 public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
-    protected BaseGuideBanner<GuidDataType> guideBanner;
+    protected BaseGuideBanner<GuidDataType,BaseGuideBanner> guideBanner;
     /**
      * 该导航页是否需要全屏显示(一般也需要全屏显示)
      */
@@ -51,8 +51,8 @@ public abstract class BaseGuideActivity<GuidDataType> extends BaseActivity {
      *
      * @return
      */
-    protected BaseGuideBanner<GuidDataType> getGuideBanner() {
-        return new BaseGuideBanner<GuidDataType>(this) {
+    protected BaseGuideBanner<GuidDataType,BaseGuideBanner> getGuideBanner() {
+        return new BaseGuideBanner<GuidDataType,BaseGuideBanner>(this) {
             /**
              * 根据提供的数据集来获取每一页的视图
              *

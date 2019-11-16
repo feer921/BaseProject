@@ -38,7 +38,7 @@ import common.base.utils.CommonLog;
  * @param <D> 数据源的数据类型
  * @param <I> 返回BaseBanner的子类自身，方便链式调用
  */
-public abstract class BaseBanner<D, I extends BaseBanner<D, I>> extends RelativeLayout{
+public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout{
     /** 日志 */
     protected final String TAG = getClass().getSimpleName();
 //    /** 单线程池定时任务 */
@@ -728,19 +728,35 @@ public abstract class BaseBanner<D, I extends BaseBanner<D, I>> extends Relative
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
         mOnPageChangeListener = listener;
     }
-    private OnItemClickListener<D> onItemClickListener;
+    private OnItemClickListener<D,I> onItemClickListener;
+    private Object extraData;
 
-    public interface OnItemClickListener<D>{
-        void onBannerItemClick(View theClickView,D itemData,int clickPosition);
-    }
-
-    public void setOnBannerItemClickListener(OnItemClickListener<D> l) {
+    public void setOnBannerItemClickListener(OnItemClickListener<D,I> l) {
         this.onItemClickListener = l;
     }
 
     protected PositonClickListener makeItemClickListener(int itemPosition) {
         return new PositonClickListener(itemPosition);
     }
+
+    public Object getExtraData() {
+        return extraData;
+    }
+
+    public void setExtraData(Object extraData) {
+        this.extraData = extraData;
+    }
+
+    private void onItemViewsClickInBanner(View curClickView, int curClickItemPosition) {
+        if (onItemClickListener != null) {
+            onItemClickListener.onBannerItemClick(self(), curClickView, getItemData(curClickItemPosition), curClickItemPosition);
+        }
+    }
+
+    public interface OnItemClickListener<D,B extends BaseBanner>{
+        void onBannerItemClick(B curBanner, View theClickView, D itemData, int clickPosition);
+    }
+
     private class PositonClickListener implements OnClickListener{
        int curClickPosition;
        PositonClickListener(int curPos) {
@@ -753,9 +769,7 @@ public abstract class BaseBanner<D, I extends BaseBanner<D, I>> extends Relative
         */
        @Override
        public void onClick(View v) {
-           if (onItemClickListener != null) {
-               onItemClickListener.onBannerItemClick(v,getItemData(curClickPosition),curClickPosition);
-           }
+           onItemViewsClickInBanner(v, curClickPosition);
        }
     }
 }

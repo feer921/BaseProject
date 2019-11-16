@@ -21,7 +21,7 @@ import common.base.R;
  * ******************(^_^)***********************
  */
 
-public class SimpleGuideBanner extends BaseGuideBanner<Integer>{
+public class SimpleGuideBanner extends BaseGuideBanner<Integer,SimpleGuideBanner>{
     public SimpleGuideBanner(Context context) {
         this(context,null);
     }

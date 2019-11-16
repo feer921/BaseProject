@@ -14,7 +14,7 @@ import common.base.R;
  * ******************(^_^)***********************
  */
 
-public abstract class BaseGuideBanner<X> extends BaseIndicatorBanner<X,BaseGuideBanner<X>> {
+public abstract class BaseGuideBanner<X,I extends BaseGuideBanner> extends BaseIndicatorBanner<X,I> {
 
     public BaseGuideBanner(Context context) {
         this(context, null);

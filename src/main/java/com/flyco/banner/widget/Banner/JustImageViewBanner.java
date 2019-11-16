@@ -17,7 +17,7 @@ import android.widget.ImageView;
  * ******************(^_^)***********************
  */
 
-public class JustImageViewBanner<DataType> extends BaseIndicatorBanner<DataType,JustImageViewBanner<DataType>>{
+public class JustImageViewBanner<DataType> extends BaseIndicatorBanner<DataType,JustImageViewBanner>{
     /**
      * 默认的占位Drawable
      */
