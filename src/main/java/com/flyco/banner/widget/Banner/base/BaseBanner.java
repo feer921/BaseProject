@@ -747,7 +747,7 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
         this.extraData = extraData;
     }
 
-    private void onItemViewsClickInBanner(View curClickView, int curClickItemPosition) {
+    protected void onItemViewsClickInBanner(View curClickView, int curClickItemPosition) {
         if (onItemClickListener != null) {
             onItemClickListener.onBannerItemClick(self(), curClickView, getItemData(curClickItemPosition), curClickItemPosition);
         }
