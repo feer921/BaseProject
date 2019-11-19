@@ -278,6 +278,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         return false;
     }
 
+    protected boolean isCurRequestWorking(int reqDataType) {
+        return curNetRequestState(reqDataType) == NetRequestLifeMarker.REQUEST_STATE_ING;
+    }
     /**
      * 某个请求类型的网络请求是否已经完成
      * @param requestDataType

@@ -444,6 +444,19 @@ public abstract class BaseFragment extends Fragment implements
         }
         return false;
     }
+
+    /**
+     * 查询当前网络请求的状态
+     * @param curRequestType
+     * @return
+     */
+    protected byte curNetRequestState(int curRequestType) {
+        if (netRequestLifeMarker != null) {
+            return netRequestLifeMarker.curRequestLifeState(curRequestType);
+        }
+        return NetRequestLifeMarker.REQUEST_STATE_NON;
+    }
+
     /**
      * 标记当前网络请求的状态 : 正在请求、已完成、已取消等
      * @see {@link NetRequestLifeMarker#REQUEST_STATE_ING}
@@ -464,6 +477,10 @@ public abstract class BaseFragment extends Fragment implements
             netRequestLifeMarker.addRequestToMark(curRequestDataType, NetRequestLifeMarker.REQUEST_STATE_ING);
         }
     }
+    protected boolean isCurRequestWorking(int reqDataType) {
+        return curNetRequestState(reqDataType) == NetRequestLifeMarker.REQUEST_STATE_ING;
+    }
+
     /**
      * 某个请求类型的网络请求是否已经完成
      * @param requestDataType
