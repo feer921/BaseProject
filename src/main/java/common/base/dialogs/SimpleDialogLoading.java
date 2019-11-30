@@ -30,6 +30,7 @@ public class SimpleDialogLoading extends android.app.ProgressDialog implements D
     private IProxyCallback callback;
     private int animResId;
 
+    private boolean isAttachToWindowManager = false;
 //    public SimpleDialogLoading(Context context) {
 //        this(context,0);
 //    }
@@ -96,6 +97,7 @@ public class SimpleDialogLoading extends android.app.ProgressDialog implements D
 
     @Override
     public void show() {
+        isAttachToWindowManager = true;//主动设置为true，因为该方法的回调会比较晚
         clearOldMsg();
         super.show();
         showAnim();
@@ -107,7 +109,10 @@ public class SimpleDialogLoading extends android.app.ProgressDialog implements D
             loadingView.reset();
         }
         //防止dismiss的时候，window已无
-        if (getWindow() == null) {
+//        if (getWindow() == null) {
+//            return;
+//        }
+        if (!isAttachToWindowManager) {
             return;
         }
         super.dismiss();
@@ -188,4 +193,16 @@ public class SimpleDialogLoading extends android.app.ProgressDialog implements D
     private static final int MSG_DELAY_TO_DISMISS = 0x10;
     private Handler mHandler;
 
+    @Override
+    public void onAttachedToWindow() {
+        //该方法的回调有可能比较晚
+        isAttachToWindowManager = true;
+        super.onAttachedToWindow();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        isAttachToWindowManager = false;
+        super.onDetachedFromWindow();
+    }
 }
