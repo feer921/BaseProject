@@ -2,6 +2,7 @@ package common.base.utils;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
@@ -139,6 +140,22 @@ public class MrNotification {
         return true;
     }
 
+    /**
+     * 在Android 8.0后，需要创建通知 channel后，再使用发送对应 channel的通知
+     * @param context Context
+     * @param channelId 可惟一的通知channel id
+     * @param channelName 渠道名称，供用户查看，需要看名知意
+     * @param importanceLevel 重要等级；见{@linkplain NotificationManager#IMPORTANCE_HIGH}
+     */
+    public static void createNotificationChannel(Context context,String channelId,CharSequence channelName,int importanceLevel) {
+        if (android.os.Build.VERSION.SDK_INT >= 26) {//Android 8.0+ 才有通知渠道的功能
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importanceLevel);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
+        }
+    }
     /**
      * 调用系统通知管理者向系统发送 一条通知
      * 注：如果同时指定tag,和notifyId,则如果要取消该通知，需要也同时指定tag和notifyId
