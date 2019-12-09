@@ -2359,7 +2359,7 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
                 refreshNotifyItemChanged(visibleFirstPos);
             }
             else {
-                notifyItemRangeChanged(visibleFirstPos, visibleLastPos - visibleFirstPos,0);
+                notifyItemRangeChanged(visibleFirstPos, visibleLastPos + 1 - visibleFirstPos, 0);
             }
         }
         else {
