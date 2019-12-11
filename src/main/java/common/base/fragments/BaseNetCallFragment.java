@@ -15,6 +15,9 @@ import common.base.utils.GenericsParamUtil;
  * DESC: 有网络请求的碎片的基类
  */
 public abstract class BaseNetCallFragment<T> extends BaseFragment implements INetEvent<T> {
+    protected boolean ON_ERROR_RESP_DEBUG_LOG = true;
+    protected boolean ON_NORMAL_RESP_DEBUG_LOG = true;
+
     /**
      * 网络请求失败
      * 之所以本基类把该重载变为final型的，是因为本基类需要做统一的逻辑，即对用户主动取消了的请求给以拒绝处理
@@ -23,8 +26,8 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      */
     @Override
     public final void onErrorResponse(int requestDataType, String errorInfo) {
-        if (LIFE_DEBUG) {
-            i(null, "--> onErrorResponse() curRequestDataType = " + requestDataType + " errorInfo = " + errorInfo);
+        if (LIFE_DEBUG && ON_ERROR_RESP_DEBUG_LOG) {
+            e(null, "--> onErrorResponse() curRequestDataType = " + requestDataType + " errorInfo = " + errorInfo);
         }
         //如果用户主动取消了当前网络请求即Loading dialog被取消了(实际上该请求已到达服务端,因而会响应回调)
         //则不让各子类处理已被用户取消了的请求
@@ -46,8 +49,8 @@ public abstract class BaseNetCallFragment<T> extends BaseFragment implements INe
      */
     @Override
     public final void onResponse(int requestDataType, T result) {
-        if (LIFE_DEBUG) {
-            i(null,"--> onResponse() requestDataType = " + requestDataType + " result = " + result);
+        if (LIFE_DEBUG && ON_NORMAL_RESP_DEBUG_LOG) {
+            v(null,"--> onResponse() requestDataType = " + requestDataType + " result = " + result);
         }
         if (curRequestCanceled(requestDataType)) {
             return;

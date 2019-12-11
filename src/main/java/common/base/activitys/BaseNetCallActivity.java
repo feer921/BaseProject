@@ -19,7 +19,8 @@ import common.base.utils.GenericsParamUtil;
  * 注：范型<T>表示网络请求响应的数据类型,eg. T = JsonObject ,则要求网络请求后返回JsonObject类型数据
  */
 public abstract class BaseNetCallActivity<T> extends BaseActivity implements INetEvent<T>{
-
+    protected boolean ON_ERROR_RESP_DEBUG_LOG = true;
+    protected boolean ON_NORMAL_RESP_DEBUG_LOG = true;
     /**
      * 是否在界面退出的时候需要取消当前所有的网络请求
      * 目前为测试阶段，各子类可根据实际情况决定是否需要，比如：某个子类只有一个网络请求，并且该请求已经返回了，则不需要本基类进行取消全部网络请求的操作
@@ -33,7 +34,7 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
      */
     @Override
     public final void onErrorResponse(int requestDataType, String errorInfo) {
-        if (LIFE_CIRCLE_DEBUG) {
+        if (LIFE_CIRCLE_DEBUG && ON_ERROR_RESP_DEBUG_LOG) {
             e(null, "--> onErrorResponse() requestDataType = " + requestDataType + " errorInfo = " + errorInfo);
         }
         //如果用户主动取消了当前网络请求即Loading dialog被取消了(实际上该请求已到达服务端,因而会响应回调)
@@ -55,8 +56,8 @@ public abstract class BaseNetCallActivity<T> extends BaseActivity implements INe
      */
     @Override
     public final void onResponse(int requestDataType, T result) {
-        if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.iFullLog(TAG, "--> onResponse() requestDataType = " + requestDataType + " result = " + result);
+        if (LIFE_CIRCLE_DEBUG && ON_NORMAL_RESP_DEBUG_LOG) {
+            CommonLog.fullLog('v',TAG, "--> onResponse() requestDataType = " + requestDataType + " result = " + result);
         }
         if (curRequestCanceled(requestDataType)) {
             return;

@@ -600,6 +600,12 @@ public abstract class BaseFragment extends Fragment implements
         CommonLog.iFullLog(tag, logBodys);
     }
 
+    protected void v(String tag, Object... logBodys) {
+        if (tag == null) {
+            tag = TAG + "[" + extraInfoInLifeDebug + "]";
+        }
+        CommonLog.fullLog('v', tag, CommonLog.getInfo(logBodys));
+    }
     protected void e(String tag, Object... logBodys) {
         if (tag == null) {
             tag = TAG + "[" + extraInfoInLifeDebug + "]";

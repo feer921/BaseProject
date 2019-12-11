@@ -93,7 +93,7 @@ public final class CommonLog {
             i(logTag, sb.toString());
         }
     }
-    private static String getInfo(Object... objs) {
+    public static String getInfo(Object... objs) {
         if (objs == null) {
             return "";
         }
