@@ -59,7 +59,7 @@ public class HttpLoggingInterceptor implements Interceptor {
 
     public void log(String message) {
         logger.log(colorLevel, message);
-        Log.i(logger.getName(), message);
+        Log.v(logger.getName(), message);
     }
 
     @Override
