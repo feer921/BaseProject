@@ -41,16 +41,22 @@ public abstract class DataBaseDao<T> {
 
     /** 返回一列的总记录数量 */
     public int countColumn(String columnName) {
-        String sql = "SELECT COUNT(?) FROM " + getTableName();
         SQLiteDatabase database = openReader();
         Cursor cursor = null;
         try {
             database.beginTransaction();
-            cursor = database.rawQuery(sql, new String[]{columnName});
             int count = 0;
-            if (cursor.moveToNext()) {
-                count = cursor.getInt(0);
+            //堵漏洞操作,不要在query中使用拼接字符串形式构造的SQL语句去查询底层SQLite数据库
+//            String sql = "SELECT COUNT(?) FROM " + getTableName();
+//            cursor = database.rawQuery(sql, new String[]{columnName});
+//            if (cursor.moveToNext()) {
+//                count = cursor.getInt(0);
+//            }
+            cursor = database.query(getTableName(), new String[]{columnName}, null, null, null, null, null);
+            if (cursor != null) {
+                count = cursor.getCount();
             }
+
             database.setTransactionSuccessful();
             return count;
         } catch (Exception e) {
