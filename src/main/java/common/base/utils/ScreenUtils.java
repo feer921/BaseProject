@@ -34,6 +34,8 @@ public class ScreenUtils {
     private static int windowHeight;
     private static float density;
     private static int statusBarHeight = 10;
+
+    private static DisplayMetrics displayMetrics;
     /**
      * 手机的导航栏(虚拟)
      * 横屏时：为宽
@@ -52,7 +54,7 @@ public class ScreenUtils {
         if (windowManager == null) {
             return;
         }
-        DisplayMetrics displayMetrics = new DisplayMetrics();
+        displayMetrics = new DisplayMetrics();
         Display defDisplay = windowManager.getDefaultDisplay();
         if (defDisplay == null) {
             return;
@@ -311,6 +313,24 @@ public class ScreenUtils {
         return " windowWidth:" + windowWidth + " windowHeight:" + windowHeight + " density:" + density;
     }
 
+    public static String getDisplayMetricsDesc() {
+        DisplayMetrics curDisplayMetrics = null;
+        Resources res = null;
+        int swdp = 0;
+        if (sContext != null) {
+            res = sContext.getResources();
+        }
+        if (res != null) {
+            curDisplayMetrics = res.getDisplayMetrics();
+            swdp = res.getConfiguration().smallestScreenWidthDp;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("当前显示信息:").append(curDisplayMetrics)
+                .append(" --> 实际显示信息:").append(displayMetrics)
+                .append(" 最短宽 dpi:").append(swdp)
+        ;
+        return sb.toString();
+    }
     public static int[] getCurScreenWidthHeight(Context context) {
         int resultWidth = 0;
         int resultHeight = 0;
