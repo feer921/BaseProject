@@ -757,4 +757,7 @@ public class Util {
         BigDecimal result4 = new BigDecimal(teraBytes);
         return result4.setScale(2, BigDecimal.ROUND_HALF_UP).toPlainString() + "TB";
     }
+    public static String formatStr(String formatStr, Object... params) {
+        return String.format(Locale.getDefault(), formatStr, params);
+    }
 }

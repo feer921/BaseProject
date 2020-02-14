@@ -268,4 +268,24 @@ public class TimeUtil {
         return twoDimensionDesc;
     }
     private static final String[] dayDesc = {"今天","昨天","前天","大前天"};
+
+    /**
+     * 将一个毫秒时间转换成 时：分：秒
+     * @param theMillisTime 毫秒时间
+     * @return int[0] = 多少小时；int[1] = 多少分钟；int[2] = 多少秒。
+     */
+    public static int[] convertATotalMillisTime2Hms(long theMillisTime) {
+        int[] hmsInfos = new int[3];
+        if (theMillisTime > 0) {//如果 <=0,则全是0
+            int seconds = (int) (theMillisTime / 1000);//转换成总共有多少秒
+            int minutes = seconds / 60;
+            int hours = minutes / 60;
+            minutes %= 60;
+            seconds = seconds % 60;
+            hmsInfos[0] = hours;
+            hmsInfos[1] = minutes;
+            hmsInfos[2] = seconds;
+        }
+        return hmsInfos;
+    }
 }
