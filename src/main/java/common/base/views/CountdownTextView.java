@@ -88,7 +88,9 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
-            onFinish();
+            if (this.mMillisInFuture != mMillisInFuture) {
+                onFinish();
+            }
             countDownTimer = null;
             return;
         }

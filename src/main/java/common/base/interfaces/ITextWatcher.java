@@ -11,7 +11,7 @@ import android.widget.TextView;
 public interface ITextWatcher {
     /***
      * 文本变化中的回调
-     * @param curEditText //changed by fee 2017-08-23 TextWatcher是TextView中的接口，故把参数对象提升到TextView
+     * @param curEditText changed by fee 2017-08-23 TextWatcher是TextView中的接口，故把参数对象提升到TextView
      */
     void onTextChanged(TextView curEditText);
 
