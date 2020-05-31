@@ -19,7 +19,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import java.lang.ref.WeakReference;
 
 import common.base.R;
 import common.base.utils.CommonLog;
@@ -92,6 +95,15 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      */
     protected boolean needCareActivityImmersion = true;
     protected boolean isAttachedToWindowManager = false;
+    /**
+     * added by fee 2020-04-15: 增加 Dialog弹出时是否需要让输入法也弹出
+     */
+    protected boolean isNeedInputMethod;
+
+    /**
+     * 是否要构建 生命周期监听者 根据Context
+     */
+    protected boolean isToBuildLifeCircleListenerBaseContext = true;
     public BaseDialog(Context context) {
 //        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
         this(context, R.style.common_dialog_bg_dim);
@@ -119,7 +131,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         mContext = context;//提前到这里来，以避免下面的空指针
         contentLayoutResId = getDialogViewResID();
         if (contentLayoutResId != 0) {
-            rootViewToInflateOutDialogView = new LinearLayout(mContext);
+            rootViewToInflateOutDialogView = new FrameLayout(mContext);
 //            dialogView = getLayoutInflater().inflate(contentLayoutResId, null);//这种 inflater会不保留xml布局中定义的LayoutParam属性
             getLayoutInflater().inflate(contentLayoutResId, rootViewToInflateOutDialogView);//目的就是为了保留xml布局中定义的LayoutParam属性
             dialogView = rootViewToInflateOutDialogView.getChildAt(0);
@@ -153,23 +165,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             dialogWindow.setBackgroundDrawableResource(bgResId);
         }
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        if (needCareActivityImmersion) {
-//            ViewUtil.hideNavigationBar(getWindow());
-//        }
-        //added by fee 2018-05-26
-        if (mOnDialogPreCreateListener != null) {
-            mOnDialogPreCreateListener.onDialogViewCreated(this);
-        }
-        setCanceledOnTouchOutside(cancelableOutSide);
-        if (rootViewToInflateOutDialogView != null) {//如果dialogView已经有父视图了,则移除
-            rootViewToInflateOutDialogView.removeAllViews();
-            rootViewToInflateOutDialogView = null;
-        }
-        howToCreateDialogView();
-    }
+
 
     protected void howToCreateDialogView() {
         //isWindowUseContentViewH | isWindowUseContentViewW 情况下,先configDialogWindow()-->setContentView(dialogView)不显示
@@ -239,7 +235,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 //                lp.height = WindowManager.LayoutParams.MATCH_PARENT;//不加上这句，默认高度会match_parent ; changed by fee 2017-07-14:
                 if (dialogViewLp != null && isWindowUseContentViewH) {//让本来由Dialog原生设置的窗口宽、高转为由dialogView来决定Dialog的宽、高
                     wlp.height = dialogViewLp.height;//注意：内容布局里的高度很可能就是MATCH_PARENT,为什么内容布局里是wrap_content 也是Match_parent
-
+                    if (wlp.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
+//                        wlp.height = dialogView.getMeasuredHeight();
+                    }
                 }
             }
             if(dialogAnimStyle != 0){
@@ -263,6 +261,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
                     + " dialogWindowBgColor= " + dialogWindowBgColor
 
             );
+            if (isNeedInputMethod) {
+                w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            }
             w.setAttributes(wlp);
         }
     }
@@ -384,6 +385,15 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         return self();
     }
 
+    public I setHintMsg(CharSequence hintMsg) {
+        View viewHintMsg = getDialogHintView();
+        if (viewHintMsg != null) {
+            if (viewHintMsg instanceof TextView) {
+                ((TextView) viewHintMsg).setText(hintMsg);
+            }
+        }
+        return self();
+    }
     /**
      * 由于可能一些界面上需要提示信息以不同的对齐方式显示，故添加此方法
      * @param gravity
@@ -550,6 +560,21 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
                 break;
         }
     }
+    /**
+     * 监听 Dialog 生命周期的监听者弱引用
+     */
+    protected WeakReference<IDialogLifeCircleListener> mLifeCircleListenerRef;
+
+    public void showInCase(int curDialogInCase) {
+        this.curDialogInCase = curDialogInCase;
+        show();
+    }
+
+    public void show(int curDialogInCase) {
+        this.curDialogInCase = curDialogInCase;
+        show();
+    }
+
     @Override
     public void show() {
 //        if (needCareActivityImmersion) {
@@ -579,23 +604,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             mHandler.removeMessages(MSG_TYPE_DISMISS);
             mHandler.sendEmptyMessageDelayed(MSG_TYPE_DISMISS, showHoldTime);
         }
-    }
-
-    public void showInCase(int curDialogInCase) {
-        this.curDialogInCase = curDialogInCase;
-        show();
-    }
-
-    public void show(int curDialogInCase) {
-        this.curDialogInCase = curDialogInCase;
-        show();
-    }
-    @Override
-    public void dismiss() {
-        tempLinkedData = null;
-        CommonLog.i(TAG, "-->dismiss() isAttachedToWindowManager = " + isAttachedToWindowManager);
-        clearShowHoldTaskInfo();
-        super.dismiss();
+        if (peekLifeCircleListener() != null) {
+            peekLifeCircleListener().onDialogShow(this);
+        }
     }
 
     public I clearShowHoldTaskInfo() {
@@ -645,6 +656,10 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         this.isWindowUseContentViewW = isWindowUseContentViewW;
         return self();
     }
+    public I useContentViewHeight(boolean isWindowUseContentviewH){
+        this.isWindowUseContentViewH = isWindowUseContentviewH;
+        return self();
+    }
     private OnDialogPreCreateListener mOnDialogPreCreateListener;
     public I withOnDialogPreCreateListener(OnDialogPreCreateListener listener) {
         this.mOnDialogPreCreateListener = listener;
@@ -680,5 +695,76 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 
     public Object theLinkedData() {
         return tempLinkedData;
+    }
+
+    @Override
+    public void dismiss() {
+        if (peekLifeCircleListener() != null) {
+            peekLifeCircleListener().onDialogDismiss(this);
+        }
+        tempLinkedData = null;
+        CommonLog.i(TAG, "-->dismiss() isAttachedToWindowManager = " + isAttachedToWindowManager);
+        clearShowHoldTaskInfo();
+        super.dismiss();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //to do  这个功能挺 不好的，后续删除掉
+        if (isToBuildLifeCircleListenerBaseContext) {
+            if (mLifeCircleListenerRef == null) {
+                if (mContext instanceof IDialogLifeCircleListener) {
+                    mLifeCircleListenerRef = new WeakReference<>((IDialogLifeCircleListener) mContext);
+                }
+            }
+        }
+//        if (needCareActivityImmersion) {
+//            ViewUtil.hideNavigationBar(getWindow());
+//        }
+        //added by fee 2018-05-26
+        if (mOnDialogPreCreateListener != null) {
+            mOnDialogPreCreateListener.onDialogViewCreated(this);
+        }
+        if (peekLifeCircleListener() != null) {
+            peekLifeCircleListener().onDialogCreate(this);
+        }
+        setCanceledOnTouchOutside(cancelableOutSide);
+        if (rootViewToInflateOutDialogView != null) {//如果dialogView已经有父视图了,则移除
+            rootViewToInflateOutDialogView.removeAllViews();
+            rootViewToInflateOutDialogView = null;
+        }
+        howToCreateDialogView();
+    }
+
+    protected IDialogLifeCircleListener peekLifeCircleListener() {
+        if (mLifeCircleListenerRef != null) {
+            return mLifeCircleListenerRef.get();
+        }
+        return null;
+    }
+
+    public I withDialogLifeCircleListener(IDialogLifeCircleListener l) {
+        if (l != null) {
+            mLifeCircleListenerRef = new WeakReference<>(l);
+        }
+        return self();
+    }
+
+    public I setBuildLifeCircleListenerBaseContext(boolean isNeedDo) {
+        this.isToBuildLifeCircleListenerBaseContext = isNeedDo;
+        return self();
+    }
+    /**
+     * 提取出 给定的一个View的 Text
+     * @param mightAsWellTextView 最好是TextView类型的View ^.^
+     * @return View上的文本
+     */
+    public CharSequence extractTextOfView(View mightAsWellTextView) {
+        if (mightAsWellTextView instanceof TextView) {
+            TextView textView = (TextView) mightAsWellTextView;
+            return textView.getText();
+        }
+        return null;
     }
 }

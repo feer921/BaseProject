@@ -305,6 +305,9 @@ public class ScreenUtils {
             case ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED:
                 oriDesc = "未指明的";
                 break;
+            case ActivityInfo.SCREEN_ORIENTATION_LOCKED:
+                oriDesc = "locked";
+                break;
         }
         return oriDesc;
     }

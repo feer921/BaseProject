@@ -21,6 +21,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
@@ -672,4 +673,38 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
             return false;
         }
     };
+
+    /**
+     * added by fee 2020-05-26:
+     * 增加如果 item view 的数据填充是在本类实现的，则有可能一些子View需要 重新布局
+     * @param theRelayoutView 要重新layout的 View
+     * @return true: 去重新layout; false:未 重新layout
+     */
+    protected boolean relayoutAnyView(View theRelayoutView) {
+        if (adapter != null) {
+            return adapter.relayoutAnyView(theRelayoutView);
+        }
+        return false;
+    }
+
+    /**
+     * 由Adapter 的系统回调而调用该方法，表示当前ViewHolder被回收了
+     */
+    public void onViewHolderRecycled() {
+
+    }
+
+    /**
+     * ViewHolder来监听 所处的宿主是否 当前为可见、活跃状态
+     * @param isHostActive  true: 活动、活跃、可见；false:反之
+     */
+    public void onHostActive(boolean isHostActive){
+
+    }
+    protected int dimen2PixValue(@DimenRes int dimenResId){
+        if (adapter != null) {
+            return adapter.dimen2PixValue(dimenResId);
+        }
+        return 0;
+    }
 }

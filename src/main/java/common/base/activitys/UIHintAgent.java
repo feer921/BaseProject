@@ -8,12 +8,13 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.LayoutRes;
 import android.view.Gravity;
 import android.view.View;
 
 import common.base.R;
 import common.base.dialogs.BaseDialog;
-import common.base.dialogs.CommonMdDialog;
+import common.base.dialogs.SimpleHintDialog;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
@@ -68,6 +69,12 @@ public class UIHintAgent {
      */
     private float hintDialogBgAlpha = -1;
 
+    /**
+     * 可额外配置 提示 Dialog的布局 的方案
+     * 注：该布局内的各控件ID需要和 {@link #hintDialog}原配布局中View的 ID一致
+     */
+    private @LayoutRes int extraHintDialogLayoutRes;
+    private boolean isDialogCompatPadUi;
     public void setProxyCallback(IProxyCallback curProxyOwner){
         mProxyCallback = curProxyOwner;
     }
@@ -78,7 +85,20 @@ public class UIHintAgent {
 
     private void initHintDialog() {
         if (hintDialog == null) {
-            hintDialog = new CommonMdDialog(mContext);
+//            hintDialog = new CommonMdDialog(mContext);
+            if (extraHintDialogLayoutRes != 0) {
+                hintDialog = new SimpleHintDialog(mContext){
+                    @Override
+                    protected int getDialogViewResID() {
+                        return extraHintDialogLayoutRes;
+                    }
+                };
+            }
+            else {
+                hintDialog = new SimpleHintDialog(mContext);
+                isDialogCompatPadUi = false;
+            }
+            extraConfigHintDialog(isDialogCompatPadUi);
             //added
             hintDialog.setDialogBgBehindAlpha(hintDialogBgAlpha);
             hintDialog.edtViewCanEdit(false);
@@ -99,6 +119,16 @@ public class UIHintAgent {
         }
     }
 
+    /**
+     * 提升至外部可调用
+     * @param isCompatPadUi 是否 提示 Dialog要兼容 pad的显示布局
+     */
+    public void extraConfigHintDialog(boolean isCompatPadUi) {
+        if (hintDialog != null && hintDialog instanceof SimpleHintDialog) {
+            SimpleHintDialog simpleHintDialog = (SimpleHintDialog) hintDialog;
+            simpleHintDialog.defConfigDialogViews(isCompatPadUi);
+        }
+    }
     public void setHintDialogOnClickListener(DialogInterface.OnClickListener l) {
         mClickListenerForDialog = l;
         if (hintDialog != null) {
@@ -201,10 +231,11 @@ public class UIHintAgent {
     public void dialogHint(String title, String hintMsg, String cancleBtnName, String sureBtnName, int dialogInCase) {
         dialogHint(title, hintMsg, Gravity.CENTER_HORIZONTAL, cancleBtnName, sureBtnName, dialogInCase);
     }
-    public void dialogHint(String title,String hintMsg,int hintMsgGravity,String cancleBtnName, String sureBtnName, int dialogInCase) {
+    public void dialogHint(String title,CharSequence hintMsg,int hintMsgGravity,String cancleBtnName, String sureBtnName, int dialogInCase) {
         if (!isOwnerVisible) {
             return;
         }
+//        SimpleHintDialog hintDialog;
         if (hintDialog == null) {
             initHintDialog();
         }
@@ -408,11 +439,13 @@ public class UIHintAgent {
      * @param theExistDialog
      */
     public void setExistHintDialog(BaseDialog theExistDialog) {
-        this.hintDialog = theExistDialog;
-        this.hintDialog.setCanceledOnTouchOut(isHintDialogCancelableOutSide)
-                .setDialogClickListener(mClickListenerForDialog)
-                .setCancelable(isHintDialogCancelable);
-        setUpHintDialogCancelListenerInfo();
+        if (theExistDialog != null) {
+            this.hintDialog = theExistDialog;
+            this.hintDialog.setCanceledOnTouchOut(isHintDialogCancelableOutSide)
+                    .setDialogClickListener(mClickListenerForDialog)
+                    .setCancelable(isHintDialogCancelable);
+            setUpHintDialogCancelListenerInfo();
+        }
     }
     public void popupWindowDismiss() {
         if (hintPopuWindow != null && hintPopuWindow.isShowing()) {
@@ -477,5 +510,17 @@ public class UIHintAgent {
                 mProxyCallback.ownerToCancelHintDialog();
             }
         }
+    }
+
+    /**
+     * 给统一的提示 Dialog 设置自定义的dialog 布局资源
+     * @param extraHintDialogLayoutRes 自定义的Dialog布局资源，注：
+     */
+    public void setExtraHintDialogLayoutRes(@LayoutRes int extraHintDialogLayoutRes) {
+        this.extraHintDialogLayoutRes = extraHintDialogLayoutRes;
+    }
+
+    public void setDialogCompatPadUi(boolean dialogCompatPadUi) {
+        isDialogCompatPadUi = dialogCompatPadUi;
     }
 }

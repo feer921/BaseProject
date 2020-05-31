@@ -11,8 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.xselector.selector.ShapeSelector;
+
 import common.base.R;
 import common.base.utils.CheckUtil;
+import common.base.utils.SelectorUtil;
 
 /**
  * ******************(^_^)***********************<br>
@@ -126,7 +129,8 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
             cancelBtnText = getStrFromResId(R.string.cancel_no_gap);
         }
         if (tvBtnCancel != null) {
-            if (HIDE_FLAG.equals(cancelBtnText.toString())) {
+            String cancelBtnStr = cancelBtnText.toString();
+            if (HIDE_FLAG.equals(cancelBtnStr) || "hide".equals(cancelBtnStr)) {
                 tvBtnCancel.setVisibility(View.GONE);
             }
             else{
@@ -238,6 +242,14 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     @Override
     public void setTitle(@Nullable CharSequence title) {
         if (tvTitle != null) {
+            boolean needHideView = false;
+            if (title == null || "".equals(title.toString()) || HIDE_FLAG.equals(title.toString())) {
+                needHideView = true;
+            }
+//            if (title != null) {
+//                needHideView = HIDE_FLAG.equals(title.toString());
+//            }
+            tvTitle.setVisibility(needHideView ? View.GONE : View.VISIBLE);
             tvTitle.setText(title);
         }
     }
@@ -245,6 +257,12 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     @Override
     public SimpleHintDialog setHintMsg(String hintMsg) {
         if (tvHint != null) {
+            if (HIDE_FLAG.equals(hintMsg)) {
+                tvHint.setVisibility(View.GONE);
+            }
+            else {
+                tvHint.setVisibility(View.VISIBLE);
+            }
             tvHint.setText(hintMsg);
         }
         return self();
@@ -266,5 +284,77 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
     @Override
     public SimpleHintDialog setCommitBtnName(String commitBtnName) {
         return withCommitBtnText(commitBtnName);
+    }
+
+    public SimpleHintDialog useDialogHintWithScrollbar(boolean useHintWithScrollbar) {
+        if (tvHint != null) {
+            tvHint.setVisibility(View.GONE);
+        }
+        if (useHintWithScrollbar) {
+            tvHint = dialogView.findViewById(R.id.tv_dialog_hint_with_scrollbar);
+        }
+        else {
+            tvHint = dialogView.findViewById(R.id.tv_dialog_hint);
+        }
+        if (tvHint != null) {
+            tvHint.setVisibility(View.VISIBLE);
+        }
+        return this;
+    }
+
+    /**
+     * added by fee 2020-4-10: 默认对 本Dialog的内的各控件设置样式
+     * 注：最好在 show()之前调用
+     */
+    public void defConfigDialogViews(boolean isPad) {
+        int provideDialogWidth = provideDialogWidth();
+        if (provideDialogWidth > 0) {
+            setDialogWidth(provideDialogWidth);
+        }
+        else {//默认的配置 dialog的最小宽
+            if(isPad){
+                setDialogWidth(mContext.getResources().getDimensionPixelSize(R.dimen.dp_348));
+            }
+            else {
+                setDialogWidth(mContext.getResources().getDimensionPixelSize(R.dimen.dp_300));
+            }
+        }
+        TextView tvDialogHint = tvHint;
+        tvDialogHint.setTextColor(0xff333333);
+        ShapeSelector shapeSelector = SelectorUtil.shapeSelector(
+                36,
+                "#ff6e50",
+                "",
+                "#cc5840",
+                ""
+        );
+
+        TextView tvDialogBtnCommit = tvBtnCommit;
+        tvDialogBtnCommit.setTextColor(0xffffffff);
+        shapeSelector.into(tvDialogBtnCommit);
+        SelectorUtil.colorSelector(
+                "#ffffff",
+                "",
+                "#b3ffffff",
+                ""
+        ).into(tvDialogBtnCommit);
+
+        TextView tvDialogBtnCancel = tvBtnCancel;
+        tvDialogBtnCancel.setTextColor(0xff333333);
+        shapeSelector.pressedBgColor("#eef2f4")
+                .defaultBgColor("#ffffffff")
+                .defaultStrokeColor("#abbec7")
+                .into(tvDialogBtnCancel);
+
+        SelectorUtil.colorSelector(
+                "#333333",
+                "",
+                "#b3333333",
+                ""
+        ).into(tvDialogBtnCancel);
+    }
+
+    protected int provideDialogWidth() {
+        return 0;
     }
 }

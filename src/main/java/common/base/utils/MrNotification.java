@@ -24,6 +24,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.pm.ShortcutInfoCompat;
 import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.support.v4.util.SparseArrayCompat;
+import android.util.Pair;
 import android.widget.Chronometer;
 import android.widget.ProgressBar;
 import android.widget.RemoteViews;
@@ -155,6 +156,29 @@ public class MrNotification {
                 notificationManager.createNotificationChannel(notificationChannel);
             }
         }
+    }
+
+    /**
+     * 创建 通知渠道
+     * @param context Context
+     * @param channelId 创建的Channel ID Android 8.0后需要创建了Channel ID，才能发送通知
+     * @param channelName  Channel Name
+     * @param importanceLevel 重要等级
+     * @param autoCreateChannel 是否本方法自动直接创建；如果是false:则 调用处拿到返回值后，还能设置 NotificationChannel的属性
+     * @return Pair<NotificationChannel,NotificationManager>
+     */
+    public static Pair<NotificationChannel,NotificationManager> createNotificationChannel(Context context,String channelId,CharSequence channelName,int importanceLevel,boolean autoCreateChannel){
+        if (android.os.Build.VERSION.SDK_INT >= 26) {//Android 8.0+ 才有通知渠道的功能
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, importanceLevel);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (autoCreateChannel) {
+                if (notificationManager != null) {
+                    notificationManager.createNotificationChannel(notificationChannel);
+                }
+            }
+            return new Pair<>(notificationChannel, notificationManager);
+        }
+        return null;
     }
     /**
      * 调用系统通知管理者向系统发送 一条通知

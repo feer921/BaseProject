@@ -11,6 +11,8 @@ import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import common.base.WeakHandler;
 import common.base.activitys.BaseActivity;
 import common.base.activitys.IProxyCallback;
 import common.base.activitys.UIHintAgent;
+import common.base.dialogs.BaseDialog;
 import common.base.interfaces.ICommonUiHintActions;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
@@ -160,6 +163,9 @@ public abstract class BaseFragment extends Fragment implements
 
     @Override
     public void onDetach() {
+        if(someUiHintAgent != null){
+            someUiHintAgent.finishAgentFollowUi();
+        }
         super.onDetach();
         if (LIFE_DEBUG) {
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onDetach() ");
@@ -189,7 +195,7 @@ public abstract class BaseFragment extends Fragment implements
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onDestroy() ");
         }
     }
-    private View rootView;
+    protected View rootView;
     private boolean needReDrawUi = true;
     protected boolean needUpdateData = false;
     @Nullable
@@ -291,6 +297,7 @@ public abstract class BaseFragment extends Fragment implements
             someUiHintAgent = new UIHintAgent(context);
             someUiHintAgent.setProxyCallback(this);
             someUiHintAgent.setHintDialogOnClickListener(this);
+            someUiHintAgent.setExistHintDialog(provideExtraHintDialog());
         }
     }
     protected void switchActivity(boolean finishSelf) {
@@ -356,7 +363,7 @@ public abstract class BaseFragment extends Fragment implements
      */
     @Override
     public final void onClick(DialogInterface dialog, int which) {
-
+        onClickInDialog(dialog,which);
     }
 
     protected void onClickInDialog(DialogInterface dialog, int which) {
@@ -549,6 +556,13 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public void dialogHint(String dialogTitle, String hintMsg, String cancelBtnName, String sureBtnName, int dialogInCase) {
         if (someUiHintAgent != null) {
+            FragmentActivity activity = getActivity();
+            if (activity != null && activity.isFinishing()) {
+                //android.view.WindowManager$BadTokenException
+                //Unable to add window -- token android.os.BinderProxy@89012cd is not valid; is your activity running?
+                Log.w(TAG,"dialogHint -> ignore the dialog hint event, because of activity is finishing.");
+                return;
+            }
             someUiHintAgent.dialogHint(dialogTitle, hintMsg, cancelBtnName, sureBtnName, dialogInCase);
         }
     }
@@ -693,4 +707,40 @@ public abstract class BaseFragment extends Fragment implements
     protected int dimenResPxValue(@DimenRes int dimenResId) {
         return getResources().getDimensionPixelSize(dimenResId);
     }
+
+    /**
+     * 当本Fragment作为父Fragment时，处理来自子Fragment的操作请求
+     * @param theSubFragment 当前请求的子Fragment
+     * @param optTypeInSubFragment 请求数据 协议自定义
+     * @return 返回处理的结果，协议自定义
+     */
+    protected String onSubFragmentOptReq(Fragment theSubFragment, String optTypeInSubFragment) {
+        //这里可以让 当 Parent 的Fragment来实现 处理来自子Fragment的操作请求
+        return null;
+    }
+
+    /**
+     * 当本类作为子Fragment时(绝大部分场景是这样的)，并且身处父Fragment中时，可以调用该方法向父Fragment
+     * 执行操作请求
+     * @param optTypeInSubFragment 请求操作数据，协议自定义
+     * @return 父Fragment响应操作的结果，协议自定义
+     */
+    protected String subFragmentOptReq(String optTypeInSubFragment) {
+        Fragment parentFragment = getParentFragment();
+        if (parentFragment != null) {
+            if (parentFragment instanceof BaseFragment) {
+                return ((BaseFragment) parentFragment).onSubFragmentOptReq(this, optTypeInSubFragment);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 子类可以提供一个可以替换掉 {{@link UIHintAgent}} 内部的 提示的Dialog
+     * @return 项目内自己的提示Dialog
+     */
+    protected BaseDialog provideExtraHintDialog() {
+        return null;
+    }
+
 }

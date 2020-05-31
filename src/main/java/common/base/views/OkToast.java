@@ -46,6 +46,16 @@ public class OkToast {
     private ImageView ivDefToastHint;
     private LinearLayout llToastViewContainer;
     /**
+     * 保存上一次的toast文案
+     */
+    private CharSequence lastToastText;
+
+    private final String TAG = "OkToast";
+    /**
+     * 是否上一个 Toast的视图脱离了Window
+     */
+    private boolean lastToastViewDetached = false;
+    /**
      * 兼容方案二：采用windown addView的方式；
      * 有两个注意点：
      * 1)context应为Activity，并且在没有授权悬浮窗权限时只能在当前Activity上显示
@@ -204,29 +214,25 @@ public class OkToast {
         show(toastText,null,duration,showGravity,xOffset,yOffset,0,0);
     }
     private int defToastGravity,defXOffset,defYOffset;
+    private View.OnAttachStateChangeListener onAttachStateChangeListener = new View.OnAttachStateChangeListener() {
+        @Override
+        public void onViewAttachedToWindow(View v) {
 
-    private Toast newToast(View toastView) {
-        Toast mToast = new Toast(mAppContext);
-        if (toastView != null) {
-            ViewParent viewParent = toastView.getParent();
-            if (viewParent != null) {
-                if (viewParent instanceof ViewGroup) {
-                    ((ViewGroup) viewParent).removeView(toastView);
-                }
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(View v) {
+            View curToastView = null;
+            if (mToast != null) {
+                curToastView = mToast.getView();
             }
-            mToast.setView(toastView);//changed by fee 2019-06-04:21:05 != null时才设置
+            boolean isCurToastView = v == curToastView;
+            CommonLog.e("OkToast", "--> onViewDetachedFromWindow() v = " + v + " isCurToastView = " + isCurToastView);
+            if (isCurToastView ) {
+                lastToastViewDetached = true;
+            }
         }
-//        if (toastView != null) {//changed by fee 2019-06-04:21:05
-//            mToast.setView(toastView);
-//        }
-//        mToast.setView(toastView);
-        if (defToastGravity == 0) {
-            defToastGravity = mToast.getGravity();
-            defXOffset = mToast.getXOffset();
-            defYOffset = mToast.getYOffset();
-        }
-        return mToast;
-    }
+    };
 
     public void showCompatToast(CharSequence toastText, View customToastView, int duration, int showGravity, int xOffset, int yOffset, float horizontalMargin, float verticalMargin) {
 //        if (tvToast != null && !Util.isEmpty(toastText)) {
@@ -256,85 +262,36 @@ public class OkToast {
         hintDialogCompatToast.withToastText(toastText)
                 .show();
     }
-    /**
-     * 默认就是Short
-     * 这个参数太多，不建议使用
-     * @param toastText
-     * @param customToastView
-     * @param duration
-     * @param showGravity
-     * @param xOffset
-     * @param yOffset
-     * @param horizontalMargin
-     * @param verticalMargin
-     */
-    public void show(CharSequence toastText,View customToastView, int duration, int showGravity, int xOffset, int yOffset
-            ,float horizontalMargin, float verticalMargin) {
-        //added by fee 2019-01-08:兼容无通知栏权限时的提示
-        if (!MrNotification.isNotifyPermissionAllowed(mAppContext)) {
-            showCompatToast(toastText, customToastView, duration, showGravity, xOffset, yOffset, horizontalMargin, verticalMargin);
-            return;
-        }
-        if (tvToast != null && !Util.isEmpty(toastText)) {
-            tvToast.setText(toastText);
-        }
-        if (customToastView != null) {
-            mToast = newToast(customToastView);
-        }
-        else{
-            if (mToast != null) {
-                boolean isToastViewSame = mToast.getView() == llToastRootView;
-                if (!isToastViewSame) {
-                    mToast = null;
-                }
+
+    private Toast newToast(View toastView,String dueToWhat) {
+        Toast newToast = new Toast(mAppContext);
+        if (toastView != null) {
+//            View rootView = toastView.getRootView();//root view就是
+            ViewParent viewParent = toastView.getParent();
+            boolean isParentViewGroup = false;
+            if (viewParent != null) {
+                isParentViewGroup = viewParent instanceof ViewGroup;
             }
+            CommonLog.d("OkToast", "-->newToast() toastView = " + toastView + " dueToWhat = " + dueToWhat + " viewParent = " + viewParent
+//                    + " rootView = " + rootView.getTag()
+                    + " isParentViewGroup = " + isParentViewGroup
+            );
+            lastToastViewDetached = false;
+            toastView.removeOnAttachStateChangeListener(onAttachStateChangeListener);
+            toastView.addOnAttachStateChangeListener(onAttachStateChangeListener);
+            newToast.setView(toastView);//changed by fee 2019-06-04:21:05 != null时才设置
         }
-        if (mToast == null) {
-            mToast = newToast(llToastRootView);
+//        if (toastView != null) {//changed by fee 2019-06-04:21:05
+//            mToast.setView(toastView);
+//        }
+//        mToast.setView(toastView);
+        if (defToastGravity == 0) {// 这里表示拿到系统 Toast的 默认 Gravity等信息
+            defToastGravity = newToast.getGravity();
+            defXOffset = newToast.getXOffset();
+            defYOffset = newToast.getYOffset();
+            CommonLog.d(TAG, "--> newToast() defToastGravity = " + defToastGravity + " defXOffset = " + defXOffset + " defYOffset = " + defYOffset + " dueToWhat = " + dueToWhat);
         }
-        if (duration <= 0) {
-            duration = Toast.LENGTH_SHORT;
-        }
-        float oldHorizontalMargin = mToast.getHorizontalMargin();
-        float oldVerticalMargin = mToast.getVerticalMargin();
-        if (horizontalMargin > 0) {
-            oldHorizontalMargin = horizontalMargin;
-        }
-        if (verticalMargin > 0) {
-            oldVerticalMargin = verticalMargin;
-        }
-        int theGravity = defToastGravity;
-        if (showGravity >= 0) {
-            theGravity = showGravity;
-        }
-        int oldGravity = mToast.getGravity();
-        int a = Gravity.TOP;
-        CommonLog.i("info", "-->show() oldGravity = " + oldGravity + " theGravity = " + theGravity + " a = " + a);
-        if (theGravity != oldGravity) {//处理Gravity不同的情况时
-            mToast.cancel();//cancel之后 是show不出来的
-            View toastView = mToast.getView();
-            mToast = null;
-            mToast = newToast(toastView);
-        }
-        mToast.setMargin(oldHorizontalMargin,oldVerticalMargin);
-        int x = this.xOffset;
-        if (xOffset > 0) {
-            x = xOffset;
-        }
-        if (x < 0) {
-            x = defXOffset;
-        }
-        int y = this.yOffset;
-        if (yOffset > 0) {
-            y = yOffset;
-        }
-        if (y < 0) {
-            y = defYOffset;
-        }
-//        CommonLog.e("info", "--》x= " + x + " y  = " + y);
-        mToast.setGravity(theGravity,x,y);
-        mToast.setDuration(duration);
-        mToast.show();
+        return newToast;
     }
     private int xOffset = -1,yOffset;
     public OkToast withXYOffset(int xOffset,int yOffset) {
@@ -388,6 +345,144 @@ public class OkToast {
         }
         if (hintDialogCompatToast != null && hintDialogCompatToast.isShowing()) {
             hintDialogCompatToast.cancel();
+        }
+    }
+
+    /**
+     * 默认就是Short
+     * 这个参数太多，不建议使用
+     * @param toastText
+     * @param customToastView
+     * @param duration
+     * @param willShowGravity
+     * @param xOffset
+     * @param yOffset
+     * @param horizontalMargin
+     * @param verticalMargin
+     */
+    public void show(CharSequence toastText,View customToastView, int duration, int willShowGravity, int xOffset, int yOffset
+            ,float horizontalMargin, float verticalMargin) {
+        //added by fee 2019-01-08:兼容无通知栏权限时的提示
+        if (Util.isEmpty(toastText)) {//added by fee 2020-05-29: 当Toast的文案为空时，不必要进行下面的流程
+            lastToastText = "";
+            return;
+        }
+        if (!MrNotification.isNotifyPermissionAllowed(mAppContext)) {
+            showCompatToast(toastText, customToastView, duration, willShowGravity, xOffset, yOffset, horizontalMargin, verticalMargin);
+            return;
+        }
+//        if (tvToast != null /*&& !Util.isEmpty(toastText)*/) {
+//            tvToast.setText(toastText);
+//        }
+        if (defToastGravity == 0) {
+            newToast(null, "just to solve defToastGravity");
+        }
+        String newToastReason = null;
+        int theFinalGravity = defToastGravity;
+        if (willShowGravity >= 0) {
+            theFinalGravity = willShowGravity;
+        }
+        if (customToastView != null) {
+            mToast = newToast(customToastView," customToastView != null");
+            //todo ?? 这里有疑问,是否需要对于 new 出来的 Toast先设置 gravity
+            mToast.setGravity(theFinalGravity,0,0);
+        }
+        else{//没有指定 Toast自定义的View时
+            if (mToast != null) {
+                if (!lastToastViewDetached) {
+                    newToastReason = "上一个Toast还在show";
+                    mToast.cancel();
+                    mToast = null;
+                }
+                if (mToast != null) {
+
+
+                boolean isToastViewSame = mToast.getView() == llToastRootView;
+                boolean isSameWithLastToastText = toastText.equals(lastToastText);
+                                                                 //上一次的Toast还未消失 并且  和上一次的Toast文案相同
+                boolean isWillSameToastTextAndLastToastShowing = !lastToastViewDetached && isSameWithLastToastText;
+                if (isWillSameToastTextAndLastToastShowing) {
+                    toastViewRemoveListener();
+                    lastToastViewDetached = true;
+//                    mToast.cancel();
+                }
+                if (!isToastViewSame/**上一次的Toast的视图和本次的默认llToastRootView不同**/ || isWillSameToastTextAndLastToastShowing) {
+                    mToast = null;
+                    if (!isToastViewSame) {
+                        newToastReason = "本次Toast的视图和上次的不同";
+                    }
+                    else {
+                        newToastReason = "相同文案并且上一个Toast在显示";
+                    }
+                    CommonLog.d(TAG, "--> show() isToastViewSame = " + isToastViewSame + " isWillSameToastTextAndLastToastShowing = " + isWillSameToastTextAndLastToastShowing);
+                }
+                }
+            }
+        }
+        lastToastText = toastText;
+        if (mToast == null) {
+            mToast = newToast(llToastRootView, newToastReason);
+            //todo ?? 这里有疑问,是否需要对于 new 出来的 Toast先设置 gravity
+            mToast.setGravity(theFinalGravity,0,0);
+        }
+        if (duration <= 0) {
+            duration = Toast.LENGTH_SHORT;
+        }
+        float oldHorizontalMargin = mToast.getHorizontalMargin();
+        float oldVerticalMargin = mToast.getVerticalMargin();
+        if (horizontalMargin > 0) {
+            oldHorizontalMargin = horizontalMargin;
+        }
+        if (verticalMargin > 0) {
+            oldVerticalMargin = verticalMargin;
+        }
+        int oldGravity = mToast.getGravity();
+        int a = Gravity.TOP;
+        CommonLog.i(TAG, "-->show() oldGravity = " + oldGravity + " theFinalGravity = " + theFinalGravity + " a = " + a);
+        if (theFinalGravity != oldGravity) {//处理Gravity不同的情况时
+            mToast.cancel();//cancel之后 是show不出来的
+            View toastView = mToast.getView();
+            mToast = null;
+            mToast = newToast(toastView, " theGravity != oldGravity " + "? theFinalGravity = " + theFinalGravity + " oldGravity = " + oldGravity);
+        }
+        mToast.setMargin(oldHorizontalMargin,oldVerticalMargin);
+        int x = this.xOffset;
+        if (xOffset > 0) {
+            x = xOffset;
+        }
+        if (x < 0) {
+            x = defXOffset;
+        }
+        int y = this.yOffset;
+        if (yOffset > 0) {
+            y = yOffset;
+        }
+        if (y < 0) {
+            y = defYOffset;
+        }
+        if (tvToast != null /*&& !Util.isEmpty(toastText)*/) {
+            tvToast.setText(toastText);
+        }
+//        CommonLog.e("info", "--》x= " + x + " y  = " + y);
+        mToast.setGravity(theFinalGravity, x, y);
+        mToast.setDuration(duration);
+        lastToastViewDetached = false;
+        mToast.show();
+    }
+
+    private void defToastViewRemoveListener() {
+        if (llToastRootView != null) {
+            llToastRootView.removeOnAttachStateChangeListener(onAttachStateChangeListener);
+        }
+    }
+
+    private void toastViewRemoveListener() {
+        View curToastViw = null;
+        if (mToast != null) {
+            curToastViw = mToast.getView();
+        }
+        if (curToastViw != null) {
+            curToastViw.removeOnAttachStateChangeListener(onAttachStateChangeListener);
         }
     }
 }

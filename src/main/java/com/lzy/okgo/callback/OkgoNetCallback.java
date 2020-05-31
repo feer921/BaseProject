@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 
 import common.base.netAbout.INetEvent;
 import common.base.netAbout.INetEventWithResponse;
-import okhttp3.Call;
 import okhttp3.Response;
 
 /**
@@ -44,8 +43,13 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         }
     }
 
-    @Override
-    public void onSuccess(T t, Call call, Response response) {
+    //是否要重写这个？？？
+//    @Override
+//    public void onSuccess(com.lzy.okgo.model.Response<T> response) {
+//
+//    }
+
+    protected void onSuccess(T t, Response response) {
         if (response != null) {
             if (netEvent != null) {
                 if (netEvent instanceof INetEventWithResponse) {
@@ -61,9 +65,29 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
         }
         onSuccess(t);
     }
+    //deleted since OkGo Ver:3.0
+//    @Override
+//    public void onSuccess(T t, Call call, Response response) {
+//        if (response != null) {
+//            if (netEvent != null) {
+//                if (netEvent instanceof INetEventWithResponse) {
+//                    ((INetEventWithResponse) netEvent).onResponse(requestType, t, response);
+//                }
+//            }
+//            INetEvent<T> netEvent = theNetEvent();
+//            if (netEvent != null) {
+//                if (netEvent instanceof INetEventWithResponse) {
+//                    ((INetEventWithResponse) netEvent).onResponse(requestType, t, response);
+//                }
+//            }
+//        }
+//        onSuccess(t);
+//    }
 
-    @Override
-    public void onError(Call call, Response response, Exception e) {
+
+
+
+    public void onError(Exception e) {
         if (canceled) {
             return;
         }
@@ -82,6 +106,28 @@ public class OkgoNetCallback<T> extends XtypeCallback<T>{
             netEvent.onErrorResponse(requestType,errorMsg);
         }
     }
+
+    //deleted since OkGo Ver:3.0
+//    @Override
+//    public void onError(Call call, Response response, Exception e) {
+//        if (canceled) {
+//            return;
+//        }
+//        String errorMsg = INetEvent.ERR_UNKNOW;
+//        if (null != e) {
+//            errorMsg = e.toString();
+//            if (e instanceof UnknownHostException) {
+//                errorMsg = INetEvent.ERR_UNKNOW_HOST;
+//            }
+//        }
+//        if (null != netEvent) {
+//            netEvent.onErrorResponse(requestType,errorMsg);
+//        }
+//        INetEvent<T> netEvent = theNetEvent();
+//        if (netEvent != null) {
+//            netEvent.onErrorResponse(requestType,errorMsg);
+//        }
+//    }
 
     protected INetEvent<T> theNetEvent() {
         if (weakRefNetEvent != null) {

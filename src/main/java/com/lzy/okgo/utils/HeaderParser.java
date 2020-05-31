@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 jeasonlzy(廖子尧)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.lzy.okgo.utils;
 
 import android.text.TextUtils;
@@ -5,7 +20,7 @@ import android.text.TextUtils;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.model.HttpHeaders;
-import com.lzy.okgo.request.BaseRequest;
+import com.lzy.okgo.request.base.Request;
 
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -68,7 +83,7 @@ public class HeaderParser {
                             //服务器缓存设置立马过期，不缓存
                             if (maxAge <= 0) return null;
                         } catch (Exception e) {
-                            OkLogger.e(e);
+                            OkLogger.printStackTrace(e);
                         }
                     }
                 }
@@ -119,7 +134,7 @@ public class HeaderParser {
      * @param cacheEntity 缓存实体类
      * @param cacheMode   缓存模式
      */
-    public static <T> void addCacheHeaders(BaseRequest request, CacheEntity<T> cacheEntity, CacheMode cacheMode) {
+    public static <T> void addCacheHeaders(Request request, CacheEntity<T> cacheEntity, CacheMode cacheMode) {
         //1. 按照标准的 http 协议，添加304相关请求头
         if (cacheEntity != null && cacheMode == CacheMode.DEFAULT) {
             HttpHeaders responseHeaders = cacheEntity.getResponseHeaders();

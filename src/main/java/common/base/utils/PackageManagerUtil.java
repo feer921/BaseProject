@@ -429,6 +429,25 @@ public class PackageManagerUtil {
         return null;
     }
 
+    public static boolean hasActivityOnTop(Context c, Class... activityClassArr) {
+        if (c != null && activityClassArr != null && activityClassArr.length > 0) {
+            ComponentName[] topAndBaseActivitys = getAppTopAndBaseActivitys(c);
+            if (topAndBaseActivitys == null || topAndBaseActivitys.length < 1) {
+                return false;
+            }
+            ComponentName topComponentName = topAndBaseActivitys[0];
+            for (Class aClass : activityClassArr) {
+                if (aClass == null) {
+                    continue;
+                }
+                if (aClass.getName().equals(topComponentName.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean isActivityOnTop(Context context, Class activityClass) {
         if (activityClass == null) {
             return false;

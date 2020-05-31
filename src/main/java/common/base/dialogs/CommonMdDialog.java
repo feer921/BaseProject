@@ -34,6 +34,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
     private View llBottomBtnsLayout;
     private View mdDialogContentLayout;
     private int contentLayoutTop,contentLayoutBottom;
+    private View contentViews;
     /**
      * Dialog中 中间部分的内容布局类型：目前有三种，提示类、编辑输入类、ListView列表选择类
      */
@@ -64,6 +65,7 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
         tvDialogHint = ViewUtil.findViewInContainer(containerLayout, R.id.tv_4_dialog_msg);
         tvDialogCancel = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_cancel);
         tvDialogCommit = ViewUtil.findViewInContainer(containerLayout, R.id.tv_btn_dialog_commit);
+        contentViews = ViewUtil.findViewInView(containerView, R.id.content_views);
         if(tvDialogCancel != null){
             tvDialogCancel.setOnClickListener(this);
         }
@@ -176,6 +178,17 @@ public class CommonMdDialog extends BaseDialog<CommonMdDialog>{
 //            return;
 //        }
         if (tvDialogHint != null) {
+            if (HIDE_FLAG.equals(hintMsg)) {
+//                tvDialogHint.setVisibility(View.GONE);
+                if (contentViews != null) {
+                    contentViews.setVisibility(View.GONE);
+                }
+            }
+            else {
+                if (contentViews != null) {
+                    contentViews.setVisibility(View.VISIBLE);
+                }
+            }
             tvDialogHint.setText(hintMsg);
         }
         return self();

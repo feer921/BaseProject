@@ -1,18 +1,38 @@
+/*
+ * Copyright 2016 jeasonlzy(廖子尧)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.lzy.okgo.utils;
 
 import android.text.TextUtils;
 
+import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.FormBody;
 import okhttp3.Headers;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -46,15 +66,14 @@ public class HttpUtils {
             sb.deleteCharAt(sb.length() - 1);
             return sb.toString();
         } catch (UnsupportedEncodingException e) {
-            OkLogger.e(e);
+            OkLogger.printStackTrace(e);
         }
         return url;
     }
 
     /** 通用的拼接请求头 */
-    public static Request.Builder appendHeaders(HttpHeaders headers) {
-        Request.Builder requestBuilder = new Request.Builder();
-        if (headers.headersMap.isEmpty()) return requestBuilder;
+    public static Request.Builder appendHeaders(Request.Builder builder, HttpHeaders headers) {
+        if (headers.headersMap.isEmpty()) return builder;
         Headers.Builder headerBuilder = new Headers.Builder();
         try {
             for (Map.Entry<String, String> entry : headers.headersMap.entrySet()) {
@@ -63,10 +82,10 @@ public class HttpUtils {
                 headerBuilder.add(entry.getKey(), entry.getValue());
             }
         } catch (Exception e) {
-            OkLogger.e(e);
+            OkLogger.printStackTrace(e);
         }
-        requestBuilder.headers(headerBuilder.build());
-        return requestBuilder;
+        builder.headers(headerBuilder.build());
+        return builder;
     }
 
     /** 生成类似表单的请求体 */
@@ -77,7 +96,7 @@ public class HttpUtils {
             for (String key : params.urlParamsMap.keySet()) {
                 List<String> urlValues = params.urlParamsMap.get(key);
                 for (String value : urlValues) {
-                    bodyBuilder.add(key, value);
+                    bodyBuilder.addEncoded(key, value);
                 }
             }
             return bodyBuilder.build();
@@ -109,33 +128,62 @@ public class HttpUtils {
     public static String getNetFileName(Response response, String url) {
         String fileName = getHeaderFileName(response);
         if (TextUtils.isEmpty(fileName)) fileName = getUrlFileName(url);
-        if (TextUtils.isEmpty(fileName)) fileName = "nofilename";
+        if (TextUtils.isEmpty(fileName)) fileName = "unknownfile_" + System.currentTimeMillis();
+        try {
+            fileName = URLDecoder.decode(fileName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            OkLogger.printStackTrace(e);
+        }
         return fileName;
     }
 
-    /** 解析文件头 Content-Disposition:attachment;filename=FileName.txt */
+    /**
+     * 解析文件头
+     * Content-Disposition:attachment;filename=FileName.txt
+     * Content-Disposition: attachment; filename*="UTF-8''%E6%9B%BF%E6%8D%A2%E5%AE%9E%E9%AA%8C%E6%8A%A5%E5%91%8A.pdf"
+     */
     private static String getHeaderFileName(Response response) {
         String dispositionHeader = response.header(HttpHeaders.HEAD_KEY_CONTENT_DISPOSITION);
         if (dispositionHeader != null) {
+            //文件名可能包含双引号，需要去除
+            dispositionHeader = dispositionHeader.replaceAll("\"", "");
             String split = "filename=";
             int indexOf = dispositionHeader.indexOf(split);
             if (indexOf != -1) {
+                return dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
+            }
+            split = "filename*=";
+            indexOf = dispositionHeader.indexOf(split);
+            if (indexOf != -1) {
                 String fileName = dispositionHeader.substring(indexOf + split.length(), dispositionHeader.length());
-                fileName = fileName.replaceAll("\"", "");   //文件名可能包含双引号,需要去除
+                String encode = "UTF-8''";
+                if (fileName.startsWith(encode)) {
+                    fileName = fileName.substring(encode.length(), fileName.length());
+                }
                 return fileName;
             }
         }
         return null;
     }
 
-    /** 通过 ‘？’ 和 ‘/’ 判断文件名 */
+    /**
+     * 通过 ‘？’ 和 ‘/’ 判断文件名
+     * http://mavin-manzhan.oss-cn-hangzhou.aliyuncs.com/1486631099150286149.jpg?x-oss-process=image/watermark,image_d2F0ZXJtYXJrXzIwMF81MC5wbmc
+     */
     private static String getUrlFileName(String url) {
-        int index = url.lastIndexOf('?');
-        String filename;
-        if (index > 1) {
-            filename = url.substring(url.lastIndexOf('/') + 1, index);
-        } else {
-            filename = url.substring(url.lastIndexOf('/') + 1);
+        String filename = null;
+        String[] strings = url.split("/");
+        for (String string : strings) {
+            if (string.contains("?")) {
+                int endIndex = string.indexOf("?");
+                if (endIndex != -1) {
+                    filename = string.substring(0, endIndex);
+                    return filename;
+                }
+            }
+        }
+        if (strings.length > 0) {
+            filename = strings[strings.length - 1];
         }
         return filename;
     }
@@ -151,5 +199,27 @@ public class HttpUtils {
             return delete;
         }
         return false;
+    }
+
+    /** 根据文件名获取MIME类型 */
+    public static MediaType guessMimeType(String fileName) {
+        FileNameMap fileNameMap = URLConnection.getFileNameMap();
+        fileName = fileName.replace("#", "");   //解决文件名中含有#号异常的问题
+        String contentType = fileNameMap.getContentTypeFor(fileName);
+        if (contentType == null) {
+            return HttpParams.MEDIA_TYPE_STREAM;
+        }
+        return MediaType.parse(contentType);
+    }
+
+    public static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
+    }
+
+    public static void runOnUiThread(Runnable runnable) {
+        OkGo.getInstance().getDelivery().post(runnable);
     }
 }

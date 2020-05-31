@@ -4,7 +4,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import common.base.utils.JsonUtil;
-import okhttp3.Call;
 import okhttp3.Response;
 
 /**
@@ -87,8 +86,15 @@ import okhttp3.Response;
 public abstract class XtypeCallback<T> extends AbsCallback<T> {
     protected Class<T> genericsTypeClass;
 
+    /**
+     * 拿到响应后，将数据转换成需要的格式，子线程中执行，可以是耗时操作
+     *
+     * @param response 需要转换的对象
+     * @return 转换后的结果
+     * @throws Exception 转换过程发生的异常
+     */
     @Override
-    public T convertSuccess(Response response) throws Exception {
+    public T convertResponse(Response response) throws Exception {
         /**
          * genType = com.lzy.okgo.callback.XtypeCallback<com.fee.theoneproject.ServerModel>
          *     对应外部使用为XtypeCallback<ServerModel>的情况打印信息
@@ -176,10 +182,19 @@ public abstract class XtypeCallback<T> extends AbsCallback<T> {
         return thisGenType;
     }
 
+
     @Override
-    public void onSuccess(T t, Call call, Response response) {
-        onSuccess(t);
+    public void onSuccess(com.lzy.okgo.model.Response<T> response) {
+        if (response != null) {
+            onSuccess(response.body());
+        }
     }
+
+    //deleted since ver:3.0
+//    @Override
+//    public void onSuccess(T t, Call call, Response response) {
+//        onSuccess(t);
+//    }
     //-------add methods---------------------
     //为了兼容
     public void onSuccess(T repData) {

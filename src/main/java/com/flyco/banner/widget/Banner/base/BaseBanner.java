@@ -48,7 +48,7 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
     /** 设备密度 */
     protected DisplayMetrics mDisplayMetrics;
     /** ViewPager */
-    protected ViewPager mViewPager;
+    protected ScrollableViewPager mViewPager;
     /** 数据源 */
     protected List<D> mDatas = new ArrayList<>();
     /** 当前position */
@@ -133,7 +133,7 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
         this(context, attrs, 0);
     }
     private LoopViewPager loopViewPager;
-    private ViewPager commonViewPager;
+    private ScrollableViewPager commonViewPager;
     public BaseBanner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.mContext = context;
@@ -345,22 +345,10 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
         return (I) this;
     }
     /**
-     * 设置ViewPager是否可以手动滑动
-     * 注：一般是不需要该功能
-     * @param scrollable
-     * @return
+     * 是否需要ViewPager 处理触摸事件冲突
+     * def = false;
      */
-    public I setViewPagerScrollable(boolean scrollable) {
-        if (mViewPager != null) {
-            if (mViewPager instanceof ScrollableViewPager) {
-                ((ScrollableViewPager) mViewPager).setScrollable(scrollable);
-            }
-            else if (mViewPager instanceof LoopViewPager) {
-                ((LoopViewPager) mViewPager).setScrollable(scrollable);
-            }
-        }
-        return self();
-    }
+    private boolean isNeedHandleEventConflict;
     /** 设置页面切换动画 */
     public I setTransformerClass(Class<? extends ViewPager.PageTransformer> transformerClass) {
         this.mTransformerClass = transformerClass;
@@ -531,24 +519,24 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
         setUpVIews();
         goOnScroll();
     }
-    public void setUpVIews() {
-        if (mDatas == null) {
-            throw new IllegalStateException("Data source is empty,you must setSource() before startScroll()");
+
+    /**
+     * 设置ViewPager是否可以手动滑动
+     * 注：一般是不需要该功能
+     * @param scrollable
+     * @return
+     */
+    public I setViewPagerScrollable(boolean scrollable) {
+        if (mViewPager != null) {
+            mViewPager.setScrollable(scrollable);
+//            if (mViewPager instanceof ScrollableViewPager) {
+//                ((ScrollableViewPager) mViewPager).setScrollable(scrollable);
+//            }
+//            else if (mViewPager instanceof LoopViewPager) {
+//                ((LoopViewPager) mViewPager).setScrollable(scrollable);
+//            }
         }
-        int dataSize = mDatas.size();
-        if (dataSize > 0 && mCurrentPositon > dataSize - 1) {
-            mCurrentPositon = 0;
-        }
-        onTitleSlect(mTvTitle, mCurrentPositon);
-        setViewPager();
-        //create indicator
-        if (isNeedCreateIndicators) {
-            View indicatorViews = onCreateIndicator();
-            if (indicatorViews != null) {
-                mLlIndicatorContainer.removeAllViews();
-                mLlIndicatorContainer.addView(indicatorViews);
-            }
-        }
+        return self();
     }
     /** 继续滚动(for LoopViewPager) */
     public void goOnScroll() {
@@ -771,5 +759,38 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
        public void onClick(View v) {
            onItemViewsClickInBanner(v, curClickPosition);
        }
+    }
+
+    public void setUpVIews() {
+        if (mDatas == null) {
+            throw new IllegalStateException("Data source is empty,you must setSource() before startScroll()");
+        }
+        int dataSize = mDatas.size();
+        if (dataSize > 0 && mCurrentPositon > dataSize - 1) {
+            mCurrentPositon = 0;
+        }
+        onTitleSlect(mTvTitle, mCurrentPositon);
+        setViewPager();
+        //create indicator
+        if (isNeedCreateIndicators) {
+            View indicatorViews = onCreateIndicator();
+            if (indicatorViews != null) {
+                mLlIndicatorContainer.removeAllViews();
+                mLlIndicatorContainer.addView(indicatorViews);
+            }
+        }
+        //added by fee 2020-04-16:
+        if (mViewPager != null) {
+            boolean isReallyHandle = false;
+            if (isNeedHandleEventConflict) {
+                isReallyHandle = dataSize > 1;
+            }
+            mViewPager.setNeedHandleEventConflict(isReallyHandle);
+        }
+    }
+
+    public I setNeedHandleEventConflict(boolean isNeedHandleEventConflict) {
+        this.isNeedHandleEventConflict = isNeedHandleEventConflict;
+        return self();
     }
 }

@@ -11,10 +11,13 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.DimenRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 
 import common.base.R;
 import common.base.WeakHandler;
+import common.base.dialogs.BaseDialog;
 import common.base.dialogs.SimpleHintDialogWithTopIcon;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.NetRequestLifeMarker;
@@ -87,6 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         uiHintAgent = new UIHintAgent(mContext);
         uiHintAgent.setHintDialogOnClickListener(this);
         uiHintAgent.setProxyCallback(this);
+        uiHintAgent.setExistHintDialog(provideExtraHintDialog());
         boolean needInitAuto = false;
         int subActivityContentViewResID = getProvideContentViewResID();
         if (subActivityContentViewResID > 0) {//子类有提供当前Activity的内容视图，则父类来调用初始化方法
@@ -367,11 +371,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void showCommonLoading(int hintMsgResID){
         showCommonLoading(getString(hintMsgResID));
     }
+
     protected void dialogHint(String dialogTitle,String hintMsg,String cancelBtnName,String sureBtnName,int dialogInCase){
-        uiHintAgent.dialogHint(dialogTitle, hintMsg, cancelBtnName, sureBtnName, dialogInCase);
+        dialogHint(dialogTitle, hintMsg, Gravity.CENTER_HORIZONTAL, cancelBtnName, sureBtnName, dialogInCase);
     }
 
-    protected void dialogHint(String dialogTitle, String hintMsg, int hintMsgGravity, String cancelBtnName, String sureBtnName, int dialogInCase) {
+    protected void dialogHint(String dialogTitle, CharSequence hintMsg, int hintMsgGravity, String cancelBtnName, String sureBtnName, int dialogInCase) {
+        if (isFinishing()) {
+            //android.view.WindowManager$BadTokenException
+            //Unable to add window -- token android.os.BinderProxy@89012cd is not valid; is your activity running?
+            Log.w(TAG,"dialogHint2 -> ignore the dialog hint event, because of activity is finishing.");
+            return;
+        }
         uiHintAgent.dialogHint(dialogTitle, hintMsg, hintMsgGravity,cancelBtnName, sureBtnName, dialogInCase);
     }
     protected void dialogHint(int titleResID,int hintMsgResID,int cancelBtnNameResID,int sureBtnNameResID,int dialogInCase){
@@ -607,5 +618,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
      */
     protected int dimenResPxValue(@DimenRes int dimenResId) {
         return getResources().getDimensionPixelSize(dimenResId);
+    }
+
+    /**
+     * 子类可以提供一个可以替换掉 {{@link UIHintAgent}} 内部的 提示的Dialog
+     * @return 项目内自己的提示Dialog
+     */
+    protected BaseDialog provideExtraHintDialog() {
+        return null;
     }
 }

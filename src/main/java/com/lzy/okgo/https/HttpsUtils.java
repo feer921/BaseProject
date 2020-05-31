@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 jeasonlzy(廖子尧)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.lzy.okgo.https;
 
 import com.lzy.okgo.utils.OkLogger;
@@ -38,7 +53,45 @@ public class HttpsUtils {
         public X509TrustManager trustManager;
     }
 
-    public static SSLParams getSslSocketFactory(X509TrustManager trustManager, InputStream bksFile, String password, InputStream[] certificates) {
+    public static SSLParams getSslSocketFactory() {
+        return getSslSocketFactoryBase(null, null, null);
+    }
+
+    /**
+     * https单向认证
+     * 可以额外配置信任服务端的证书策略，否则默认是按CA证书去验证的，若不是CA可信任的证书，则无法通过验证
+     */
+    public static SSLParams getSslSocketFactory(X509TrustManager trustManager) {
+        return getSslSocketFactoryBase(trustManager, null, null);
+    }
+
+    /**
+     * https单向认证
+     * 用含有服务端公钥的证书校验服务端证书
+     */
+    public static SSLParams getSslSocketFactory(InputStream... certificates) {
+        return getSslSocketFactoryBase(null, null, null, certificates);
+    }
+
+    /**
+     * https双向认证
+     * bksFile 和 password -> 客户端使用bks证书校验服务端证书
+     * certificates -> 用含有服务端公钥的证书校验服务端证书
+     */
+    public static SSLParams getSslSocketFactory(InputStream bksFile, String password, InputStream... certificates) {
+        return getSslSocketFactoryBase(null, bksFile, password, certificates);
+    }
+
+    /**
+     * https双向认证
+     * bksFile 和 password -> 客户端使用bks证书校验服务端证书
+     * X509TrustManager -> 如果需要自己校验，那么可以自己实现相关校验，如果不需要自己校验，那么传null即可
+     */
+    public static SSLParams getSslSocketFactory(InputStream bksFile, String password, X509TrustManager trustManager) {
+        return getSslSocketFactoryBase(trustManager, bksFile, password);
+    }
+
+    private static SSLParams getSslSocketFactoryBase(X509TrustManager trustManager, InputStream bksFile, String password, InputStream... certificates) {
         SSLParams sslParams = new SSLParams();
         try {
             KeyManager[] keyManagers = prepareKeyManager(bksFile, password);
@@ -79,7 +132,7 @@ public class HttpsUtils {
             kmf.init(clientKeyStore, password.toCharArray());
             return kmf.getKeyManagers();
         } catch (Exception e) {
-            OkLogger.e(e);
+            OkLogger.printStackTrace(e);
         }
         return null;
     }
@@ -101,7 +154,7 @@ public class HttpsUtils {
                 try {
                     if (certStream != null) certStream.close();
                 } catch (IOException e) {
-                    OkLogger.e(e);
+                    OkLogger.printStackTrace(e);
                 }
             }
             //我们创建一个默认类型的TrustManagerFactory
@@ -111,7 +164,7 @@ public class HttpsUtils {
             //通过tmf获取TrustManager数组，TrustManager也会信任keyStore中的证书
             return tmf.getTrustManagers();
         } catch (Exception e) {
-            OkLogger.e(e);
+            OkLogger.printStackTrace(e);
         }
         return null;
     }

@@ -1,9 +1,27 @@
+/*
+ * Copyright 2016 jeasonlzy(廖子尧)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.lzy.okgo.model;
 
+import com.lzy.okgo.utils.HttpUtils;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +32,7 @@ import okhttp3.MediaType;
 
 /**
  * ================================================
- * 作    者：廖子尧
+ * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy
  * 版    本：1.0
  * 创建日期：2015/10/9
  * 描    述：请求参数的包装类，支持一个key对应多个值
@@ -22,7 +40,6 @@ import okhttp3.MediaType;
  * ================================================
  */
 public class HttpParams implements Serializable {
-
     private static final long serialVersionUID = 7369819159227055048L;
 
     public static final MediaType MEDIA_TYPE_PLAIN = MediaType.parse("text/plain;charset=utf-8");
@@ -151,7 +168,7 @@ public class HttpParams implements Serializable {
     }
 
     public void put(String key, File file, String fileName) {
-        put(key, file, fileName, guessMimeType(fileName));
+        put(key, file, fileName, HttpUtils.guessMimeType(fileName));
     }
 
     public void put(String key, FileWrapper fileWrapper) {
@@ -205,21 +222,13 @@ public class HttpParams implements Serializable {
         fileParamsMap.clear();
     }
 
-    private MediaType guessMimeType(String path) {
-        FileNameMap fileNameMap = URLConnection.getFileNameMap();
-        path = path.replace("#", "");   //解决文件名中含有#号异常的问题
-        String contentType = fileNameMap.getContentTypeFor(path);
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
-        return MediaType.parse(contentType);
-    }
-
     /** 文件类型的包装类 */
-    public static class FileWrapper {
+    public static class FileWrapper implements Serializable {
+        private static final long serialVersionUID = -2356139899636767776L;
+
         public File file;
         public String fileName;
-        public MediaType contentType;
+        public transient MediaType contentType;
         public long fileSize;
 
         public FileWrapper(File file, String fileName, MediaType contentType) {
@@ -229,9 +238,24 @@ public class HttpParams implements Serializable {
             this.fileSize = file.length();
         }
 
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            out.defaultWriteObject();
+            out.writeObject(contentType.toString());
+        }
+
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            in.defaultReadObject();
+            contentType = MediaType.parse((String) in.readObject());
+        }
+
         @Override
         public String toString() {
-            return "FileWrapper{" + "file=" + file + ", fileName=" + fileName + ", contentType=" + contentType + ", fileSize=" + fileSize + '}';
+            return "FileWrapper{" + //
+                   "file=" + file + //
+                   ", fileName=" + fileName + //
+                   ", contentType=" + contentType + //
+                   ", fileSize=" + fileSize +//
+                   "}";
         }
     }
 

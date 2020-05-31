@@ -2,11 +2,13 @@ package common.base.netAbout;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.AbsCallback;
-import com.lzy.okgo.request.BaseRequest;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okgo.request.PostRequest;
+import com.lzy.okgo.request.base.Request;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import common.base.utils.CommonLog;
 import common.base.utils.Util;
 
@@ -64,7 +66,7 @@ public class BaseOkgoApi extends BaseApi {
      * @param values values 要一一对应到key的值
      * @return request请求自身
      */
-    public static BaseRequest buildCommonRequestParams(BaseRequest request, String[] appendKeys, String... values) {
+    public static Request buildCommonRequestParams(Request request, String[] appendKeys, String... values) {
         if (appendKeys != null && values != null) {//如果有外部传入的参数
             int keysLen = appendKeys.length;
             int valuesLen = values.length;
@@ -145,7 +147,7 @@ public class BaseOkgoApi extends BaseApi {
         callback.requestType = requestType;
         post(apiUrl, callback);
     }
-    protected static BaseRequest createRequest(String wholeUrl, byte requestMethod) {
+    protected static Request createRequest(String wholeUrl, byte requestMethod) {
         switch (requestMethod) {
             case GET:
                 return OkGo.get(wholeUrl);
@@ -157,7 +159,7 @@ public class BaseOkgoApi extends BaseApi {
         return null;
     }
 
-    public static void excute(BaseRequest request, AbsCallback callback) {
+    public static void excute(Request request, AbsCallback callback) {
         Object cancelFlagInCallback = null;
         if (callback != null) {
             cancelFlagInCallback = callback.getObj4CancelTag();

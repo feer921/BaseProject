@@ -22,6 +22,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -653,13 +654,49 @@ public class ViewUtil{
                             mayExistVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                     | View.SYSTEM_UI_FLAG_IMMERSIVE
                                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                    ;
+                            ;
                             windowParams.systemUiVisibility = mayExistVisibility;
                             window.setAttributes(windowParams);
                         }
                     }//curSdkInt >= 19 end
                 }
             }
+        }
+    }
+
+    public static String motionActionToString(int action,boolean forChineseStr) {
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                return forChineseStr ? "按下" : "ACTION_DOWN";
+            case MotionEvent.ACTION_UP:
+                return forChineseStr ? "抬起" : "ACTION_UP";
+            case MotionEvent.ACTION_CANCEL:
+                return forChineseStr ? "取消" : "ACTION_CANCEL";
+            case MotionEvent.ACTION_OUTSIDE:
+                return forChineseStr ? "外部" : "ACTION_OUTSIDE";
+            case MotionEvent.ACTION_MOVE:
+                return forChineseStr ? "移动" : "ACTION_MOVE";
+            case MotionEvent.ACTION_HOVER_MOVE:
+                return forChineseStr ? "悬浮移动(一般是鼠标)" : "ACTION_HOVER_MOVE";
+            case MotionEvent.ACTION_SCROLL:
+                return forChineseStr ? "滚动" : "ACTION_SCROLL";
+            case MotionEvent.ACTION_HOVER_ENTER:
+                return "ACTION_HOVER_ENTER";
+            case MotionEvent.ACTION_HOVER_EXIT:
+                return "ACTION_HOVER_EXIT";
+            case MotionEvent.ACTION_BUTTON_PRESS:
+                return "ACTION_BUTTON_PRESS";
+            case MotionEvent.ACTION_BUTTON_RELEASE:
+                return "ACTION_BUTTON_RELEASE";
+        }
+        int index = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                return "ACTION_POINTER_DOWN(" + index + ")";
+            case MotionEvent.ACTION_POINTER_UP:
+                return "ACTION_POINTER_UP(" + index + ")";
+            default:
+                return Integer.toString(action);
         }
     }
 }
