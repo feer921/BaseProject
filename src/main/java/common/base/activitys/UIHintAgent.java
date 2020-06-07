@@ -14,6 +14,7 @@ import android.view.View;
 
 import common.base.R;
 import common.base.dialogs.BaseDialog;
+import common.base.dialogs.IDialogLifeCircleListener;
 import common.base.dialogs.SimpleHintDialog;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
@@ -75,6 +76,8 @@ public class UIHintAgent {
      */
     private @LayoutRes int extraHintDialogLayoutRes;
     private boolean isDialogCompatPadUi;
+
+    private IDialogLifeCircleListener dialogLifeCircleListener;
     public void setProxyCallback(IProxyCallback curProxyOwner){
         mProxyCallback = curProxyOwner;
     }
@@ -116,6 +119,9 @@ public class UIHintAgent {
                 });
             }
            setUpHintDialogCancelListenerInfo();
+            if (dialogLifeCircleListener != null) {
+                hintDialog.withDialogLifeCircleListener(dialogLifeCircleListener);
+            }
         }
     }
 
@@ -522,5 +528,12 @@ public class UIHintAgent {
 
     public void setDialogCompatPadUi(boolean dialogCompatPadUi) {
         isDialogCompatPadUi = dialogCompatPadUi;
+    }
+
+    public void setHintDialogLifeCircleListener(IDialogLifeCircleListener l) {
+        this.dialogLifeCircleListener = l;
+        if (hintDialog != null) {
+            hintDialog.withDialogLifeCircleListener(l);
+        }
     }
 }

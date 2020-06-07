@@ -271,6 +271,9 @@ public class OkToast {
             boolean isParentViewGroup = false;
             if (viewParent != null) {
                 isParentViewGroup = viewParent instanceof ViewGroup;
+                if (windowManager != null) {
+                    windowManager.removeViewImmediate(toastView);
+                }
             }
             CommonLog.d("OkToast", "-->newToast() toastView = " + toastView + " dueToWhat = " + dueToWhat + " viewParent = " + viewParent
 //                    + " rootView = " + rootView.getTag()
@@ -395,27 +398,24 @@ public class OkToast {
                     mToast = null;
                 }
                 if (mToast != null) {
-
-
-                boolean isToastViewSame = mToast.getView() == llToastRootView;
-                boolean isSameWithLastToastText = toastText.equals(lastToastText);
-                                                                 //上一次的Toast还未消失 并且  和上一次的Toast文案相同
-                boolean isWillSameToastTextAndLastToastShowing = !lastToastViewDetached && isSameWithLastToastText;
-                if (isWillSameToastTextAndLastToastShowing) {
-                    toastViewRemoveListener();
-                    lastToastViewDetached = true;
+                    boolean isToastViewSame = mToast.getView() == llToastRootView;
+                    boolean isSameWithLastToastText = toastText.equals(lastToastText);
+                    //上一次的Toast还未消失 并且  和上一次的Toast文案相同
+                    boolean isWillSameToastTextAndLastToastShowing = !lastToastViewDetached && isSameWithLastToastText;
+                    if (isWillSameToastTextAndLastToastShowing) {
+                        toastViewRemoveListener();
+                        lastToastViewDetached = true;
 //                    mToast.cancel();
-                }
-                if (!isToastViewSame/**上一次的Toast的视图和本次的默认llToastRootView不同**/ || isWillSameToastTextAndLastToastShowing) {
-                    mToast = null;
-                    if (!isToastViewSame) {
-                        newToastReason = "本次Toast的视图和上次的不同";
                     }
-                    else {
-                        newToastReason = "相同文案并且上一个Toast在显示";
+                    if (!isToastViewSame/**上一次的Toast的视图和本次的默认llToastRootView不同**/ || isWillSameToastTextAndLastToastShowing) {
+                        mToast = null;
+                        if (!isToastViewSame) {
+                            newToastReason = "本次Toast的视图和上次的不同";
+                        } else {
+                            newToastReason = "相同文案并且上一个Toast在显示";
+                        }
+                        CommonLog.d(TAG, "--> show() isToastViewSame = " + isToastViewSame + " isWillSameToastTextAndLastToastShowing = " + isWillSameToastTextAndLastToastShowing);
                     }
-                    CommonLog.d(TAG, "--> show() isToastViewSame = " + isToastViewSame + " isWillSameToastTextAndLastToastShowing = " + isWillSameToastTextAndLastToastShowing);
-                }
                 }
             }
         }

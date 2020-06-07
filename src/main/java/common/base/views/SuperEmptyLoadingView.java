@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import common.base.R;
 import common.base.utils.CheckUtil;
 
@@ -28,6 +29,7 @@ import common.base.utils.CheckUtil;
  */
 
 public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickListener{
+    public static final String HIDE_FLAG_TEXT = "HIdE";
     private LayoutStatus curStatus = null;
     /**
      * 提示文本，如：正在加载...
@@ -71,7 +73,7 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
     /**
      * added by fee 2018-10-18:好象有点必要增加字符串类型的加载时的提示文本
      */
-    private CharSequence loadingHintWords;
+    private CharSequence loadingHintText;
     /**
      * 加载完后没有数据的提示文案
       */
@@ -287,17 +289,17 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
 
         pbDefLeftAnim.setVisibility(GONE);
         pbDefUpAnim.setVisibility(GONE);
+        tvHintMsg.setVisibility(VISIBLE);
         switch (targetStatus) {
             case Loading://  2018/10/14  loadingHintStr 资源id>>0 判断是否正确 changed by fee 2020-05-07: 使用 !=0来判断
-                if (loadingHintStr != 0 || !CheckUtil.isEmpty(loadingHintWords)) {
-                    if(loadingHintStr != 0){
-                        tvHintMsg.setText(loadingHintStr);
+                if (!CheckUtil.isEmpty(loadingHintText)) {//指定的文本优先判断
+                    if (HIDE_FLAG_TEXT.equals(loadingHintText.toString())) {
+                        tvHintMsg.setVisibility(INVISIBLE);
                     }
-                    if (!CheckUtil.isEmpty(loadingHintWords)) {//这里意味着如果有loadingHintWords则会覆盖loadingHintStr
-                        tvHintMsg.setText(loadingHintWords);
-                    }
-                }
-                else{
+                    tvHintMsg.setText(loadingHintText);
+                } else if (loadingHintStr != 0) {
+                    tvHintMsg.setText(loadingHintStr);
+                }else{
                     tvHintMsg.setText(attachHintMsgResId);
                 }
                 isWholeLayoutClickable = false;
@@ -314,12 +316,12 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
                 }
                 break;
             case HorizontalLoading://水平方向的正在加载...
-                if (loadingHintStr != 0 || !CheckUtil.isEmpty(loadingHintWords)) {
+                if (loadingHintStr != 0 || !CheckUtil.isEmpty(loadingHintText)) {
                     if(loadingHintStr != 0){
                         tvHintMsg.setText(loadingHintStr);
                     }
-                    if (!CheckUtil.isEmpty(loadingHintWords)) {//这里意味着如果有loadingHintWords则会覆盖loadingHintStr
-                        tvHintMsg.setText(loadingHintWords);
+                    if (!CheckUtil.isEmpty(loadingHintText)) {//这里意味着如果有loadingHintWords则会覆盖loadingHintStr
+                        tvHintMsg.setText(loadingHintText);
                     }
                 }
                 else{
@@ -507,7 +509,7 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
         switch (hintInCase) {
             case Loading:
             case HorizontalLoading:
-                loadingHintWords = hintMsgText;
+                loadingHintText = hintMsgText;
                 break;
             case NoData:
                 noDataHintText = hintMsgText;
@@ -523,10 +525,17 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
     }
 
     public SuperEmptyLoadingView withLoadingHint(CharSequence loadingHintWords) {
-        this.loadingHintWords = loadingHintWords;
+        this.loadingHintText = loadingHintWords;
+        CharSequence willShowText = loadingHintText;
         if (!CheckUtil.isEmpty(loadingHintWords)) {
-            withHintMsg(loadingHintWords);
+            if (HIDE_FLAG_TEXT.equals(loadingHintWords.toString())) {
+                willShowText = "";
+            }
         }
+        withHintMsg(willShowText);
+//        if (!CheckUtil.isEmpty(loadingHintWords)) {
+//            withHintMsg(loadingHintWords);
+//        }
         return this;
     }
     /**

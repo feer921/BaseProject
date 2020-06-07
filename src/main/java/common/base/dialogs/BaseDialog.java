@@ -767,4 +767,9 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         }
         return null;
     }
+
+    public I withNeedShowInputMethod(boolean isNeedInputMethod) {
+        this.isNeedInputMethod = isNeedInputMethod;
+        return self();
+    }
 }
