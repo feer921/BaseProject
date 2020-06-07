@@ -1,6 +1,6 @@
 package common.base.activitys;
 
-import android.support.v4.view.PagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import common.base.adapters.ViewPagerFragmentAdapter;
 
 /**

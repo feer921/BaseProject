@@ -23,7 +23,7 @@ import android.os.StatFs;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Telephony;
-import android.support.annotation.DimenRes;
+import androidx.annotation.DimenRes;
 
 import java.io.BufferedInputStream;
 import java.io.File;

@@ -2,7 +2,7 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;

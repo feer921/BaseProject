@@ -19,7 +19,7 @@ import android.util.AttributeSet;
 import common.base.R;
 
 
-public class ImageViewPlus extends android.support.v7.widget.AppCompatImageView{
+public class ImageViewPlus extends androidx.appcompat.widget.AppCompatImageView{
 	/**
 	 * android.widget.ImageView
 	 */

@@ -19,7 +19,7 @@ import android.view.ViewParent;
 import common.base.R;
 
 
-public class SwitchButton extends android.support.v7.widget.AppCompatCheckBox {
+public class SwitchButton extends androidx.appcompat.widget.AppCompatCheckBox {
     private Paint mPaint;
 
     private ViewParent mParent;

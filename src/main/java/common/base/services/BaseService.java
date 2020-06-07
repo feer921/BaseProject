@@ -8,7 +8,7 @@ import android.content.res.Configuration;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import common.base.WeakHandler;
 import common.base.utils.CommonLog;
 

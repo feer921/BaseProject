@@ -69,14 +69,14 @@
 #继承activity,application,service,broadcastReceiver,contentprovider....不进行混淆
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
--keep public class * extends android.support.multidex.MultiDexApplication
+-keep public class * extends androidx.multidex.MultiDexApplication
 -keep public class * extends android.app.Service
 -keep public class * extends android.content.BroadcastReceiver
 -keep public class * extends android.content.ContentProvider
 -keep public class * extends android.app.backup.BackupAgentHelper
 -keep public class * extends android.preference.Preference
 -keep public class * extends android.view.View
--keep class android.support.** {*;}## 保留support下的所有类及其内部类
+-keep class androidx.** {*;}## 保留support下的所有类及其内部类
 
 -keep public class com.google.vending.licensing.ILicensingService
 -keep public class com.android.vending.licensing.ILicensingService
@@ -84,9 +84,9 @@
 #----------------------------------------------------
 
 # 保留继承的
--keep public class * extends android.support.v4.**
--keep public class * extends android.support.v7.**
--keep public class * extends android.support.annotation.**
+#-keep public class * extends android.support.v4.**
+#-keep public class * extends android.support.v7.**
+-keep public class * extends androidx.annotation.**
 
 
 #表示不混淆任何包含native方法的类的类名以及native方法名

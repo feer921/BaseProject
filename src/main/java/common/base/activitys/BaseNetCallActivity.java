@@ -1,6 +1,6 @@
 package common.base.activitys;
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.OkgoNetCallback;

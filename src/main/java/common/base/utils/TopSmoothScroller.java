@@ -1,7 +1,7 @@
 package common.base.utils;
 
 import android.content.Context;
-import android.support.v7.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 
 /**
  * ******************(^_^)***********************<br>

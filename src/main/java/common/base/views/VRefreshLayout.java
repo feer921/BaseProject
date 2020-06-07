@@ -4,9 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.support.annotation.LayoutRes;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewCompat;
+import androidx.annotation.LayoutRes;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -20,8 +20,6 @@ import android.widget.AbsListView;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import common.base.utils.CommonLog;
 
 /**
  * 支持垂直下拉刷新的Layout

@@ -1,7 +1,7 @@
 package com.flyco.banner.transform;
 
 import android.view.View;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 
 
 public class DepthTransformer implements ViewPager.PageTransformer {

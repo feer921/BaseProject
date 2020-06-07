@@ -1,7 +1,7 @@
 package common.base.adapters;
 
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 import android.view.View;
 
 import com.chad.library.adapter.base.BaseViewHolder;

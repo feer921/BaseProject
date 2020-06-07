@@ -1,6 +1,6 @@
 package common.base.interfaces;
 
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 /**
  * ******************(^_^)***********************<br>

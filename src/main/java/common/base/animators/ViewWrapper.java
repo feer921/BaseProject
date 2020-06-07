@@ -1,6 +1,6 @@
 package common.base.animators;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 import android.view.View;
 
 /**

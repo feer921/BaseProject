@@ -1,7 +1,6 @@
 package common.base.adapters;
 
-import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.chad.library.adapter.base.BaseViewHolder;
 

@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.CallSuper;
+import androidx.annotation.RequiresApi;
 import common.base.utils.CommonLog;
 
 /**

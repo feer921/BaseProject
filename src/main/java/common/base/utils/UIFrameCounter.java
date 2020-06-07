@@ -2,7 +2,7 @@ package common.base.utils;
 
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.view.Choreographer;
 
 /**

@@ -2,9 +2,9 @@ package common.base.dialogs;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

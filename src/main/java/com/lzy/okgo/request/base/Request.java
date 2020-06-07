@@ -15,7 +15,7 @@
  */
 package com.lzy.okgo.request.base;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.lzy.okgo.OkGo;

@@ -8,7 +8,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.LayoutRes;
+import androidx.annotation.LayoutRes;
 import android.view.Gravity;
 import android.view.View;
 

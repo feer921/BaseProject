@@ -2,7 +2,7 @@ package common.base;
 
 import android.app.Activity;
 import android.app.Application;
-import android.support.annotation.DimenRes;
+import androidx.annotation.DimenRes;
 
 import common.base.utils.CommonLog;
 import common.base.utils.PreferVisitor;
