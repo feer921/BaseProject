@@ -2,10 +2,6 @@ package common.base.views;
 
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import common.base.R;
 import common.base.utils.CheckUtil;
@@ -35,7 +36,7 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
      * 提示文本，如：正在加载...
      */
     private TextView tvHintMsg;
-
+    private boolean isAlwaysVisibleTvHintMsg = true;
     private @ColorInt int hintTextColor;
     private float hintTextSizeSp;
 
@@ -289,7 +290,9 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
 
         pbDefLeftAnim.setVisibility(GONE);
         pbDefUpAnim.setVisibility(GONE);
-        tvHintMsg.setVisibility(VISIBLE);
+        if (isAlwaysVisibleTvHintMsg) {
+            tvHintMsg.setVisibility(VISIBLE);
+        }
         switch (targetStatus) {
             case Loading://  2018/10/14  loadingHintStr 资源id>>0 判断是否正确 changed by fee 2020-05-07: 使用 !=0来判断
                 if (!CheckUtil.isEmpty(loadingHintText)) {//指定的文本优先判断
@@ -694,6 +697,11 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
         this.outSideClickListener = outSideClickListener;
         return this;
     }
+
+    public ImageView getIvShowStateIconOrAnim(){
+        return ivShowStateIconOrAnim;
+    }
+
     /**
      * 获取显示 提示内容的控件 以便于设置字体、颜色等
      * @return
@@ -702,6 +710,10 @@ public class SuperEmptyLoadingView extends FrameLayout implements View.OnClickLi
         return tvHintMsg;
     }
 
+    public SuperEmptyLoadingView isAlwaysVisibleTvHintMsg(boolean alwaysVisibleTvHintMsg) {
+        this.isAlwaysVisibleTvHintMsg = alwaysVisibleTvHintMsg;
+        return this;
+    }
     /**
      * 获取显示 额外提示内容的控件 以便于设置字体、颜色等
      * @return

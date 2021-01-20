@@ -6,8 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -21,6 +19,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.flyco.banner.widget.LoopViewPager.FixedSpeedScroller;
 import com.flyco.banner.widget.LoopViewPager.LoopViewPager;
@@ -91,7 +92,7 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
     protected int mItemWidth;
     protected int mItemHeight;
 
-    /** 显示器和标题的直接父容器 */
+    /** 指示器和标题的直接父容器 */
     private LinearLayout mLlBottomBar;
     /** 最后一条item是否显示背景条 */
     private boolean mIsBarShowWhenLast;
@@ -209,7 +210,7 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
         LayoutParams lp = new LayoutParams(mItemWidth, mItemHeight);
         addView(mViewPager, lp);
 
-        //top parent of indicators
+        //top parent of indicators 该容器View的目的就是为了和 ViewPager 同宽、高,不然的话，直接使用 BaseBanner 来添加 mLlBottomBar
         mRlBottomBarParent = new RelativeLayout(context);
         addView(mRlBottomBarParent, lp);
 
@@ -368,11 +369,23 @@ public abstract class BaseBanner<D, I extends BaseBanner> extends RelativeLayout
     }
 
     /** 设置底部背景条padding,单位dp */
-    public I barPadding(float left, float top, float right, float bottom) {
+    public I barPaddingDpUnit(float left, float top, float right, float bottom) {
         mLlBottomBar.setPadding(dp2px(left), dp2px(top), dp2px(right), dp2px(bottom));
         return self();
     }
 
+    public I barPadding(int paddingLeftPx, int paddingTopPx, int paddingRightPx, int paddingBottomPx) {
+        int srcPaddingLeft = mLlBottomBar.getPaddingLeft();
+        int srcPaddingTop = mLlBottomBar.getPaddingTop();
+        int srcPaddingRight = mLlBottomBar.getPaddingRight();
+        int srcPaddingBottom = mLlBottomBar.getPaddingBottom();
+        int finalPaddingLeft = paddingLeftPx > 0 ? paddingLeftPx : srcPaddingLeft;
+        int finalPaddingTop = paddingTopPx > 0 ? paddingTopPx : srcPaddingTop;
+        int finalPaddingRight = paddingRightPx > 0 ? paddingRightPx : srcPaddingRight;
+        int finalPaddingBottom = paddingBottomPx > 0 ? paddingBottomPx : srcPaddingBottom;
+        mLlBottomBar.setPadding(finalPaddingLeft, finalPaddingTop, finalPaddingRight, finalPaddingBottom);
+        return self();
+    }
     /** 设置标题文字颜色,默认"#ffffff" */
     public I setTextColor(int textColor) {
         mTvTitle.setTextColor(textColor);

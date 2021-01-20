@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -24,6 +25,9 @@ public final class JsonUtil {
         mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);//属性为 空（“”） 或者为 NULL 都不序列化
+
+        //解决kotlin中数据类非空类型但是json反序列化时为空抛异常的问题
+        mapper.registerModule(new KotlinModule.Builder().nullIsSameAsDefault(true).nullToEmptyMap(true).nullToEmptyCollection(true).build());
     }
 
     private JsonUtil() {

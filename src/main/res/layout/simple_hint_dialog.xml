@@ -62,14 +62,16 @@
         <TextView
             style="@style/common_tv_style"
             android:layout_width="wrap_content"
-            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_10"
             android:minHeight="@dimen/dp_40"
             android:text="@string/cancel_no_gap"
             android:id="@+id/tv_btn_dialog_cancel"
             android:textSize="@dimen/sp_16"
             android:textColor="@color/color_999"
             android:background="@drawable/sel_4_rounded_stroke"
-            android:layout_marginRight="@dimen/dp_20"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_10"
             android:minWidth="@dimen/dp_110"
             />
 
@@ -82,6 +84,10 @@
             android:id="@+id/tv_btn_dialog_commit"
             android:textSize="@dimen/sp_16"
             android:background="@drawable/sel_4_rounded_stroke"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginLeft="@dimen/dp_10"
             />
     </LinearLayout>
 </LinearLayout>

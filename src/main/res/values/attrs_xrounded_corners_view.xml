@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="XRoundedCornersView">
+        <attr name="perCornerRadius" format="dimension"/>
+        <attr name="leftTopCornerRadius" format="dimension" />
+        <attr name="leftBottomCornerRadius" format="dimension" />
+        <attr name="rightTopCornerRadius" format="dimension" />
+        <attr name="rightBottomCornerRadius" format="dimension" />
+    </declare-styleable>
+</resources>

@@ -1,11 +1,10 @@
 package common.base.adapters;
 
-import android.os.Parcelable;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,15 +16,15 @@ import common.base.utils.CommonLog;
 /**
  * ******************(^_^)***********************<br>
  * User: fee(QQ/WeiXin:1176610771)<br>
- * Date: 2019/12/10<br>
- * Time: 20:21<br>
+ * Date: 2020/8/27<br>
+ * Time: 21:08<br>
  * <P>DESC:
- * 给 ViewPager 的适配器提供Fragment的数据集
+ * 一个不带保存Fragment状态的 PagerAdapter
  * </p>
  * ******************(^_^)***********************
  */
-public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
-    private static final String TAG = "AFragmentStatePagerAdapter";
+public class AFragmentPagerAdapter extends FragmentPagerAdapter {
+    private static final String TAG = "AFragmentPagerAdapter";
     private String belongTag = "";
     private List<Fragment> fragments;
     private List<CharSequence> pageTitles;
@@ -44,11 +43,11 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
 
     private boolean isNeedSaveFragmentState = true;
 
-    public AFragmentStatePagerAdapter(FragmentManager fm) {
+    public AFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
-    public AFragmentStatePagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+    public AFragmentPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
         super(fm);
         this.fragments = fragments == null ? new ArrayList<Fragment>() : fragments;
     }
@@ -72,11 +71,15 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
     }
 
 
-//    @Override
-//    public int getItemPosition(Object object) {
-//
-//        return PagerAdapter.POSITION_NONE;
-//    }
+    @Override
+    public int getItemPosition(Object object) {
+        return PagerAdapter.POSITION_NONE;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return getItem(position).hashCode();
+    }
 
     /**
      * Return the number of views available.
@@ -94,21 +97,21 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return pageTitles != null && !pageTitles.isEmpty() ? pageTitles.get(position) : null;
     }
 
-    public AFragmentStatePagerAdapter needUpdateWhenAddData(boolean isNeedUpdateWhenAddData) {
+    public AFragmentPagerAdapter needUpdateWhenAddData(boolean isNeedUpdateWhenAddData) {
         this.isNeedUpdateWhenAddData = isNeedUpdateWhenAddData;
         return this;
     }
 
-    public AFragmentStatePagerAdapter needUpdateWhenAddTitle(boolean isNeedUpdateWhenAddTitles) {
+    public AFragmentPagerAdapter needUpdateWhenAddTitle(boolean isNeedUpdateWhenAddTitles) {
         this.isNeedUpdateWhenAddTitles = isNeedUpdateWhenAddTitles;
         return this;
     }
-    public AFragmentStatePagerAdapter addData(Fragment fragment) {
+    public AFragmentPagerAdapter addData(Fragment fragment) {
         addData(fragment, -1);
         return this;
     }
 
-    public AFragmentStatePagerAdapter addData(Fragment fragment, int addToIndex) {
+    public AFragmentPagerAdapter addData(Fragment fragment, int addToIndex) {
         if (fragment != null) {
             if (fragments == null) {
                 fragments = new ArrayList<>();
@@ -126,7 +129,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter addData(Fragment... fragments) {
+    public AFragmentPagerAdapter addData(Fragment... fragments) {
         if (fragments != null && fragments.length > 0) {
             List<Fragment> fragmentList = Arrays.asList(fragments);
             addData(fragmentList);
@@ -135,7 +138,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
     }
 
 
-    public AFragmentStatePagerAdapter addData(Collection<Fragment> fragments) {
+    public AFragmentPagerAdapter addData(Collection<Fragment> fragments) {
         if (fragments != null) {
             if (this.fragments != null) {
                 this.fragments.addAll(fragments);
@@ -150,7 +153,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter setNewDatas(Collection<? extends Fragment> newFragments) {
+    public AFragmentPagerAdapter setNewDatas(Collection<? extends Fragment> newFragments) {
         if (newFragments == null || newFragments.isEmpty()) {
             this.fragments = null;
         }
@@ -162,13 +165,13 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter addPageTitle(CharSequence title) {
+    public AFragmentPagerAdapter addPageTitle(CharSequence title) {
         if (title != null) {
             addPageTitle(title, -1);
         }
         return this;
     }
-    public AFragmentStatePagerAdapter addPageTitle(CharSequence title,int addToIndex) {
+    public AFragmentPagerAdapter addPageTitle(CharSequence title,int addToIndex) {
         if (title != null) {
             if (pageTitles == null) {
                 pageTitles = new ArrayList<>();
@@ -187,7 +190,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter addPageTitle(CharSequence... titles) {
+    public AFragmentPagerAdapter addPageTitle(CharSequence... titles) {
         if (titles != null && titles.length > 0) {
             List<CharSequence> titleList = Arrays.asList(titles);
             addPageTitle(titleList);
@@ -195,7 +198,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter addPageTitle(Collection<? extends CharSequence> pageTitles) {
+    public AFragmentPagerAdapter addPageTitle(Collection<? extends CharSequence> pageTitles) {
         if (this.pageTitles != null) {
             this.pageTitles.addAll(pageTitles);
         }
@@ -208,7 +211,7 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter setNewPageTitles(Collection<CharSequence> newPageTitles) {
+    public AFragmentPagerAdapter setNewPageTitles(Collection<CharSequence> newPageTitles) {
         if (newPageTitles == null || newPageTitles.isEmpty()) {
             this.pageTitles = null;
         }
@@ -219,17 +222,8 @@ public class AFragmentStatePagerAdapter extends FragmentStatePagerAdapter {
         return this;
     }
 
-    public AFragmentStatePagerAdapter setNeedSaveFragmentState(boolean isNeedSaveFragmentState) {
-        this.isNeedSaveFragmentState = isNeedSaveFragmentState;
-        return this;
-    }
-
-    public AFragmentStatePagerAdapter setBelongTag(String belongTag) {
+    public AFragmentPagerAdapter setBelongTag(String belongTag) {
         this.belongTag = belongTag;
         return this;
-    }
-    @Override
-    public Parcelable saveState() {
-        return !isNeedSaveFragmentState ? null : super.saveState();
     }
 }

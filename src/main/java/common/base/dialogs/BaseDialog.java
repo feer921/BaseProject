@@ -9,18 +9,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.StringRes;
-import androidx.annotation.StyleRes;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
 
 import java.lang.ref.WeakReference;
 
@@ -104,6 +105,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
      * 是否要构建 生命周期监听者 根据Context
      */
     protected boolean isToBuildLifeCircleListenerBaseContext = true;
+
+    /**
+     * 是否当设置Dialog的内容View时使用本类用来 inflate出子类提供的布局资源id的父视图
+     * 提供可配置选项，目的为：本变量为 true时，子类所提供的布局layout里面可以设置 margin/padding等布局参数
+     * def: false;
+     */
+    protected boolean isDialogViewJustParentView = false;
     public BaseDialog(Context context) {
 //        this(context, android.R.style.Theme_Material_Light_Dialog_Alert);//android.R.style.Theme_Material_Light_Dialog_Alert//这个style不错
         this(context, R.style.common_dialog_bg_dim);
@@ -172,7 +180,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
         //而 先setContentView(dialogView) -->configDialogWindow()则显示
 //        configDialogWindow();
 
-        setContentView(dialogView);
+        setContentView(isDialogViewJustParentView ? rootViewToInflateOutDialogView : dialogView);
         configDialogWindow();
 
 //        if (isWindowUseContentViewW | isWindowUseContentViewH) {
@@ -262,8 +270,13 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
 
             );
             if (isNeedInputMethod) {
-                w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                int providedSoftInputMode = theAdjustSoftInputModeFlag();
+                if (providedSoftInputMode == -1) {
+                    providedSoftInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+                }
+                w.setSoftInputMode(providedSoftInputMode);
             }
+            extraConfigDialogWindow(w,wlp);
             w.setAttributes(wlp);
         }
     }
@@ -730,7 +743,7 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
             peekLifeCircleListener().onDialogCreate(this);
         }
         setCanceledOnTouchOutside(cancelableOutSide);
-        if (rootViewToInflateOutDialogView != null) {//如果dialogView已经有父视图了,则移除
+        if (rootViewToInflateOutDialogView != null && !isDialogViewJustParentView) {//如果dialogView已经有父视图了,则移除
             rootViewToInflateOutDialogView.removeAllViews();
             rootViewToInflateOutDialogView = null;
         }
@@ -771,5 +784,21 @@ public abstract class BaseDialog<I extends BaseDialog<I>> extends Dialog impleme
     public I withNeedShowInputMethod(boolean isNeedInputMethod) {
         this.isNeedInputMethod = isNeedInputMethod;
         return self();
+    }
+
+    protected int theAdjustSoftInputModeFlag() {
+        return -1;
+    }
+
+    public I adjustSoftInputModeFlag(int theAdjustSoftinputModeFlag) {
+        Window window = getWindow();
+        if (window != null) {
+            window.setSoftInputMode(theAdjustSoftinputModeFlag);
+        }
+        return self();
+    }
+
+    protected void extraConfigDialogWindow(Window window, WindowManager.LayoutParams willConfigWindowParams) {
+
     }
 }

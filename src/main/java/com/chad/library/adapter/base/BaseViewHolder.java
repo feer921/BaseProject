@@ -15,17 +15,12 @@
  */
 package com.chad.library.adapter.base;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DimenRes;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
-import androidx.annotation.StringRes;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.util.Linkify;
 import android.util.SparseArray;
 import android.view.View;
@@ -38,6 +33,13 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -76,7 +78,8 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
      */
     Object associatedObject;
 
-
+    protected Context mContext;
+    protected Context appContext;
     public BaseViewHolder(final View view) {
         super(view);
         this.views = new SparseArray<>();
@@ -84,8 +87,8 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
         this.itemChildLongClickViewIds = new LinkedHashSet<>();
         this.nestViews = new HashSet<>();
         convertView = view;
-
-
+        mContext = view.getContext();
+        appContext = mContext.getApplicationContext();
     }
 
     private int getClickPosition() {
@@ -702,6 +705,9 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 
     }
     protected int dimen2PixValue(@DimenRes int dimenResId){
+        if (mContext != null) {
+            return mContext.getResources().getDimensionPixelSize(dimenResId);
+        }
         if (adapter != null) {
             return adapter.dimen2PixValue(dimenResId);
         }

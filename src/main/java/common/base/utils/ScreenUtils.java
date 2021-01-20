@@ -1,6 +1,9 @@
 package common.base.utils;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -18,6 +21,8 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ScrollView;
+
+import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -350,5 +355,130 @@ public class ScreenUtils {
             }
         }
         return new int[]{resultWidth,resultHeight};
+    }
+
+    /**
+     * 最原始的
+     */
+    private static float theOriginalDensity = 0;
+    private static float theOriginalScaleDensity = 0;
+
+    /**
+     * 基于UI设计效果图进行屏幕适配
+     * 基于今日头条适配方案: https://mp.weixin.qq.com/s/d9QCoBP6kV9VSWvVldVVwA
+     * 的改进
+     * 该适配方案也有缺点:
+     * 1:以UI设计效果图的单边为适配基准，单边适配较完美,但由于安卓的设备分辨率千差万别，所以可能存在另一边并不适配;
+     * 2:如果项目中使用了第三方的视图、控件，而其作者又指定了尺寸，则会导致使用此方案后，第三方的出现适配问题；
+     * 3：如果使用此适配方案，则不能在布局 xml文件中使用 诸如 dp适配方案的 dp资源，因为该dp资源会先适配一次得到适配后的dp值，再被本方案适配一次,
+     *    而是应该直接写 50dp,或者较佳实践为 在values目录下新建一个 no_dp.xml,里面写 <dimen name="ndp_30">30dp</dimen>
+     *    以便于后续放弃本适配方案切换成其他适配方案
+     *
+     * @param curActivity 当前的Activity
+     * @param curActivityOrientation 开发者指定当前Activity明知的屏幕方向；如果为-1，则本方法内调用API获取所请求的屏蔽方向
+     * @param application 当前项目的 Application实例
+     * @param uiDesignDpValue 所根据的Ui设计效果图 宽、高 为适配基准的 dp数值
+     * @param isSizeBaseWidthOrHeigth {uiDesignDpValue} 变量所对应的尺寸是宽还是高；
+     *                                true:依据Ui设计的宽为基准；false:依据UI设计的高为基准。
+     */
+    public static void adaptUiDesign(@NonNull Activity curActivity,
+                                     int curActivityOrientation,@NonNull final Application application,
+                                     int uiDesignDpValue, boolean isSizeBaseWidthOrHeigth) {
+        if (uiDesignDpValue < 1) {
+            return;
+        }
+        DisplayMetrics displayMetricsOfApp = application.getResources().getDisplayMetrics();
+        if (theOriginalDensity == 0) {
+            theOriginalDensity = displayMetricsOfApp.density;
+            theOriginalScaleDensity = displayMetricsOfApp.scaledDensity;
+            //今日头条在这里注册 组件配置更改的监听，但我想可能可以不需要，这么做，可以交给开发者自己在相关Activity的
+            //onConfigurationChanged()方法回调时来进行再调用一次本方法来适配 (用户在外部把系统字体等更改后的再适配)
+            application.registerComponentCallbacks(new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration newConfig) {
+                    if (newConfig != null && newConfig.fontScale > 0) {
+                        theOriginalScaleDensity = application.getResources().getDisplayMetrics().scaledDensity;
+                    }
+                }
+
+                @Override
+                public void onLowMemory() {
+
+                }
+            });
+        }
+        //to do 这里是否使用本类 init()方法中得出的宽、高？ 有可能这里在取值时 取的是竖屏的宽、高，而实际上Activity却是横屏展示的
+        //下面要处理
+//        int appMetricsWidth = displayMetricsOfApp.widthPixels;
+//        int appMetricsHeight = displayMetricsOfApp.heightPixels;
+        //下面是使用 真实的屏幕宽、高
+        int appMetricsWidth = windowWidth;
+        int appMetricsHeight = windowHeight;
+
+        DisplayMetrics displayMetricsOfActivity = curActivity.getResources().getDisplayMetrics();
+
+        if (-1 == curActivityOrientation) {
+            curActivityOrientation = curActivity.getRequestedOrientation();
+        }
+        int toCalculateScreenSize = 0;
+        switch (curActivityOrientation) {
+            //当前Activity需要横屏展示,一般横屏的Activity基于UI设计的长宽为基准适配，但本方法还是可选择基于UI设计的高为基准
+            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE://横屏
+                if (isSizeBaseWidthOrHeigth) {//以UI设计图的宽为基准适配
+                    //不能简单的以上面 的 [appMetricsWidth] 来当作此时屏幕的宽，有可能该值正好取成竖屏的宽
+//                    appMetricsWidth/uiDesignDpValue;
+                    //所以要取出最大边为横屏的宽
+                    int landscapeWidth = Math.max(appMetricsWidth, appMetricsHeight);
+                    toCalculateScreenSize = landscapeWidth;
+                }
+                else {//以UI设计图的高为基准适配
+                    int landscapeHeight = Math.min(appMetricsWidth, appMetricsHeight);
+                    toCalculateScreenSize = landscapeHeight;
+                }
+
+                break;
+            //当前Activity以竖屏展示，一般竖屏展示的Activity基于UI设计的短宽为基准适配,但本方法还是可选择基于UI设计的高为基准
+            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT://竖屏
+                if (isSizeBaseWidthOrHeigth) {//以UI设计图的宽为基准适配
+                    //竖屏时的宽，为最短边
+                    int portraitWidth = Math.min(appMetricsWidth, appMetricsHeight);
+                    toCalculateScreenSize = portraitWidth;
+                }
+                else {//以UI设计图的高为基准适配
+                    int portraitHeight = Math.max(appMetricsWidth, appMetricsHeight);
+                    toCalculateScreenSize = portraitHeight;
+                }
+            default:
+                if (isSizeBaseWidthOrHeigth) {//以UI设计图的宽为基准适配
+                    toCalculateScreenSize = appMetricsWidth;
+                }
+                else {//以UI设计图的高为基准适配
+                    toCalculateScreenSize = appMetricsHeight;
+                }
+                break;
+        }
+        //从dp和px的转换公式 ：px = dp * density
+        //比如： screenWidthPx = dpOfWidth * density,而当我们希望在任何设备上都和UI设计的宽(337 dp)保持一致的情况下，
+        //即要任何设备的宽算出来 都是 337 dp，则我们只能 改变 系统计算 的 density,而该 density = screenWidthPx/UI设计宽dp
+        //并且把计算出的 density 替换掉系统计算的 density
+
+        float targetDensity = toCalculateScreenSize * 1.0f / uiDesignDpValue;
+        //dpi (dots per inch)(每英寸的像素点数) = (分辨率宽 *分辨率宽 + 分辨率高 *分辨率高)开根号再/屏幕尺寸(设备对角线英寸)
+
+        int targetDensityDpi = (int) (160 * targetDensity);//屏幕像素密度
+        float targetScaledDensity = targetDensity * (theOriginalScaleDensity / theOriginalDensity);
+        CommonLog.sysErr("ScreenUtils -> adaptUiDesign()  targetDensity = " + targetDensity + " targetDensityDpi = " + targetDensityDpi +
+                "  targetScaledDensity = " + targetScaledDensity +
+                "  toCalculateScreenSize = " + toCalculateScreenSize
+        );
+        displayMetricsOfApp.density = targetDensity;
+        displayMetricsOfApp.densityDpi = targetDensityDpi;
+        displayMetricsOfApp.scaledDensity = targetScaledDensity;
+
+        displayMetricsOfActivity.density = targetDensity;
+        displayMetricsOfActivity.densityDpi = targetDensityDpi;
+
+        displayMetricsOfActivity.scaledDensity = targetScaledDensity;
+
     }
 }

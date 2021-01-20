@@ -7,15 +7,16 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import common.base.R;
 import common.base.WeakHandler;
@@ -33,6 +34,18 @@ import common.base.utils.CommonLog;
  * Date: 2016-05-16
  * Time: 15:21
  * DESC: 碎片的基类
+ * <P>生命周期：
+ * <P>显示线:
+ * {@link #onAttach(Context)}--> {@link #onAttach(Activity)}--> {@link #onCreate(Bundle)}
+ * --> {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} -->{@link #onViewCreated(View, Bundle)}
+ * --> {@link #onActivityCreated(Bundle)} --> {@link #onStart()} --> {@link #onResume()}</P>
+ * <P>
+ *     隐藏线：
+ *     {@link #onPause()} -->{@link #onStop()}--> {@link #onDestroyView()} -->{@link #onDestroy()}-->{@link #onDetach()}
+ *
+ *     <P>其中 {@link #onDestroyView() } 可恢复至 {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} </P>
+ * </P>
+ * </P>
  */
 public abstract class BaseFragment extends Fragment implements
                                 View.OnClickListener,
@@ -89,17 +102,19 @@ public abstract class BaseFragment extends Fragment implements
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//    }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(@NonNull Context context) {
+        this.context = context;
+        appContext = context.getApplicationContext();
         if (LIFE_DEBUG) {
-            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onAttach() ");
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug + "]", "--> onAttach() context = " + context);
         }
+        super.onAttach(context);
     }
 
     @Override
@@ -134,7 +149,7 @@ public abstract class BaseFragment extends Fragment implements
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onResume() ");
         }
         if (someUiHintAgent != null && isLetDialogCareAboutVisible) {
-            someUiHintAgent.setOwnerVisibility(true);
+            someUiHintAgent.setOwnerVisibility(isVisible());
         }
         if (needUpdateData) {
             initData();
@@ -202,12 +217,24 @@ public abstract class BaseFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if (LIFE_DEBUG) {
-            CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onCreateView() container id = " + container.getId() +" savedInstanceState = " + savedInstanceState);
+            String containerId = "";
+            String containerTag = "";
+            if (container != null) {//增加下面的输出，是为了方便使用者查看(debug)当前Fragment的容器View是哪一个
+                containerId = container.getId() + "";
+                containerTag = container.getTag() + "";
+            }
+            CommonLog.i(TAG + "[" + extraInfoInLifeDebug + "]", "--> onCreateView() container id = " + containerId + " savedInstanceState = " + savedInstanceState
+                    + " containerTag = " + containerTag
+            );
             CommonLog.i(TAG + "[" + extraInfoInLifeDebug +"]","--> onCreateView() rootView = " + rootView);
         }
         mLayoutInflater = inflater;
-        context = getActivity();
-        appContext = context.getApplicationContext();
+        if (context == null) {
+            context = getActivity();
+            if (context != null) {
+                appContext = context.getApplicationContext();
+            }
+        }
         if (rootView == null) {
             needReDrawUi = true;
             int curFragmentViewResId = providedFragmentViewResId();
@@ -301,10 +328,12 @@ public abstract class BaseFragment extends Fragment implements
         }
     }
     protected void switchActivity(boolean finishSelf) {
-        if (finishSelf) {
-            getActivity().overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
-        } else {
-            getActivity().overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
+        if (getActivity() != null) {
+            if (finishSelf) {
+                getActivity().overridePendingTransition(R.anim.common_part_left_in, R.anim.common_whole_right_out);
+            } else {
+                getActivity().overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_part_right_out);
+            }
         }
     }
     /**
@@ -557,7 +586,7 @@ public abstract class BaseFragment extends Fragment implements
     public void dialogHint(String dialogTitle, String hintMsg, String cancelBtnName, String sureBtnName, int dialogInCase) {
         if (someUiHintAgent != null) {
             FragmentActivity activity = getActivity();
-            if (activity != null && activity.isFinishing()) {
+            if (activity == null || activity.isFinishing()) {
                 //android.view.WindowManager$BadTokenException
                 //Unable to add window -- token android.os.BinderProxy@89012cd is not valid; is your activity running?
                 Log.w(TAG,"dialogHint -> ignore the dialog hint event, because of activity is finishing.");

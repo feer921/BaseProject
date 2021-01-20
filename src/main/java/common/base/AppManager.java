@@ -55,6 +55,7 @@ public class AppManager {
             finishActivity(latestActivity);
         }
     }
+
     /**
      * 结束指定的Activity
      */
@@ -74,6 +75,7 @@ public class AppManager {
             }
         }
     }
+
     /**
      * 结束指定类名的Activity
      */
@@ -95,11 +97,11 @@ public class AppManager {
         if (activityStack == null) {
             return;
         }
-//        for (int i = 0, size = activityStack.size(); i < size; i++) {
-//            if (null != activityStack.get(i)) {
-//                activityStack.get(i).finish();
-//            }
-//        }
+        //        for (int i = 0, size = activityStack.size(); i < size; i++) {
+        //            if (null != activityStack.get(i)) {
+        //                activityStack.get(i).finish();
+        //            }
+        //        }
         //增加一个集合临时存储一下，避免在Activity one.finish()时，发生concurrentmodifyException
         Stack<Activity> temp = new Stack<>();
         temp.addAll(activityStack);
@@ -118,7 +120,7 @@ public class AppManager {
         try {
             finishAllActivity();
             ActivityManager activityMgr = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-            activityMgr.restartPackage(context.getPackageName());
+            //            activityMgr.restartPackage(context.getPackageName());
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();

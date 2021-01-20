@@ -69,4 +69,15 @@ public class CheckUtil {
     public static boolean isEmpty(Object[] objArray) {
         return isNullObj(objArray) || objArray.length == 0;
     }
+
+    /**
+     * 是否是 Gif 动画
+     */
+    public static boolean isGifImage(String url) {
+        boolean isGif = false;
+        if (!isEmpty(url)) {
+            isGif = url.toLowerCase().endsWith(".gif");
+        }
+        return isGif;
+    }
 }

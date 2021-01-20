@@ -2,9 +2,13 @@ package common.base.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * ******************(^_^)***********************<br>
@@ -64,8 +68,9 @@ public class AppScopeStorageUtil {
      */
     public static File createFileIfNotExisted(File mayNeedCreatedFile) {
         if (mayNeedCreatedFile != null) {
-            if (!mayNeedCreatedFile.getParentFile().exists()) {
-                mayNeedCreatedFile.getParentFile().mkdirs();
+            File parentFile = mayNeedCreatedFile.getParentFile();
+            if (parentFile != null && !parentFile.exists()) {
+                boolean isMkSuc = parentFile.mkdirs();
             }
             if (!mayNeedCreatedFile.exists()) {
                 try {
@@ -199,6 +204,87 @@ public class AppScopeStorageUtil {
             }
         }
         return filePathStr;
+    }
+
+
+    /**
+     * 从APP的 [assets]目录中复制 整个目录或者某个文件到 指定的目录[targetDirPath]路径下
+     * @param context Context 上下文，最好使用 Application类型的
+     * @param existManager 已经存在的 AssetManager (目的是复用已经存在的 AssetManager )
+     * @param fileOrDirNameInAssets 在[assets]目录下的 目录(不能带"/"结尾,eg.: "bDir")或者相对[assets]的文件的文件名(eg.: bDir/test.txt)
+     * @param isJustDirInAsset [assetFileOrDirName] 是否为文件夹
+     * @param targetDirPath 要复制到的目标 目录路径, eg.: /sdcard/target/
+     */
+    public static void copyAssetsFilesToTargetPath(Context context, AssetManager existManager, String fileOrDirNameInAssets, boolean isJustDirInAsset, String targetDirPath) {
+        if (existManager == null) {
+            existManager = context.getAssets();
+        }
+        if (existManager == null) {
+            return;
+        }
+        if (isJustDirInAsset) {
+            try {
+                String[] assetsFilesNamesInDir = existManager.list(fileOrDirNameInAssets);
+                if (assetsFilesNamesInDir == null) {
+                    return;
+                }
+                for (String aFileNameInDir : assetsFilesNamesInDir) {
+                    //这里要再判断，[aFileNameInDir]是否仍为文件夹??
+                    String theWillAccessAssetFilePath = fileOrDirNameInAssets + "/" + aFileNameInDir;
+                    boolean isSubFileIsDir = false;
+                    try {
+                        String[] stillHasSubFiles = existManager.list(theWillAccessAssetFilePath);
+                        isSubFileIsDir = stillHasSubFiles != null && stillHasSubFiles.length > 0;///如果该文件是文件夹但是目录下并没有文件呢？length ==0
+                    } catch (Exception listSubFileException) {
+                        listSubFileException.printStackTrace();
+                    }
+                    copyAssetsFilesToTargetPath(context, existManager, theWillAccessAssetFilePath, isSubFileIsDir, targetDirPath);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else {//在 assets目录下为文件，可能的文件名为: a/test.txt
+            //判断是否在 要复制到目标目录下该文件是否已经存在,如：/data/data/com.xx.xx/file/a/test.text
+            File targetFile = new File(targetDirPath, fileOrDirNameInAssets);
+            if (targetFile.exists() && targetFile.length() > 1) {
+                return;
+            }
+            File parentFile = targetFile.getParentFile();
+            if (parentFile!= null && !parentFile.exists()) {//使用这个就可以解决,带目录的 assets下资源名，复制到 目标文件夹下未先创建相应的 目录的问题
+                boolean isMkSuc = parentFile.mkdirs();
+            }
+            InputStream is = null;
+            OutputStream os = null;
+            try {
+                is = existManager.open(fileOrDirNameInAssets);
+                os = new FileOutputStream(targetFile);
+                byte[] readBuffer = new byte[1024];
+                int readLen = -1;
+                while ((readLen = is.read()) != -1) {
+                    os.write(readBuffer, 0, readLen);
+                }
+                os.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -28,9 +28,13 @@ public class JustStringCallback extends StringCallback {
 
     @Override
     public void onSuccess(String s, Response response) {
-        if (getNetEvent() != null) {
-            getNetEvent().onResponse(requestType,s);
+        INetEvent<String> netEvent = getNetEvent();
+        if (netEvent != null) {
+            netEvent.onResponse(requestType,s);
         }
+//        if (getNetEvent() != null) {
+//            getNetEvent().onResponse(requestType,s);
+//        }
     }
 
     @Override

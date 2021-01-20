@@ -10,16 +10,17 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class BezierAnimView extends FrameLayout {
     private static final String TAG = "BezierAnimView";
     /**
      * 本控件的宽
+     * 目前使用在本类内默认获取 贝塞尔曲线关键点的运算中
      */
     private int mWidth;
     /**
@@ -105,8 +107,13 @@ public class BezierAnimView extends FrameLayout {
      * def:红色
      */
     private @ColorInt int thePaintColor = 0xffff0000;
-    private boolean isNeedDebugDrawKeyPoings = false;
+    private boolean isNeedDebugDrawKeyPoints = false;
 
+    /**
+     * 当要调试绘制出 贝塞尔关键点时，是否需要仅绘制一次
+     * def:true
+     */
+    private boolean isJustDebugDrawOnce = true;
     /**
      * 贝塞尔曲线动画执行过程中是否需要回调 动画的状态
      * def: true
@@ -176,10 +183,40 @@ public class BezierAnimView extends FrameLayout {
     }
 
     @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        int curMeasuredWidth = getMeasuredWidth();
+        int curMeasuredHeight = getMeasuredHeight();
+        CommonLog.d(TAG, "--> onFinishInflate() curMeasuredWidth = " + curMeasuredWidth + " curMeasuredHeight = " + curMeasuredHeight);
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mWidth = getMeasuredWidth();
-        mHeight = getMeasuredHeight();
+        //这里发现一个 问题，当本类在约束容器视图内时，如果设置了宽、高0dp并 与 其他View 控件有约束关系时，其他 View可能会引起重绘，导致宽、高为0了
+        int curMeasuredWidth = getMeasuredWidth();
+        int curMeasuredHeight = getMeasuredHeight();
+        if (curMeasuredWidth != 0) {
+            mWidth = curMeasuredWidth;
+        }
+        if (curMeasuredHeight != 0) {
+            mHeight = curMeasuredHeight;
+        }
+        boolean isDecideReMeasured = false;
+        int finalMeasureWidth = curMeasuredWidth;
+        if (curMeasuredWidth == 0 && mWidth != 0) {
+            finalMeasureWidth = mWidth;
+            isDecideReMeasured = true;
+        }
+        int finalMeasuredHeight = curMeasuredHeight;
+        if (curMeasuredHeight == 0 && mHeight != 0) {
+            finalMeasuredHeight = mHeight;
+            isDecideReMeasured = true;
+        }
+        if (isDecideReMeasured) {
+            setMeasuredDimension(finalMeasureWidth,finalMeasuredHeight);
+        }
+        CommonLog.d(TAG, "--> onMeasure() curMeasuredWidth = " + curMeasuredWidth + " curMeasuredHeight = " + curMeasuredHeight);
     }
 
     /**
@@ -287,7 +324,7 @@ public class BezierAnimView extends FrameLayout {
                 if (this.providedKeyPoints == null) {
                     providedKeyPoints = animControler.provideKeyPoints(this, animIconWidth, animIconHeight);
                     //
-                    if (isNeedDebugDrawKeyPoings) {
+                    if (isNeedDebugDrawKeyPoints) {
                         if (mPaint4ShowKeyPoints == null) {
                             mPaint4ShowKeyPoints = new Paint(Paint.ANTI_ALIAS_FLAG);
                             mPaint4ShowKeyPoints.setColor(thePaintColor);
@@ -374,7 +411,7 @@ public class BezierAnimView extends FrameLayout {
         int halfMineW = mWidth / 2;
         switch (pointIndex) {
             case 0://第一个点
-                thePoint.x = mWidth / 2 - animIconWidth / 2;
+                thePoint.x = mWidth / 2f - animIconWidth / 2f;
                 thePoint.y = mHeight - animIconHeight;
                 break;
             case 1:
@@ -399,11 +436,15 @@ public class BezierAnimView extends FrameLayout {
 //        this.animControler = animaControler;
 //    }
 
-
+    /**
+     * 注意：因为本View 为ViewGroup容器类型，而ViewGroup 本来是不需要绘制什么的(为透明容器)，所以正常情况下
+     * 本方法并不会调用，但可以 给设置一个背景 或者 调用{@link #setWillNotDraw(boolean)}来让 onDraw()会被调用
+     * @param canvas 画布
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (isNeedDebugDrawKeyPoings) {
+        if (isNeedDebugDrawKeyPoints) {
             List<PointF> theKeyPoints = this.providedKeyPoints;
             if (theKeyPoints != null && theKeyPoints.size() > 0) {
                 int index = 1;
@@ -485,8 +526,9 @@ public class BezierAnimView extends FrameLayout {
         }
     }
 
-    public void setNeedDebugDrawKeyPoings(boolean isNeedDebugDrawKeyPoings) {
-        this.isNeedDebugDrawKeyPoings = isNeedDebugDrawKeyPoings;
+    public void setNeedDebugDrawKeyPoints(boolean isNeedDebugDrawKeyPoings) {
+        this.isNeedDebugDrawKeyPoints = isNeedDebugDrawKeyPoings;
+        setWillNotDraw(!isNeedDebugDrawKeyPoings);
     }
 
     public void setNeedCallbackUpdateAnimState(boolean isNeedCallbackUpdateAnimState) {
