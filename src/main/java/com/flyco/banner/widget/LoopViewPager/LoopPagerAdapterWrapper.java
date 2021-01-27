@@ -1,12 +1,18 @@
 package com.flyco.banner.widget.LoopViewPager;
 
 import android.os.Parcelable;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+
+import org.jetbrains.annotations.NotNull;
+
+import common.base.utils.CommonLog;
 
 /**
  * A PagerAdapter wrapper responsible for providing a proper page to
@@ -73,11 +79,12 @@ public class LoopPagerAdapterWrapper extends PagerAdapter {
 		return mAdapter;
 	}
 
+	@NotNull
 	@Override
-	public Object instantiateItem(ViewGroup container, int position) {
-		int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter) ? position
-				: toRealPosition(position);
-
+	public Object instantiateItem(@NonNull ViewGroup container, int position) {
+		boolean isFragmentAdapter = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter);
+		int realPosition = isFragmentAdapter ? position : toRealPosition(position);
+		CommonLog.e("info", "--> instantiateItem() position = " + position + " isFragmentAdapter = " + isFragmentAdapter);
 		if (mBoundaryCaching) {
 			ToDestroy toDestroy = mToDestroy.get(position);
 			if (toDestroy != null) {
