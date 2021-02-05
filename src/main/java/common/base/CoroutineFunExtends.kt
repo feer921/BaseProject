@@ -6,7 +6,7 @@ import kotlinx.coroutines.*
 /**
  * @author fee
  * <P>DESC:
- * 针对Kotlin的扩展函数
+ * 针对 Kotlin 的 [Coroutine] 扩展函数
  * </p>
  */
 
@@ -57,27 +57,35 @@ fun <R> executeBlockOnUiThreadAlways(block: () -> R) {
  * @param block 将运行的代码块
  * @return [R] 所运行的代码块将返回的结果类型
  */
-fun <R> executeBlockWith(isExecuteOnThreadOrUiThread: Boolean,block: () -> R){
+fun <R> executeBlockWith(isExecuteOnThreadOrUiThread: Boolean, block: () -> R): Job? {
     val isAlreadyOnMainThread = Looper.getMainLooper() == Looper.myLooper()
+    var executeJob: Job? = null
     if (isExecuteOnThreadOrUiThread) {//需要在工作线程中执行
         if (isAlreadyOnMainThread) {
-            CoroutineScope(Dispatchers.Default).launch {
+            executeJob = CoroutineScope(Dispatchers.Default).launch {
                 block()
             }
-        }
-        else{
+        } else {
             block()
         }
-    }
-    else{//需要在UI线程中执行
+    } else {//需要在UI线程中执行
         if (isAlreadyOnMainThread) {
             block()
-        }
-        else{
-            MainScope().launch {
+        } else {
+            executeJob = MainScope().launch {
                 block()
             }
         }
+    }
+    return executeJob
+}
+
+fun <R> executeBlockOnWorkThread(executeDelayTimeMills: Long = 0, block: () -> R): Job? {
+    return CoroutineScope(Dispatchers.Default).launch{
+        if (executeDelayTimeMills > 0) {
+            delay(executeDelayTimeMills)
+        }
+        block()
     }
 }
 

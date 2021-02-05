@@ -33,11 +33,19 @@ import java.lang.reflect.Method;
 /**
  * 工具类
  */
-public class ScreenUtils {
+public final class ScreenUtils {
     private static Context sContext;
     private static int windowWidth;
     private static int windowHeight;
+    /**
+     * 安卓屏幕密度的比率
+     * eg.: 1.0/1.5/2.0
+     */
     private static float density;
+    /**
+     * eg.: 160/240/320/...
+     */
+    private static int densityDpi;
     private static int statusBarHeight = 10;
 
     private static DisplayMetrics displayMetrics;
@@ -88,12 +96,15 @@ public class ScreenUtils {
         windowWidth = displayMetrics.widthPixels;
         windowHeight = displayMetrics.heightPixels;
         density = displayMetrics.density;
+        densityDpi = displayMetrics.densityDpi;
         int displayWidth = defDisplay.getWidth();
         int displayHeight = defDisplay.getHeight();
         int swdp = context.getResources().getConfiguration().smallestScreenWidthDp;
+        //ScreenUtils:    DisplayMetrics{density=1.5, width=1080, height=1920, scaledDensity=1.5, xdpi=117.23, ydpi=234.461}  display width :1080 display height :1848  swdp = 720
         CommonLog.sysErr("ScreenUtils:    " + displayMetrics + "  display width :" + displayWidth
                 + " display height :" + displayHeight
                 + "  swdp = " + swdp
+                + "  densityDpi = " + densityDpi
         );
         boolean isLandscape = windowWidth > windowHeight;
         if (isLandscape) {
@@ -112,6 +123,9 @@ public class ScreenUtils {
 //        return windowHeight;
 //    }
 
+    public static int getDensityDpi() {
+        return densityDpi;
+    }
     public static int getScreenCurWidth(boolean needLandscapeScreenWidth) {
         if (needLandscapeScreenWidth) {//需要横屏的宽,则是找最长边
             return Math.max(windowWidth, windowHeight);
