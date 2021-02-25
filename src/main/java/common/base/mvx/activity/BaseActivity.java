@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.DimenRes;
@@ -51,7 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             }
             needInitAuto = true;
         } else {
-            View providedContentView = providedContentView();
+            View providedContentView = providedContentView(null,savedInstanceState);
             if (providedContentView != null) {
                 if (isNeedSetContentView()) {
                     setContentView(providedContentView);
@@ -70,7 +71,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      *
      * @return
      */
-    protected View providedContentView() {
+    protected View providedContentView(ViewGroup container,Bundle savedInstanceState) {
         return null;
     }
 
@@ -129,17 +130,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             //                        //要启动的Activity的进场动画     //自身的左出动画效果？？
             overridePendingTransition(R.anim.common_whole_right_in, R.anim.common_whole_left_out);
         }
-    }
-
-    /**
-     * 从xml文件中找到一个Viwe控件的通配方法，将使用方需要的强制转换通用实现
-     *
-     * @param viewId
-     * @param <V>    控件类型
-     * @return T类型的视图控件
-     */
-    protected <V extends View> V findAviewById(int viewId) {
-        return findViewById(viewId);
     }
 
     /**

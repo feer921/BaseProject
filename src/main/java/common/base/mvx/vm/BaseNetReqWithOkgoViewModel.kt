@@ -1,6 +1,5 @@
-package common.base.viewmodels
+package common.base.mvx.vm
 
-import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import com.lzy.okgo.callback.OkgoNetCallback
 import common.base.netAbout.INetEvent
 import common.base.netAbout.NetRequestLifeMarker
 import common.base.netAbout.WrapperRespData
-import common.base.utils.CommonLog
 import common.base.utils.GenericsParamUtil
 
 /**
@@ -21,19 +19,7 @@ import common.base.utils.GenericsParamUtil
  * </p>
  * ******************(^_^)***********************
  */
-open class BaseViewModel<R> : ViewModel(), INetEvent<R> {
-    protected val TAG = javaClass.simpleName
-
-    /**
-     * Log 输出时的 额外信息
-     */
-    var extraInfosInDebug: String? = ""
-
-    /**
-     * 是否启用 网络请求响应回调时的 Log输出
-     * def: false
-     */
-    var enableDebug: Boolean = false
+abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
 
     /**
      * 是否启用 网络请求错误回调时的 Log 输出
@@ -116,7 +102,7 @@ open class BaseViewModel<R> : ViewModel(), INetEvent<R> {
      * @param errorInfo       错误信息
      */
     final override fun onErrorResponse(requestDataType: Int, errorInfo: String?) {
-        if (enableDebug && enableDebugOnErrorResp) {
+        if (isEnableLogDebug && enableDebugOnErrorResp) {
             e(null, " --> onErrorResponse() requestDataType = $requestDataType, errorInfo = $errorInfo")
         }
         //如果用户主动取消了当前网络请求如【Loading dialog】被取消了(实际上该请求已到达服务端,因而会响应回调)
@@ -149,7 +135,7 @@ open class BaseViewModel<R> : ViewModel(), INetEvent<R> {
      * @param result          响应实体:即表示将网络响应的结果转化成指定的数据实体bean
      */
     final override fun onResponse(requestDataType: Int, result: R?) {
-        if (enableDebug && enableDebugOnNormalResp) {
+        if (isEnableLogDebug && enableDebugOnNormalResp) {
             v(null, "--> onResponse() requestDataType = $requestDataType, result = $result")
         }
         if (curRequestCanceled(requestDataType)) {
@@ -280,20 +266,5 @@ open class BaseViewModel<R> : ViewModel(), INetEvent<R> {
 
 
 
-    open fun e(tag: String?, vararg logBodys: Any?) {
-        CommonLog.e(tag ?: "$TAG[$extraInfosInDebug]", *logBodys)
-    }
-
-    open fun v(tag: String?, vararg logBodys: Any?) {
-        CommonLog.fullLog('v', tag ?: "$TAG[$extraInfosInDebug]", CommonLog.getInfo(*logBodys))
-    }
-
-    open fun i(tag: String?, vararg logBodys: Any?) {
-        CommonLog.iFullLog(tag ?: "$TAG[$extraInfosInDebug]", *logBodys)
-    }
-
-    open fun d(logTag: String?, vararg logBodys: Any?) {
-        CommonLog.d(logTag ?: "$TAG[$extraInfosInDebug]", *logBodys)
-    }
 
 }

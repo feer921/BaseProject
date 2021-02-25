@@ -556,20 +556,6 @@ public abstract class BaseFragment extends Fragment implements
         return true;
     }
 
-    /**
-     * 注意：该提示性PopupWindow适用与在一个界面的顶部经由上至下的动画弹出
-     *
-     * @param anchorView 一般为顶部的一个控件
-     * @param xOffset    X方向的偏移量
-     * @param yOffset    Y方向的偏移量
-     */
-    @Override
-    public void initCommonHintPopuWindow(View anchorView, int xOffset, int yOffset) {
-        if (someUiHintAgent != null) {
-            someUiHintAgent.initHintPopuWindow(anchorView,xOffset,yOffset);
-        }
-    }
-
     @Override
     public void showCommonLoading(String hintMsg) {
         if (someUiHintAgent != null) {
@@ -605,16 +591,6 @@ public abstract class BaseFragment extends Fragment implements
         dialogHint(dialogTitle, hintMsg, cancelBtnName, sureBtnName, dialogInCase);
     }
 
-    @Override
-    public void popupHint(String hintMsg) {
-        if(someUiHintAgent != null)
-        someUiHintAgent.popupHint(hintMsg);
-    }
-
-    @Override
-    public void popupHint(int hintMsgResID) {
-        popupHint(getString(hintMsgResID));
-    }
     protected WeakHandler mHandler;
     /**
      * 各子类按需决定是否需要Handler

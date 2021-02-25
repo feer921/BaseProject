@@ -7,13 +7,14 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Message;
-import androidx.annotation.CallSuper;
-import androidx.annotation.DimenRes;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.DimenRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import common.base.R;
 import common.base.WeakHandler;
@@ -356,15 +357,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             netRequestLifeMarker.addRequestToMark(curRequestDataType, NetRequestLifeMarker.REQUEST_STATE_ING);
         }
     }
-    /**
-     * 注意：该提示性PopupWindow适用与在一个界面的顶部经由上至下的动画弹出
-     * @param anchorView 一般为顶部的一个控件
-     * @param xOffset X方向的偏移量
-     * @param yOffset Y方向的偏移量
-     */
-    protected void initCommonHintPopuWindow(View anchorView,int xOffset,int yOffset){
-        uiHintAgent.initHintPopuWindow(anchorView, xOffset, yOffset);
-    }
+
     protected void showCommonLoading(String hintMsg) {
         uiHintAgent.showLoading(hintMsg);
     }
@@ -392,13 +385,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         String sureBtnName = getString(sureBtnNameResID);
         dialogHint(dialogTitle, hintMsg, cancelBtnName, sureBtnName, dialogInCase);
     }
-    protected void popupHint(String hintMsg){
-        uiHintAgent.popupHint(hintMsg);
-    }
-    protected void popupHint(int hintMsgResID){
-        popupHint(getString(hintMsgResID));
-    }
-
 
     //------------------------- 生命周期方法----------(我是不漂亮的分隔线)------------------
     @Override

@@ -30,15 +30,14 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    mavenCentral()
-//    maven { url 'https://maven.google.com' }
     google()
+    mavenCentral()
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     api 'androidx.appcompat:appcompat:1.2.0'
     api 'com.google.android.material:material:1.2.1'
     api 'androidx.recyclerview:recyclerview:1.1.0'
@@ -59,4 +58,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1' // kotlin coroutines 协程
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
 }
