@@ -2,6 +2,8 @@ package common.base;
 
 import android.app.Activity;
 import android.app.Application;
+
+import androidx.annotation.CallSuper;
 import androidx.annotation.DimenRes;
 
 import common.base.utils.CommonLog;
@@ -15,8 +17,14 @@ import common.base.utils.PreferVisitor;
  */
 public class BaseApplication<E extends BaseApplication> extends Application{
     protected final String TAG = getClass().getSimpleName();
+    /**
+     * 将使用 DataStore替代
+     */
+    @Deprecated
     protected PreferVisitor preferVisitor;
     protected String appPreferFileName = "def_app_config";
+
+    @CallSuper
     @Override
     public void onCreate() {
         super.onCreate();

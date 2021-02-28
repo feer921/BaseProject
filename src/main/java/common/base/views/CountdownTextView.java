@@ -2,10 +2,11 @@ package common.base.views;
 
 import android.content.Context;
 import android.graphics.Color;
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import android.text.SpannableString;
 import android.util.AttributeSet;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import common.base.utils.CheckUtil;
 import common.base.utils.CommonLog;
@@ -65,6 +66,17 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
     private long mCountdownInterval;
 
     protected boolean isDetachFromWindow = true;
+
+    private CountdownTimerImpl.ICountdown outsideCountdownListener;
+
+    /**
+     * 是否使用 Handler的方案来倒计时
+     */
+    private boolean isUseHandlerCase = false;
+
+    private Runnable countDownTask = null;
+
+    private long mLeftTimeMills = 0;
     public CountdownTextView(Context context) {
         this(context,null);
     }
@@ -77,41 +89,66 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
 
     /**
      * 开始倒数
-     * @param mMillisInFuture 总倒数的时间，单位：毫秒
-     * @param mCountdownInterval 每次倒数时间间隔，单位：毫秒
+     * @param theMillisInFuture 总倒数的时间，单位：毫秒
+     * @param theCountdownInterval 每次倒数时间间隔，单位：毫秒
      */
-    public void start(long mMillisInFuture, long mCountdownInterval) {
+    public void start(long theMillisInFuture, long theCountdownInterval) {
         boolean willRestart = false;
-        if (mCountdownInterval <= 0 || mCountdownInterval > mMillisInFuture) {//该条件即包含了
+        if (theCountdownInterval <= 0 || theCountdownInterval > theMillisInFuture) {//该条件即包含了
             // mMillisInFuture <= 0了
             //这些个条件时，都不能执行任务
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
-            if (this.mMillisInFuture != mMillisInFuture) {
+            if (this.mMillisInFuture != theMillisInFuture) {
                 onFinish();
             }
             countDownTimer = null;
+            if (countDownTask != null) {
+                removeCallbacks(countDownTask);
+            }
             return;
         }
-        if (this.mMillisInFuture != mMillisInFuture || this.mCountdownInterval != mCountdownInterval) {
+        if (this.mMillisInFuture != theMillisInFuture || this.mCountdownInterval != theCountdownInterval) {
             willRestart = true;
         }
-        this.mMillisInFuture = mMillisInFuture;
-        this.mCountdownInterval = mCountdownInterval;
+        this.mLeftTimeMills = theMillisInFuture;
+        this.mMillisInFuture = theMillisInFuture;
+        this.mCountdownInterval = theCountdownInterval;
         if (willRestart) {
             if (countDownTimer != null) {
                 countDownTimer.cancel();
             }
             countDownTimer = null;
+
+            if (isUseHandlerCase) {
+                onTick(mMillisInFuture);
+                if (countDownTask == null) {
+                    countDownTask = new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO: 2021/2/28 ???
+                            mLeftTimeMills -= mCountdownInterval;
+
+                            if (mLeftTimeMills < mCountdownInterval) {
+                                onFinish();
+                            }
+                            else {
+                                onTick(mLeftTimeMills);
+                                postDelayed(this, mCountdownInterval);
+                            }
+                        }
+                    };
+                }
+                postDelayed(countDownTask, mCountdownInterval);
+            }
         }
-        if (countDownTimer == null) {
+        if (countDownTimer == null && !isUseHandlerCase) {
             countDownTimer = new CountdownTimerImpl(mMillisInFuture, mCountdownInterval);
             countDownTimer.setCountdown(this);
             onTick(mMillisInFuture);
             countDownTimer.start();
-        }
-        else {
+        } else {
             //如果不 为 null(可能时间参数一致的情况下),不需要 再start()
         }
     }
@@ -121,6 +158,10 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
         isDetachFromWindow = true;
         super.onDetachedFromWindow();
         log("onDetachedFromWindow()");
+        this.outsideCountdownListener = null;
+        if (countDownTask != null) {
+            removeCallbacks(countDownTask);
+        }
     }
 
     @Override
@@ -136,6 +177,9 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
     @Override
     public void onFinish() {
         log("onFinish()");
+        if (outsideCountdownListener != null) {
+            outsideCountdownListener.onFinish();
+        }
         showCountdownResultInfo(0);
     }
 
@@ -145,8 +189,8 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
      */
     @Override
     public void onTick(long leftMillisUntilFinished) {
-//        log("onTick() leftMillisUntilFinished = " + leftMillisUntilFinished);
-        if (isDetachFromWindow) {
+//        log("onTick() leftMillisUntilFinished = " + leftMillisUntilFinished + " isDetachFromWindow = " + isDetachFromWindow);
+        if (isDetachFromWindow && outsideCountdownListener == null) {
             return;
         }
         showCountdownResultInfo(leftMillisUntilFinished);
@@ -157,6 +201,10 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
      * @param leftMillisUntilFinished 剩余的 时间，单位：毫秒
      */
     protected void showCountdownResultInfo(long leftMillisUntilFinished) {
+        if (outsideCountdownListener != null) {
+            outsideCountdownListener.onTick(leftMillisUntilFinished);
+            return;
+        }
         // TODO: 2020/2/13 ???是否要交给外部来决定怎么显示
         int[] hms = TimeUtil.convertATotalMillisTime2Hms(leftMillisUntilFinished);
         //格式化时、分、秒
@@ -238,5 +286,13 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
             colorSpan4MinuteText = new RadiusCornerBackgroundColorSpan(hourMinuteSecondBgColor,bgColorSpanRadiusPxValue);
             colorSpan4SecondText = new RadiusCornerBackgroundColorSpan(hourMinuteSecondBgColor,bgColorSpanRadiusPxValue);
         }
+    }
+
+    public void setOutsideCountdownListener(CountdownTimerImpl.ICountdown outsideCountdownListener) {
+        this.outsideCountdownListener = outsideCountdownListener;
+    }
+
+    public void setUseHandlerCase(boolean isToUseHandlerCase) {
+        this.isUseHandlerCase = isToUseHandlerCase;
     }
 }

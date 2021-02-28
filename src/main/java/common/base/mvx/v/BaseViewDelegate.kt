@@ -1,6 +1,7 @@
 package common.base.mvx.v
 
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,16 +9,15 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.CallSuper
-import androidx.annotation.DimenRes
-import androidx.annotation.IdRes
-import androidx.annotation.StringRes
+import androidx.annotation.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStoreOwner
 import common.base.R
 import common.base.utils.CheckUtil
 import common.base.utils.CommonLog
+import common.base.utils.ImageUtil
 import common.base.views.OkToast
 
 
@@ -106,7 +106,12 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
             val toastTextPadding = dimenResPxValue(R.dimen.dp_10)
             okToast = OkToast.with(mContext)
                 .withTextSizePixelValue(dimenResPxValue(R.dimen.sp_14).toFloat())
-                .withTextPadding(toastTextPadding, toastTextPadding, toastTextPadding, toastTextPadding)
+                .withTextPadding(
+                    toastTextPadding,
+                    toastTextPadding,
+                    toastTextPadding,
+                    toastTextPadding
+                )
 //                .withBackground()
             initBlock(okToast!!)
             extraInitOkToast()
@@ -122,13 +127,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
      * 方法名以 toast前缀 便捷限定即为 Toast功能
      * 注：如果子类有不同的 Toast方案，重写之
      */
-    open fun toastCenter(toastMsg: CharSequence?,duration:Int = Toast.LENGTH_SHORT) {
+    open fun toastCenter(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT) {
         if (!CheckUtil.isEmpty(toastMsg)) {
             needOkToast {
 //                it.withBackground()
             }
             okToast?.withXYOffset(0, 0)
-                ?.centerShow(toastMsg,duration)
+                ?.centerShow(toastMsg, duration)
         }
     }
 
@@ -136,7 +141,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
         toastCenter(getString(toastMsgResId))
     }
 
-    open fun toastTop(toastMsg: CharSequence?,duration:Int = Toast.LENGTH_SHORT){
+    open fun toastTop(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT){
         if (!CheckUtil.isEmpty(toastMsg)) {
             needOkToast {  }
             okToast?.withXYOffset(0, 100)
@@ -151,8 +156,8 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     open fun toastBottom(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT) {
         if (!toastMsg.isNullOrBlank()) {
             needOkToast {  }
-            okToast?.withXYOffset(0,0)
-                ?.bottomShow(toastMsg,duration)
+            okToast?.withXYOffset(0, 0)
+                ?.bottomShow(toastMsg, duration)
         }
     }
 
@@ -184,7 +189,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
         reqCode: Int = 0,
         needFeedbackResult: Boolean = false
     ) {
-        jumpToActivity(Intent(mContext,targetActivityClass),reqCode,needFeedbackResult)
+        jumpToActivity(Intent(mContext, targetActivityClass), reqCode, needFeedbackResult)
     }
 
     fun jumpToActivity(
@@ -210,16 +215,12 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     //------- 关于 宿主生命周期 @end   ----------
 
     //------- 关于 调试日志输出 @start ----------
-    open fun i(logTag: String? = TAG,logMsg: String) {
-        if (IS_LOG_DEBUG) {
-            CommonLog.i(logTag ?: TAG, logMsg)
-        }
+    open fun i(logTag: String? = TAG, logMsg: String) {
+        CommonLog.i(logTag ?: TAG, logMsg)
     }
 
-    open fun e(logTag: String? = TAG,logMsg: String) {
-        if (IS_LOG_DEBUG) {
-            CommonLog.e(logTag ?: TAG, logMsg)
-        }
+    open fun e(logTag: String? = TAG, logMsg: String) {
+        CommonLog.e(logTag ?: TAG, logMsg)
     }
 
     //------- 关于 调试日志输出 @end   ----------
@@ -247,5 +248,77 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
      */
     override fun attachLifecycleOwner(theLifecycleOwner: LifecycleOwner?) {
         mLifecycleOwner = theLifecycleOwner
+    }
+
+   protected open fun <App : Application> peekAppInstance(): App {
+        return mContext.applicationContext as App
+    }
+
+    open fun commonLoadImgData(
+        @IdRes imgViewId: Int,
+        imgUrl: String?,
+        @DrawableRes defHoldImgRes: Int,
+        useAppContext: Boolean
+    ) {
+        val ivImg: ImageView = findView(imgViewId)
+        var useContext: Context? = null
+        if (!useAppContext) {
+            if (ivImg != null) {
+                useContext = ivImg.context
+            }
+        }
+        loadImgDataWithContext(useContext, ivImg, imgUrl, defHoldImgRes)
+    }
+
+    //------------ 通用加载图片 方法 @Start
+    /**
+     * 使用 Application 级的Context 加载图片
+     * @param imgViewId
+     * @param imgUrl
+     * @param defHoldImgRes
+     */
+    open fun commonLoadImgData(
+        @IdRes imgViewId: Int,
+        imgUrl: String?,
+        @DrawableRes defHoldImgRes: Int
+    ) {
+        val ivImg: ImageView = findView(imgViewId)
+        commonLoadImgData(ivImg, imgUrl, defHoldImgRes)
+    }
+
+    open fun commonLoadImgData(
+        imgView: ImageView?,
+        imgUrl: String?,
+        @DrawableRes defHoldImgRes: Int
+    ) {
+        loadImgDataWithContext(null, imgView, imgUrl, defHoldImgRes)
+    }
+
+    open fun loadImgDataWithContext(
+        assignContext: Context?,
+        imgView: ImageView?,
+        imgUrl: String?,
+        @DrawableRes defHoldImgRes: Int
+    ) {
+        if (imgView != null) {
+            var willUseContext: Context? = assignContext
+            if (willUseContext == null) {
+                willUseContext = mContext.applicationContext
+            }
+            if (isEmpty(imgUrl)) {
+                imgView.setImageResource(defHoldImgRes)
+            } else {
+                if (CheckUtil.isGifImage(imgUrl)) {
+                    ImageUtil.loadGifModel(willUseContext, imgUrl, defHoldImgRes, imgView, 0)
+                } else {
+                    ImageUtil.loadImage(willUseContext, imgUrl, defHoldImgRes, defHoldImgRes, imgView)
+                }
+            }
+        }
+    }
+
+    //------------ 通用加载图片 方法 @end
+    open fun isEmpty(charSequence: CharSequence?): Boolean {
+        return charSequence.isNullOrBlank()
     }
 }
