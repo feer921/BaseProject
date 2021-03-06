@@ -19,6 +19,7 @@ import common.base.R;
 /**
  * 集成第三方的下拉刷新以及上拉加载更多的控件
  */
+@Deprecated
 public class XListView extends ListView implements OnScrollListener {
 
     private float mLastY = -1; // save event y

@@ -19,7 +19,6 @@ import common.base.dialogs.SimpleHintDialog;
 import common.base.netAbout.BaseServerResult;
 import common.base.netAbout.INetEvent;
 import common.base.utils.NetHelper;
-import common.base.views.HintPopuWindow;
 
 
 /**
@@ -32,7 +31,6 @@ public class UIHintAgent {
 //    private CommonMdLoadialog loadingDialog;
     private BaseDialog hintDialog;
     private Context mContext;
-    private HintPopuWindow hintPopuWindow;
     /**
      * 对话框Dialog中的("确定“、”取消“按钮)的点击事件的监听者,供回调给外部
      */
@@ -358,32 +356,15 @@ public class UIHintAgent {
             if(mProxyCallback != null && mProxyCallback.ownerDealWithServerError(requestDataType,errorInfo)){
                 return;
             }
-            popupHint("连接服务器失败,请检查网络或稍候重试");
         }
     }
     private String getString(int errorInfoResIdBaseCode) {
         return mContext.getResources().getString(errorInfoResIdBaseCode);
     }
 
-    /**
-     * 初始化提示用的PopupWindow控件,用于显示提示信息
-     * @param anchorView
-     * @param xOffset
-     * @param yOffset
-     */
-    public void initHintPopuWindow(View anchorView, int xOffset, int yOffset) {
-        if (hintPopuWindow == null) {
-            hintPopuWindow = new HintPopuWindow(mContext);
-        }
-        hintPopuWindow.setAnchorView(anchorView, xOffset, yOffset);
-    }
 
-    public void popupHint(String hintMsg) {
-        if(!isOwnerVisible) return;
-        if (hintPopuWindow != null) {
-            hintPopuWindow.hintMsg(hintMsg);
-        }
-    }
+
+
     public void setOwnerVisibility(boolean isVisible){
         this.isOwnerVisible = isVisible;
     }
@@ -411,9 +392,7 @@ public class UIHintAgent {
 //        if (loadingDialog != null) {
 //            loadingDialog.dismiss();
 //        }
-        if (hintPopuWindow != null) {
-            hintPopuWindow.dismiss();
-        }
+
         if(mHandler != null){
             mHandler.removeCallbacksAndMessages(null);
         }
@@ -453,11 +432,7 @@ public class UIHintAgent {
             setUpHintDialogCancelListenerInfo();
         }
     }
-    public void popupWindowDismiss() {
-        if (hintPopuWindow != null && hintPopuWindow.isShowing()) {
-            hintPopuWindow.dismiss();
-        }
-    }
+
     /**
      * @deprecated 
      * @param timeOutMills

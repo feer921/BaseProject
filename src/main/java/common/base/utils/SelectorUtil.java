@@ -3,8 +3,11 @@ package common.base.utils;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+
 import com.android.xselector.XSelector;
 import com.android.xselector.selector.ColorSelector;
+import com.android.xselector.selector.DrawableSelector;
 import com.android.xselector.selector.ShapeSelector;
 
 /**
@@ -96,5 +99,23 @@ public class SelectorUtil {
             colorSelector.focusedColor(focusColor);
         }
         return colorSelector;
+    }
+
+    public static DrawableSelector drawableSelector(@DrawableRes int defDrawable,@DrawableRes int pressedDrawable,@DrawableRes int selectedDrawable,
+                                        @DrawableRes int disableDrawable) {
+        DrawableSelector drawableSelector = XSelector.drawableSelector();
+        if (defDrawable != 0) {
+            drawableSelector.defaultDrawable(defDrawable);
+        }
+        if (pressedDrawable != 0) {
+            drawableSelector.pressedDrawable(pressedDrawable);
+        }
+        if (selectedDrawable != 0) {
+            drawableSelector.selectedDrawable(selectedDrawable);
+        }
+        if (disableDrawable != 0) {
+            drawableSelector.disabledDrawable(disableDrawable);
+        }
+        return drawableSelector;
     }
 }
