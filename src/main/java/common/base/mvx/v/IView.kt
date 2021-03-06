@@ -28,6 +28,12 @@ interface IView : IHostActions {
     fun onCreateView(container: ViewGroup?, savedInstanceState: Bundle?): View?
 
     /**
+     * 提供 的视图/布局资源 ID
+     */
+    @LayoutRes
+    fun provideVLayoutRes(): Int
+
+    /**
      * 在该方法回调里初始化 Views
      * @param isInitState 是否为初始化状态,eg.: [Activity]的[onCreate]生命周期方法回调时；
      * @param dataIntent 从其他地方 跳转/路由 过来时所携带的 [Intent]
@@ -42,11 +48,7 @@ interface IView : IHostActions {
     fun peekRootView(): View?
 
 
-    /**
-     * 提供 的视图/布局资源 ID
-     */
-    @LayoutRes
-    fun provideVLayoutRes(): Int
+
 
     /**
      * 根据 指定的 View的 ID来查找对应的View

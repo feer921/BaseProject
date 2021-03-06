@@ -20,7 +20,7 @@ import common.base.mvx.v.IView
  */
 abstract class BaseViewDelegateFragment<V : IView> : BaseFragment() {
 
-    protected var mViewModule: V? = lazy { provideVModule()?.apply {
+    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
         attachViewModelStoreOwner(this@BaseViewDelegateFragment)
         attachLifecycleOwner(this@BaseViewDelegateFragment)
     } }.value

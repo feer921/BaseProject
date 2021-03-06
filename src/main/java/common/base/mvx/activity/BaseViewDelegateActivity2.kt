@@ -18,12 +18,16 @@ import common.base.mvx.v.IView
  * [MVVM]框架场景时，结合[DataBinding]或者[ViewModel]来使用
  * </P>
  */
-abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
+abstract class BaseViewDelegateActivity2<V : IView> : BaseActivity() {
 
-    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
-        attachLifecycleOwner(this@BaseViewDelegateActivity)
-        attachViewModelStoreOwner(this@BaseViewDelegateActivity)
-    } }.value
+    //因为 [lazy]方法执行时，前于 [Activity]的[onCreate] 方法，并且方法体里拿不到Activity的 [Intent]
+//    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
+//        attachLifecycleOwner(this@BaseViewDelegateActivity2)
+//        attachViewModelStoreOwner(this@BaseViewDelegateActivity2)
+//    } }.value
+
+
+    protected var mViewModule: V? = null
 
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理
@@ -36,6 +40,10 @@ abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
 
     @InvokeStep(2,desc = "onCreate()")
     override fun providedContentView(container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        mViewModule = provideVModule()?.apply {
+            attachLifecycleOwner(this@BaseViewDelegateActivity2)
+            attachViewModelStoreOwner(this@BaseViewDelegateActivity2)
+        }
         return mViewModule?.onCreateView(null, savedInstanceState)
     }
 
@@ -105,10 +113,9 @@ abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
         mViewModule?.initViews(false,intent,null)
     }
 
-    protected var isLetViewDelegateConsumeBackPressed = true
-
+    @CallSuper
     override fun onBackPressed() {
-        if (isLetViewDelegateConsumeBackPressed && mViewModule?.onConsumeBackPressed() == true) {
+        if (mViewModule?.onConsumeBackPressed() == true) {
             return
         }
         super.onBackPressed()

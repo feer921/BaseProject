@@ -27,7 +27,7 @@ import common.base.views.OkToast
  * 通用的基础 的[V]视图层
  * </P>
  */
-abstract class BaseViewDelegate(protected val mContext: Context) : IView {
+abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.OnClickListener {
 
     protected val TAG = javaClass.simpleName
 
@@ -53,20 +53,28 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     protected var mViewModelStoreOwner: ViewModelStoreOwner? = null
 
     protected var mLifecycleOwner: LifecycleOwner? = null
+
+    var isNeedCancelToastAtFinish = false
+
     /**
      * @param container 将要装载 本 视图层的容器 View; eg.: 当本视图层是提供给 [Fragment]时
      * @param savedInstanceState [Activity] 重绘时临时存储了状态数据的 对象
      * @return 本视图层最终创建的 视图 View
      */
     override fun onCreateView(container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = LayoutInflater.from(mContext).inflate(provideVLayoutRes(), container, false)
-        return rootView
+        val provideVLayoutRes = provideVLayoutRes()
+        if (provideVLayoutRes != 0) {
+            rootView = LayoutInflater.from(mContext).inflate(provideVLayoutRes, container, false)
+        }
+        return peekRootView()
     }
 
     /**
      * 本 接口View 的根View，可以提供给 [Activity] 或者 [Fragment]
      */
     override fun peekRootView(): View? = rootView
+
+    var isEnableCachViews = true
 
     /**
      * 根据 指定的 View的 ID来查找对应的View
@@ -77,7 +85,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
         var findedView = viewsCache?.get(targetViewId)//首先在 缓存中找,目的是 减少 View 树的遍历
         if (findedView == null) {
             findedView = super.findView(targetViewId)
-            if (findedView != null) {
+            if (isEnableCachViews && findedView != null) {
                 if (viewsCache == null) {
                     viewsCache = SparseArray()
                 }
@@ -141,9 +149,9 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
         toastCenter(getString(toastMsgResId))
     }
 
-    open fun toastTop(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT){
+    open fun toastTop(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT) {
         if (!CheckUtil.isEmpty(toastMsg)) {
-            needOkToast {  }
+            needOkToast { }
             okToast?.withXYOffset(0, 100)
                 ?.topShow(toastMsg, duration)
         }
@@ -155,7 +163,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
 
     open fun toastBottom(toastMsg: CharSequence?, duration: Int = Toast.LENGTH_SHORT) {
         if (!toastMsg.isNullOrBlank()) {
-            needOkToast {  }
+            needOkToast { }
             okToast?.withXYOffset(0, 0)
                 ?.bottomShow(toastMsg, duration)
         }
@@ -176,8 +184,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     ) {
         if (!needFeedbackResult) {
             mContext.startActivity(startIntent)
-        }
-        else{
+        } else {
             if (mContext is Activity) {
                 mContext.startActivityForResult(startIntent, startReqCode)
             }
@@ -205,11 +212,10 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     //------ 关于 通用 路由跳转 @end -----------
 
 
-
     //------- 关于 宿主生命周期 @start ----------
     @CallSuper
     override fun finish() {
-        okToast?.cancelShow(false)
+        okToast?.cancelShow(isNeedCancelToastAtFinish)
         super.finish()
     }
     //------- 关于 宿主生命周期 @end   ----------
@@ -250,8 +256,22 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
         mLifecycleOwner = theLifecycleOwner
     }
 
-   protected open fun <App : Application> peekAppInstance(): App {
+    protected open fun <App : Application> peekAppInstance(): App {
         return mContext.applicationContext as App
+    }
+
+    fun <V : View> bindViewOnClickListener(
+        @IdRes theViewID: Int,
+        onClickListener: View.OnClickListener = this
+    ): V {
+        val theV: V = findView(theViewID)
+        if (theV != null) {
+            theV.setOnClickListener(onClickListener)
+        }
+        return theV
+    }
+    override fun onClick(v: View?) {
+
     }
 
     open fun commonLoadImgData(
@@ -311,7 +331,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
                 if (CheckUtil.isGifImage(imgUrl)) {
                     ImageUtil.loadGifModel(willUseContext, imgUrl, defHoldImgRes, imgView, 0)
                 } else {
-                    ImageUtil.loadImage(willUseContext, imgUrl, defHoldImgRes, defHoldImgRes, imgView)
+                    ImageUtil.loadImage(
+                        willUseContext,
+                        imgUrl,
+                        defHoldImgRes,
+                        defHoldImgRes,
+                        imgView
+                    )
                 }
             }
         }
@@ -320,5 +346,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView {
     //------------ 通用加载图片 方法 @end
     open fun isEmpty(charSequence: CharSequence?): Boolean {
         return charSequence.isNullOrBlank()
+    }
+
+    fun peekContextAsActivity(): Activity? {
+        return if (mContext is Activity) {
+            mContext
+        } else {
+            null
+        }
     }
 }

@@ -18,6 +18,14 @@
         android:supportsRtl="true"
         >
 
+        <!--   通用的 可替换 ViewDelegate 的共用Activity
+             默认屏幕旋转不销毁
+             -->
+        <activity android:name=".mvx.activity.CommonViewDelegateActivity"
+            android:configChanges="fontScale|keyboardHidden|orientation|screenSize|layoutDirection|screenLayout"
+            >
+
+        </activity>
     </application>
 
 </manifest>
