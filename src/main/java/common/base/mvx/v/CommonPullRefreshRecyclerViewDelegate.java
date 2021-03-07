@@ -15,6 +15,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import java.util.List;
 
 import common.base.R;
+import common.base.annotations.InvokeStep;
 import common.base.netAbout.BaseServerResult;
 import common.base.utils.NetHelper;
 import common.base.utils.Util;
@@ -28,7 +29,21 @@ import common.base.views.VRefreshLayout;
  * Date: 2021/3/6<br>
  * Time: 22:11<br>
  * <P>DESC:
- *
+ * 通用的列表视图层
+ * <ul>
+ *     <li>可下拉刷新,由下拉刷新View提供功能</li>
+ *     <li>可再添加头部视图，由子类自行使用根View的addView()实现</li>
+ *     <li>可加载更多，由BaseQuickAdapter实现</li>
+ *     <li>可显示空视图，由{@link #emptyLoadingView}实现</li>
+ *     <li>可重写提供本视图布局，但需要保证本基类使用的View的ID一致</li>
+ * </ul>
+ * 一般子类需要关注的：
+ * 1、如果加载列表数据；
+ * 2、差异化的视图配置；
+ * 3、如果解析列表数据
+ * 等
+ * <D> 为列表加载的 Item数据对象
+ * <VH>为 适配器 ViewHolder的类型
  * </p>
  * ******************(^_^)***********************
  */
@@ -63,6 +78,7 @@ import common.base.views.VRefreshLayout;
      * def: 1
      */
     protected int curPage = 1;
+
     /**
      * 每页需要加载的数量
      * def: 20
@@ -84,6 +100,7 @@ import common.base.views.VRefreshLayout;
      * def: 0, 基类不可定
      */
     protected int theListDataRequestType;
+
     /**
      * 获取到数据后是否需要去重处理
      * def: false,默认对加载下来的网络数据不作去重处理
@@ -118,6 +135,8 @@ import common.base.views.VRefreshLayout;
     /**
      * 是否需要当初始化时自动请求数据
      * def:true
+     * 因为有些界面可能需要在 宿主[Activity]或者[Fragment]的[onResume]方法时才去请求数据，此时请把该属性置为false
+     * 并且自行在相关位置请求数据
      */
     protected boolean isNeedAutoReqDataInit = true;
 
@@ -128,6 +147,9 @@ import common.base.views.VRefreshLayout;
      */
     protected boolean isNeedDefPageLoading = true;
 
+    /**
+     * 是否将自动调用请求数据的方法，当宿主[Activity]或者[Fragment]的[onResume]方法时
+     */
     protected boolean isWillAutoLoadDataOnResume = false;
 
     /**
@@ -149,7 +171,7 @@ import common.base.views.VRefreshLayout;
 //            vRefreshLayout.setHeaderView(new CustomPullDownHeaderView(this));
 
             recyclerView = findView(R.id.recycleview);
-            //added by fee 2018-12-20
+
             vRefreshLayout.setBelongTag(getTAG());
             vRefreshLayout.setNestedCanScrolableView(recyclerView);
 
@@ -157,12 +179,11 @@ import common.base.views.VRefreshLayout;
 
             initRecyclerView(recyclerView);
 
-
             dataAdapter = providedAdapterAndInit();
 
             emptyLoadingView = new SuperEmptyLoadingView(getMContext());
             initEmptyLoadingView(emptyLoadingView);
-            //added by fee 2018-10-16:
+
             emptyLoadFailNeedCareNoNet = true;
 
             dontShowNoMoreDataView = true;
@@ -178,34 +199,22 @@ import common.base.views.VRefreshLayout;
                 dataAdapter.setOnLoadMoreListener(this, recyclerView);
             }
             recyclerView.setAdapter(dataAdapter);
-
+            initData();
         }
     }
 
     /**
      * 初始化 当前视图的头部视图
      */
+    @InvokeStep(value = 1,desc = "invoke in initViews()")
     protected abstract void initHeaderViews();
-
-    /**
-     * 初始化SuperEmptyLoadingView：设置空内容时的图片、提示信息等
-     *
-     * @param emptyLoadingView
-     */
-    protected abstract void initEmptyLoadingView(SuperEmptyLoadingView emptyLoadingView);
-
-    /**
-     * 子类提供RecyclerView具体的适配器并且初始化: 设置加载更多视图、设置开启上拉加载更多功能、设置加载更多的监听者、加载初始化数据等
-     *
-     * @return BaseQuickAdapter的子类，必须返回
-     */
-    protected abstract BaseQuickAdapter<D, VH> providedAdapterAndInit();
 
     /**
      * 初始化VRefreshLayout： 设置自定义的刷新头部等
      *
      * @param vRefreshLayout
      */
+    @InvokeStep(value = 2,desc = "invoke in initViews()")
     protected abstract void initRefreshLayout(VRefreshLayout vRefreshLayout);
 
     /**
@@ -213,17 +222,36 @@ import common.base.views.VRefreshLayout;
      *
      * @param recyclerView
      */
+    @InvokeStep(value = 3,desc = "invoke in initViews()")
     protected abstract void initRecyclerView(RecyclerView recyclerView);
 
+    /**
+     * 子类提供RecyclerView具体的适配器并且初始化: 设置加载更多视图、设置开启上拉加载更多功能、设置加载更多的监听者、加载初始化数据等
+     *
+     * @return BaseQuickAdapter的子类，必须返回
+     */
+    @InvokeStep(value = 4,desc = "invoke in initViews()")
+    protected abstract BaseQuickAdapter<D, VH> providedAdapterAndInit();
 
-    protected final void initData() {
+    /**
+     * 初始化SuperEmptyLoadingView：设置空内容时的图片、提示信息等
+     *
+     * @param emptyLoadingView
+     */
+    @InvokeStep(value = 5,desc = "invoke in initViews()")
+    protected abstract void initEmptyLoadingView(SuperEmptyLoadingView emptyLoadingView);
+
+
+    @InvokeStep(value = 6,desc = "invoke in initViews()")
+    protected void initData() {
         prepare2LoadData();
         if (!canPulldownWhenInitLoadingData
-                || !isNeedPulldownRefresh//added by fee 2018-03-19,子类不需要下拉刷新功能，但不影响下拉加载更多功能
+                || !isNeedPulldownRefresh//added by fee : 子类不需要下拉刷新功能，但不影响下拉加载更多功能
         ) {
             vRefreshLayout.setEnabled(false);
         }
-        //changed by fee 2019-11-22:把初次加载数据是否需要空布局的loading逻辑放在这里，如果不需要，则清除空布局的默认显示数据
+
+        //changed: 把初次加载数据是否需要空布局的loading逻辑放在这里，如果不需要，则清除空布局的默认显示数据
         if (isNeedDefPageLoading) {
             emptyLoadingView.loading();
         }
@@ -274,6 +302,7 @@ import common.base.views.VRefreshLayout;
 
     /**
      * 子类提供加载当前列表数据的逻辑
+     * 注：因为本基类为 视图层，所以加载数据子类自行处理，可调用[ViewModel]层来加载数据
      */
     protected abstract void loadListData();
 

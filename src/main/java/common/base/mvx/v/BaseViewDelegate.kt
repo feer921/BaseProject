@@ -95,6 +95,8 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         return findedView as V
     }
 
+    protected fun <V : View> view(@IdRes targetViewId: Int): V = findView(targetViewId)
+
     /**
      * 将dimen资源id,转换为系统中的px值
      * @param dimenResId 定义的dimen 资源 ID
@@ -266,10 +268,15 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
     ): V {
         val theV: V = findView(theViewID)
         if (theV != null) {
-            theV.setOnClickListener(onClickListener)
+            bindViewOnClickListener(theV,onClickListener)
         }
         return theV
     }
+
+    fun bindViewOnClickListener(theView: View?, onClickListener: View.OnClickListener = this) {
+        theView?.setOnClickListener(onClickListener)
+    }
+
     override fun onClick(v: View?) {
 
     }

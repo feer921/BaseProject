@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 背景无，只有点击时的背景颜色变化 -->
 <selector
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true" >
@@ -41,10 +42,7 @@
 
     <item>
         <shape>
-            <gradient
-                android:startColor="#00000000"
-                android:endColor="#00000000"
-                />
+            <solid android:color="#00000000" />
             <!--<stroke-->
                 <!--android:width="0.5dp"-->
                 <!--android:color="@color/grey_line"-->
