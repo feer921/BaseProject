@@ -55,7 +55,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
             View providedContentView = providedContentView(null,savedInstanceState);
             if (providedContentView != null) {
                 if (isNeedSetContentView()) {
-                    setContentView(providedContentView);
+                    setContentView(providedContentView);// 注：这种填充布局的方式，不会把xml布局中根View的布局参数给保留(如：设置的左右marging属性)
                 }
                 needInitAuto = true;
             }

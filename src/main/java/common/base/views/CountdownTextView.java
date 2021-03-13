@@ -122,6 +122,9 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
             countDownTimer = null;
 
             if (isUseHandlerCase) {
+                if (countDownTask != null) {
+                    removeCallbacks(countDownTask);
+                }
                 onTick(mMillisInFuture);
                 if (countDownTask == null) {
                     countDownTask = new Runnable() {
@@ -153,6 +156,9 @@ public class CountdownTextView extends CustomTextView implements CountdownTimerI
         }
     }
 
+    public void reset() {
+        mMillisInFuture = 0;
+    }
     @Override
     protected void onDetachedFromWindow() {
         isDetachFromWindow = true;

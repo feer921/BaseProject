@@ -9,6 +9,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.*
@@ -57,6 +58,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
     var isNeedCancelToastAtFinish = false
 
     /**
+     * added by fee 2021-03-13: 由于本视图层是使用 [LayoutInflater] [inflate]出界面布局的方式，
+     * 而如果 [container]外部没有指定容器View的Case 下，XML中根 View 所写的 布局参数并不会被保留
+     * 造成开发者在 XML 中写的 边距等属性无效，所以这里统一处理，并可以让子类 自主配置
+     * def = false 因为大多数情况下，我们在 XML中的根 View不会写 边距等属性
+     */
+    protected var isNeedKeepXmlRootViewParams = false
+    /**
      * @param container 将要装载 本 视图层的容器 View; eg.: 当本视图层是提供给 [Fragment]时
      * @param savedInstanceState [Activity] 重绘时临时存储了状态数据的 对象
      * @return 本视图层最终创建的 视图 View
@@ -64,7 +72,11 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
     override fun onCreateView(container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val provideVLayoutRes = provideVLayoutRes()
         if (provideVLayoutRes != 0) {
-            rootView = LayoutInflater.from(mContext).inflate(provideVLayoutRes, container, false)
+            var theTempContainerView = container
+            if (theTempContainerView == null && isNeedKeepXmlRootViewParams) {
+                theTempContainerView = FrameLayout(mContext)
+            }
+            rootView = LayoutInflater.from(mContext).inflate(provideVLayoutRes, theTempContainerView, false)
         }
         return peekRootView()
     }
@@ -92,7 +104,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
                 viewsCache?.put(targetViewId, findedView)
             }
         }
-        return findedView as V
+        return findedView as V//如果 findedView == null 会抛出异常
     }
 
     protected fun <V : View> view(@IdRes targetViewId: Int): V = findView(targetViewId)
