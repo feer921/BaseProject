@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelStoreOwner
 import common.base.R
@@ -369,6 +370,14 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
 
     fun peekContextAsActivity(): Activity? {
         return if (mContext is Activity) {
+            mContext
+        } else {
+            null
+        }
+    }
+
+    fun peekContextAsAppCompatActivity(): AppCompatActivity? {
+        return if (mContext is AppCompatActivity) {
             mContext
         } else {
             null

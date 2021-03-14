@@ -18,12 +18,27 @@ import common.base.mvx.v.IView
  * [MVVM]框架场景时，结合[DataBinding]或者[ViewModel]来使用
  * </P>
  */
-abstract class BaseViewDelegateFragment<V : IView> : BaseFragment() {
+abstract class BaseViewDelegateFragment<V : IView>() : BaseFragment() {
 
-    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
+    protected val mViewModule: V? by lazy(mode = LazyThreadSafetyMode.NONE) {
+        provideVModule()?.apply {
         attachViewModelStoreOwner(this@BaseViewDelegateFragment)
         attachLifecycleOwner(this@BaseViewDelegateFragment)
-    } }.value
+    } }
+
+
+
+//    init {
+//        println("in init time : 0 in lazy ")
+//    }
+
+    //下面 这个 会在 对象初始化阶段 就初始化
+//    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) {
+//        println("00000000000000000000000000000000000000000000000 in lazy ")
+//        provideVModule()?.apply {
+//            attachViewModelStoreOwner(this@BaseViewDelegateFragment)
+//            attachLifecycleOwner(this@BaseViewDelegateFragment)
+//        } }.value
 
     /**
      * 提供当前碎片的内容视图布局的资源ID

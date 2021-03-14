@@ -26,7 +26,7 @@ import common.base.mvx.v.IView;
  * </p>
  * ******************(^_^)***********************
  */
-public class CommonViewDelegateActivity extends BaseViewDelegateActivity2<IView> {
+public class CommonViewDelegateActivity extends BaseViewDelegateActivity<IView> {
 
     protected static final String INTENT_KEY_REQ_SCREEN_ORIENTATION = "intent.key.screen_orientation";
     @Override

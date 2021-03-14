@@ -232,7 +232,7 @@ public abstract class BaseFragment extends Fragment implements
             needReDrawUi = true;
             int curFragmentViewResId = providedFragmentViewResId();
             if (curFragmentViewResId > 0) {
-                rootView = inflater.inflate(curFragmentViewResId, null);
+                rootView = inflater.inflate(curFragmentViewResId, container,false);
             }
             else{
                 rootView = providedFragmentView(container,savedInstanceState);

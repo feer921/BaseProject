@@ -18,7 +18,7 @@ import common.base.mvx.v.IView
  * [MVVM]框架场景时，结合[DataBinding]或者[ViewModel]来使用
  * </P>
  */
-abstract class BaseViewDelegateActivity2<V : IView> : BaseActivity() {
+internal abstract class BaseViewDelegateActivity2<V : IView> : BaseActivity() {
 
     //因为 [lazy]方法执行时，前于 [Activity]的[onCreate] 方法，并且方法体里拿不到Activity的 [Intent]
 //    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {

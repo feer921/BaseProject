@@ -20,10 +20,10 @@ import common.base.mvx.v.IView
  */
 abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
 
-    protected var mViewModule: V? = lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
+    protected val mViewModule: V? by lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
         attachLifecycleOwner(this@BaseViewDelegateActivity)
         attachViewModelStoreOwner(this@BaseViewDelegateActivity)
-    } }.value
+    } }
 
     /**
      * 获取当前Activity需要填充、展示的内容视图，如果各子类提供，则由基类来填充，如果不提供，各子类也可自行处理

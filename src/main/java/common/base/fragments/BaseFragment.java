@@ -46,7 +46,9 @@ import common.base.utils.CommonLog;
  *     <P>其中 {@link #onDestroyView() } 可恢复至 {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} </P>
  * </P>
  * </P>
+ * @deprecated MVC框架下的 BaseFragment
  */
+@Deprecated
 public abstract class BaseFragment extends Fragment implements
                                 View.OnClickListener,
                                 IProxyCallback,
@@ -239,7 +241,7 @@ public abstract class BaseFragment extends Fragment implements
             needReDrawUi = true;
             int curFragmentViewResId = providedFragmentViewResId();
             if (curFragmentViewResId > 0) {
-                rootView = inflater.inflate(curFragmentViewResId, null);
+                rootView = inflater.inflate(curFragmentViewResId, container,false);
             }
             else{
                 rootView = providedFragmentView();
