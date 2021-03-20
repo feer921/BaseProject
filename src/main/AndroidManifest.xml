@@ -20,10 +20,12 @@
 
         <!--   通用的 可替换 ViewDelegate 的共用Activity
              默认屏幕旋转不销毁
+             默认 输入法隐藏|自动调整布局
              -->
         <activity android:name=".mvx.activity.CommonViewDelegateActivity"
             android:configChanges="fontScale|keyboardHidden|orientation|screenSize|layoutDirection|screenLayout"
             android:screenOrientation="locked"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan|adjustResize"
             >
 
         </activity>

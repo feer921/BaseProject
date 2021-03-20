@@ -8,8 +8,8 @@ import common.base.mvx.v.IView
 /**
  ******************(^_^)***********************<br>
  * User: fee(QQ/WeiXin:1176610771)<br>
- * Date: 2021/3/17<br>
- * Time: 22:31<br>
+ * Date: 2021/3/20<br>
+ * Time: 12:31<br>
  * <P>DESC:
  * 一个通用的加载 视图层代理的 Fragment，
  * 从而可以不用写各个Fragment，而只写 相应的 ViewDelegate
