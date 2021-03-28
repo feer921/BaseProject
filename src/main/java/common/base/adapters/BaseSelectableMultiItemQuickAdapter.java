@@ -270,5 +270,5 @@ public abstract class BaseSelectableMultiItemQuickAdapter<T extends MultiItemEnt
     protected ASelectableDelegate.IChooseCallback chooseCallback;
 
 
-    //----------------------------- @接口 ISelectOptions 的基类可实行方法 start -----
+    //----------------------------- @接口 ISelectOptions 的基类可实行方法 end -----
 }
