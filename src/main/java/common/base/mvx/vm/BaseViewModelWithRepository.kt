@@ -22,4 +22,7 @@ abstract class BaseViewModelWithRepository<REPO : IRepository> : BaseViewModel()
      * 提供当前 [M]业务层 的主仓库，因为有可能 一个 [ViewModel] 会需要多个[M]层的业务仓库
      */
     protected abstract fun provideMainRepository(): REPO?
+
+    public fun getMainBizRepo(): REPO? = mMainRepository
+
 }

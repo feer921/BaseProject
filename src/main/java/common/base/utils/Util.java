@@ -52,6 +52,9 @@ import java.util.zip.ZipInputStream;
 public class Util {
 
     private static final String TAG = "util";
+
+    public static final int SDK_INT = Build.VERSION.SDK_INT;
+
     /**
      * 获取压缩文件里的bitmap
      * @param file
@@ -106,7 +109,7 @@ public class Util {
 
     @SuppressLint("NewApi")
     public static void enableWriteSmsOpt(Context mContext) {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (SDK_INT >= 19) {
             // Android 4.4
             // 及以上才有以下功能，并且可直接设置程序有写短信权限，如果以下运行有异常，则表示可能系统为Android5.0
             String PHONE_PACKAGE_NAME = mContext.getPackageName();
@@ -395,7 +398,7 @@ public class Util {
      */
     public static Intent getServiceIntentCompatibledApi20(Context mContext, String serviceAction) {
         Intent actionIntent = new Intent(serviceAction);
-        if (Build.VERSION.SDK_INT < 19) {// android 5.0以下
+        if (SDK_INT < 19) {// android 5.0以下
             return actionIntent;
         }
         PackageManager pm = mContext.getPackageManager();
@@ -416,7 +419,7 @@ public class Util {
     }
 
     public static Intent getServiceIntentCompatibledApi20(Context mContext, Intent actionIntent) {
-        if (Build.VERSION.SDK_INT < 19) {// android 5.0以下
+        if (SDK_INT < 19) {// android 5.0以下
             return actionIntent;
         }
         PackageManager pm = mContext.getPackageManager();
@@ -480,7 +483,7 @@ public class Util {
      */
     public static boolean isCompateApi(int apiLevle){
         if(apiLevle <= 0) return  false;
-        if(apiLevle <= Build.VERSION.SDK_INT){
+        if(apiLevle <= SDK_INT){
             return true;
         }
         return false;

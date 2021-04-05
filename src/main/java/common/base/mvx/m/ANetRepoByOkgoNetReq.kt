@@ -40,7 +40,7 @@ abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
     protected var enableDebugOnErrorResp = true
 
     /**
-     * 当本[ViewModel] 销毁时，是否自动标记当前进行的网络请求(如果有的话) 为取消状态
+     * 当宿主[ViewModel] 销毁时，是否自动标记当前进行的网络请求(如果有的话) 为取消状态
      * def: true
      */
     protected var enableAutoCancelNetReq = true

@@ -7,6 +7,8 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
+import java.lang.ref.WeakReference;
+
 /**
  * ******************(^_^)***********************<br>
  * User: fee(QQ/WeiXin:1176610771)<br>
@@ -28,7 +30,7 @@ public class ExtraClickableSpan extends ClickableSpan {
      * 当前用来区分Span类型的，点击的时候可用来区分点到哪里
      */
     private int spanType;
-    private OnClickableSpanClickListener clickableSpanClickListener;
+    private WeakReference<OnClickableSpanClickListener> refSpanClickListener;
 
     private @ColorInt int linkTextColor;
 
@@ -47,8 +49,11 @@ public class ExtraClickableSpan extends ClickableSpan {
      */
     @Override
     public void onClick(@NonNull View widget) {
-        if (clickableSpanClickListener != null) {
-            clickableSpanClickListener.onSpanClick(this, widget, spanType, wrappedSpanText);
+        if (refSpanClickListener != null) {
+            OnClickableSpanClickListener clickableSpanClickListener = refSpanClickListener.get();
+            if (clickableSpanClickListener != null) {
+                clickableSpanClickListener.onSpanClick(this, widget, spanType, wrappedSpanText);
+            }
         }
     }
 
@@ -85,7 +90,7 @@ public class ExtraClickableSpan extends ClickableSpan {
     }
 
     public void setClickableSpanClickListener(OnClickableSpanClickListener clickableSpanClickListener) {
-        this.clickableSpanClickListener = clickableSpanClickListener;
+        refSpanClickListener = new WeakReference<>(clickableSpanClickListener);
     }
 
     public interface OnClickableSpanClickListener{

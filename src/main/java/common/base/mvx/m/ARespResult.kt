@@ -16,6 +16,6 @@ open class ARespResult<DataType,R>(
     val dataType: DataType,
     val data: R?,
     val isNeedShowLoading: Boolean = false,
-    val errorMsg: String? = "",
+    val errorMsg: String? = null,
     val exception: Exception? = null
 )
