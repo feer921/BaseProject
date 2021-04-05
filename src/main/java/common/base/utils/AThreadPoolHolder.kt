@@ -1,5 +1,7 @@
 package common.base.utils
 
+import android.os.Looper
+import com.flyco.banner.widget.LoopViewPager.LoopViewPager
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -64,5 +66,7 @@ class AThreadPoolHolder private constructor(coreThreadCount: Int = 0, maxThreadC
                 block()
             }
         }
+
+        fun isOnMainThread() = Looper.getMainLooper() == Looper.myLooper()
     }
 }

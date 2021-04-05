@@ -81,7 +81,7 @@
                 android:cacheColorHint="@color/transparent"
                 android:divider="@color/divider_line_gray_color"
                 android:dividerHeight="0.5dp"
-                android:listSelector="@drawable/selector_4_list_item"
+                android:listSelector="@drawable/selector_4_item"
                 android:visibility="gone">
 
             </ListView>

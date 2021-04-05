@@ -1,4 +1,4 @@
-package common.base.mvx.vm
+package common.base.mvx.m
 
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
@@ -7,27 +7,43 @@ import com.lzy.okgo.OkGo
 import com.lzy.okgo.callback.OkgoNetCallback
 import common.base.netAbout.INetEvent
 import common.base.netAbout.NetRequestLifeMarker
-import common.base.netAbout.WrapperRespData
 import common.base.utils.GenericsParamUtil
 
 /**
- * ******************(^_^)***********************<br>
+ ******************(^_^)***********************<br>
  * User: fee(QQ/WeiXin:1176610771)<br>
+ * Date: 2021/4/4<br>
+ * Time: 20:59<br>
  * <P>DESC:
- * [ViewModel] 的基础封装，
- * 可进行 基于[OkGo]的网络数据请求
- * 注：此基类把 业务数据层(网络请求数据) 耦合到了 [ViewModel]层
+ * 网络请求仓库、基于 OkGo的网络请求
  * </p>
  * ******************(^_^)***********************
  */
-@Deprecated("此基类把 业务数据层(网络请求数据) 耦合到了")
-abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
+abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
+
+    private var netRespLiveData: MutableLiveData<ARespResult<Int,R>>? = null
+
+    /**
+     * 如果外部调用了该方法，则表明外部需要 监听 网络请求的响应的数据
+     */
+    fun getNetRespLiveData(): MutableLiveData<ARespResult<Int, R>>? {
+        if (netRespLiveData == null) {
+            netRespLiveData = MutableLiveData()
+        }
+        return netRespLiveData
+    }
 
     /**
      * 是否启用 网络请求错误回调时的 Log 输出
      * def: true
      */
     protected var enableDebugOnErrorResp = true
+
+    /**
+     * 当本[ViewModel] 销毁时，是否自动标记当前进行的网络请求(如果有的话) 为取消状态
+     * def: true
+     */
+    protected var enableAutoCancelNetReq = true
 
     /**
      * 是否启用 网络请求 正常回调里的 Log 输出
@@ -37,37 +53,11 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
     protected var aOkGoCallback: OkgoNetCallback<R>? = null
 
     /**
-     * 通用的 网络请求 响应 的[LiveData],子类可以不用
-     */
-    private var commonNetRespLiveData: MutableLiveData<WrapperRespData<R?>> ? = null
-
-    /**
-     * 如果该方法调用了，即表明 某处是希望来 观察 该 LiveData 的
-     */
-    fun getCommonNetRespLiveData(): MutableLiveData<WrapperRespData<R?>>? {
-        if (commonNetRespLiveData == null) {
-            commonNetRespLiveData = MutableLiveData()
-        }
-        return commonNetRespLiveData
-    }
-    /**
-     * 是否启用 本基类 通用的网络请求 结果数据的 LiveData
-     * def: true
-     */
-    protected var enableCommonNetRespLivedata = true
-
-    /**
-     * 当本[ViewModel] 销毁时，是否自动标记当前进行的网络请求(如果有的话) 为取消状态
-     * def: true
-     */
-    protected var enableAutoCancelNetReq = true
-
-
-    /**
      * 网络请求 状态 标记者
      * 用于标记一个网络请求的：开始、结束
      */
     protected val netRequestStateMarker = NetRequestLifeMarker()
+
     protected fun initOkgoNetDataListener() {
         if (aOkGoCallback == null) {
             aOkGoCallback = createOkgoNetListener()
@@ -97,6 +87,7 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
     protected fun cancelOkGoNetWork(toCancelTag: Any) {
         OkGo.getInstance().cancelTag(toCancelTag)
     }
+
     /**
      * 网络请求失败
      *
@@ -105,7 +96,10 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
      */
     final override fun onErrorResponse(requestDataType: Int, errorInfo: String?) {
         if (isEnableLogDebug && enableDebugOnErrorResp) {
-            e(null, " --> onErrorResponse() requestDataType = $requestDataType, errorInfo = $errorInfo")
+            e(
+                null,
+                " --> onErrorResponse() requestDataType = $requestDataType, errorInfo = $errorInfo"
+            )
         }
         //如果用户主动取消了当前网络请求如【Loading dialog】被取消了(实际上该请求已到达服务端,因而会响应回调)
         //则不让各子类处理已被用户取消了的请求
@@ -121,15 +115,11 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
      * @param requestDataType 当前网络请求类型
      * @param errorInfo 错误/异常 信息
      */
-    protected open fun dealWithErrorResponse(requestDataType: Int, errorInfo: String?){
+    protected open fun dealWithErrorResponse(requestDataType: Int, errorInfo: String?) {
         //如果子类重写，并不调用 supper本方法，则[netRespLiveData] 无效
-        if (enableCommonNetRespLivedata) {
-//            if (commonNetRespLiveData == null) {
-//                commonNetRespLiveData = MutableLiveData()
-//            }
-            commonNetRespLiveData?.value = WrapperRespData(null, requestDataType, errorInfo)
-        }
+        netRespLiveData?.value = ARespResult(requestDataType, null, errorMsg = errorInfo)
     }
+
     /**
      * 网络请求的响应
      *
@@ -153,15 +143,10 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
      * @param requestDataType 当前网络请求类型
      * @param result 序列化后[如JSON序列化后] 的结果对象
      */
-    protected open fun dealWithResponse(requestDataType: Int, result: R?){
-        //如果子类重写，并不调用 supper本方法，则[netRespLiveData] 无效
-        if (enableCommonNetRespLivedata) {
-//            if (commonNetRespLiveData == null) {
-//                commonNetRespLiveData = MutableLiveData()
-//            }
-            commonNetRespLiveData?.value = WrapperRespData(result, requestDataType, null)
-        }
+    protected open fun dealWithResponse(requestDataType: Int, result: R?) {
+        netRespLiveData?.value = ARespResult(requestDataType, result)
     }
+
     /**
      * 错误回调，在还没有开始请求之前，比如：一些参数错误
      *
@@ -206,7 +191,10 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
      * @param curRequestDataType
      */
     protected fun trackARequestState(curRequestDataType: Int) {
-        netRequestStateMarker.addRequestToMark(curRequestDataType, NetRequestLifeMarker.REQUEST_STATE_ING)
+        netRequestStateMarker.addRequestToMark(
+            curRequestDataType,
+            NetRequestLifeMarker.REQUEST_STATE_ING
+        )
     }
 
     protected fun isCurRequestWorking(reqDataType: Int): Boolean {
@@ -248,25 +236,17 @@ abstract class BaseNetReqWithOkgoViewModel<R> : BaseViewModel(), INetEvent<R> {
         return true
     }
 
-
-    /**
-     * This method will be called when this ViewModel is no longer used and will be destroyed.
-     * <p>
-     * It is useful when ViewModel observes some data and you need to clear this subscription to
-     * prevent a leak of this ViewModel.
-     */
     @CallSuper
-    override fun onCleared() {
-        super.onCleared()
+    fun onCleared() {
         if (enableAutoCancelNetReq) {
             aOkGoCallback?.canceled = true
         }
         e(null, " --> onCleared()")
     }
 
+    override fun initData() {
 
 
-
-
+    }
 
 }

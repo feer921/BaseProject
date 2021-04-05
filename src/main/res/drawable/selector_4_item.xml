@@ -6,13 +6,19 @@
         <shape>
             <!-- 渐变 -->
             <gradient
-                android:startColor="#eeefef"
-                android:endColor="#eeefef"
+                android:startColor="#80EEEFEF"
+                android:endColor="#80eeefef"
                 />
             <!-- 描边 -->
 
             <!-- 圆角 -->
 
+            <padding
+                android:left="@dimen/dp_2"
+                android:top="@dimen/dp_2"
+                android:right="@dimen/dp_2"
+                android:bottom="@dimen/dp_2"
+                />
             <!--<padding
                 android:left="10dp"
                 android:top="10dp"

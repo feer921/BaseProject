@@ -17,7 +17,6 @@
         android:src="@drawable/okey"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:id="@+id/item_iv"
         />
 </RelativeLayout>

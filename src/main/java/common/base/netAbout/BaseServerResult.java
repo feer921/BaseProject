@@ -36,21 +36,29 @@ public class BaseServerResult {
      * 这里是为了再把JsonNode的data再转化成字符串，方便使用Json序列化工具再转化成对应的Java实体类
      */
     @JsonIgnore
-    private String dataStr = "";
+    protected String dataStr = "";
 
     public boolean isResponseOk() {
         getDataStr();
-        return "0".equals(statusCode);
+        return isStatusCodeOk();
     }
 
+    protected boolean isStatusCodeOk() {
+        return "0".equals(statusCode);
+    }
     public String getDataStr() {
         if (!Util.isEmpty(dataStr)) {
             return dataStr;
         }
-        if (data != null) {
-            dataStr = data.toString();
-        }
+        dataStr = jsonNodeDataToString();
         return dataStr;
+    }
+
+    protected String jsonNodeDataToString() {
+        if (data != null) {
+            return data.toString();
+        }
+        return "";
     }
 
     public <T> T convertData2Bean(Class<T> beanClass) {
@@ -112,6 +120,7 @@ public class BaseServerResult {
                 ", dataStr='" + dataStr + '\'' +
                 '}';
     }
+
     @JsonIgnore
     public JSONObject dataJson;
 

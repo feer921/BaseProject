@@ -15,7 +15,7 @@ import common.base.utils.PreferVisitor;
  * Time: 12:00
  * DESC: APP程序上下文基类,一些通用的操作类 <E>指代BaseApplication子类自身，方便链式调用
  */
-public class BaseApplication<E extends BaseApplication> extends Application{
+public class BaseApplication<E extends BaseApplication<E>> extends Application{
     protected final String TAG = getClass().getSimpleName();
     /**
      * 将使用 DataStore替代

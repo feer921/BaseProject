@@ -1,7 +1,5 @@
 package common.base.adapters;
 
-import androidx.annotation.Nullable;
-
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.util.ArrayList;
@@ -21,8 +19,8 @@ import java.util.List;
  */
 public abstract class JustHoldPositionSelectAdapter<T, VH extends BaseViewHolder> extends AbsSelectableAdapter<T, VH> {
     protected int singleSelectedPos = -1;
-    public JustHoldPositionSelectAdapter(@Nullable List<T> data) {
-        super(data);
+    public JustHoldPositionSelectAdapter() {
+        super(null);
     }
 
     @Override
