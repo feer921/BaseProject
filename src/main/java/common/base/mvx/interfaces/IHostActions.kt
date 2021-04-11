@@ -44,6 +44,12 @@ interface IHostActions {
     }
 
     /**
+     * 宿主的 生命周期 [onPause] 回调
+     */
+    fun onPause(){
+
+    }
+    /**
      * 当宿主 将处于后台状态时
      */
     fun onStop() {

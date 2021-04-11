@@ -39,60 +39,60 @@ abstract class BaseRepository : IRepository {
     }
 
 
-    /**
-     * 基于 框架 为 [ViewModel] 给 视图层 提供可观测 [Model]数据
-     * 本方法 提供 基础的通用数据 [DoResult] 数据
-     */
-    protected fun <R> getADoResultLiveData(): MutableLiveData<DoResult<R>> {
-        return MutableLiveData<DoResult<R>>()
-    }
-
-    protected fun getADoResultLoading(isNeedShowLoading: Boolean = true) = DoResult.Loading(isNeedShowLoading)
-
-    protected fun getADoResultError(exceptionMsg: String? = null, exception: Exception? = null) =
-        DoResult.Error(exceptionMsg, exception)
-
-
-    protected fun <R> assignLoadingToDoResultLiveData(
-        theLiveData: MutableLiveData<DoResult<R>>?,
-        isNeedLoading: Boolean = true
-    ) {
-        theLiveData?.let {
-            if (AThreadPoolHolder.isOnMainThread()) {
-                it.value = getADoResultLoading(isNeedLoading)
-            }
-            else{
-                it.postValue(getADoResultLoading(isNeedLoading))
-            }
-        }
-    }
-
-    protected fun <R> assignErrorToDoResultLiveData(
-        theLiveData: MutableLiveData<DoResult<R>>?,
-        theExceptionMsg: String? = "", exception: Exception? = null
-    ) {
-        theLiveData?.let {
-            it.value = getADoResultError(theExceptionMsg,exception)
-        }
-    }
-
-    protected fun <R> assignResultToDoResultLiveData(theLiveData: MutableLiveData<DoResult<R>>?, theResult:R?,
-                                           exceptionMsg:String? = null) {
-        theLiveData?.let {
-            val doResult: DoResult<R> = if (!exceptionMsg.isNullOrBlank()) {
-                DoResult.Error(exceptionMsg,null)
-            }
-            else{
-                DoResult.Success(theResult)
-            }
-            if (AThreadPoolHolder.isOnMainThread()) {
-                it.value = doResult
-            }
-            else{
-                it.postValue(doResult)
-            }
-        }
-    }
+//    /**
+//     * 基于 框架 为 [ViewModel] 给 视图层 提供可观测 [Model]数据
+//     * 本方法 提供 基础的通用数据 [DoResult] 数据
+//     */
+//    protected fun <R> getADoResultLiveData(): MutableLiveData<DoResult<R>> {
+//        return MutableLiveData<DoResult<R>>()
+//    }
+//
+//    protected fun getADoResultLoading(isNeedShowLoading: Boolean = true) = DoResult.Loading(isNeedShowLoading)
+//
+//    protected fun getADoResultError(exceptionMsg: String? = null, exception: Exception? = null) =
+//        DoResult.Error(exceptionMsg, exception)
+//
+//
+//    protected fun <R> assignLoadingToDoResultLiveData(
+//        theLiveData: MutableLiveData<DoResult<R>>?,
+//        isNeedLoading: Boolean = true
+//    ) {
+//        theLiveData?.let {
+//            if (AThreadPoolHolder.isOnMainThread()) {
+//                it.value = getADoResultLoading(isNeedLoading)
+//            }
+//            else{
+//                it.postValue(getADoResultLoading(isNeedLoading))
+//            }
+//        }
+//    }
+//
+//    protected fun <R> assignErrorToDoResultLiveData(
+//        theLiveData: MutableLiveData<DoResult<R>>?,
+//        theExceptionMsg: String? = "", exception: Exception? = null
+//    ) {
+//        theLiveData?.let {
+//            it.value = getADoResultError(theExceptionMsg,exception)
+//        }
+//    }
+//
+//    protected fun <R> assignResultToDoResultLiveData(theLiveData: MutableLiveData<DoResult<R>>?, theResult:R?,
+//                                           exceptionMsg:String? = null) {
+//        theLiveData?.let {
+//            val doResult: DoResult<R> = if (!exceptionMsg.isNullOrBlank()) {
+//                DoResult.Error(exceptionMsg,null)
+//            }
+//            else{
+//                DoResult.Success(theResult)
+//            }
+//            if (AThreadPoolHolder.isOnMainThread()) {
+//                it.value = doResult
+//            }
+//            else{
+//                it.postValue(doResult)
+//            }
+//        }
+//    }
 
 
 }

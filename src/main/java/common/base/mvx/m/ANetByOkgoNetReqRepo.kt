@@ -19,18 +19,18 @@ import common.base.utils.GenericsParamUtil
  * </p>
  * ******************(^_^)***********************
  */
-abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
+abstract class ANetByOkgoNetReqRepo<R> : BaseRepository(), INetEvent<R> {
 
-    private var netRespLiveData: MutableLiveData<ARespResult<Int,R>>? = null
+    private var netBizLiveData: MutableLiveData<ABizResult<Int,R>>? = null
 
     /**
      * 如果外部调用了该方法，则表明外部需要 监听 网络请求的响应的数据
      */
-    fun getNetRespLiveData(): MutableLiveData<ARespResult<Int, R>>? {
-        if (netRespLiveData == null) {
-            netRespLiveData = MutableLiveData()
+    fun getNetRespLiveData(): MutableLiveData<ABizResult<Int, R>>? {
+        if (netBizLiveData == null) {
+            netBizLiveData = MutableLiveData()
         }
-        return netRespLiveData
+        return netBizLiveData
     }
 
     /**
@@ -117,7 +117,7 @@ abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
      */
     protected open fun dealWithErrorResponse(requestDataType: Int, errorInfo: String?) {
         //如果子类重写，并不调用 supper本方法，则[netRespLiveData] 无效
-        netRespLiveData?.value = ARespResult(requestDataType, null, errorMsg = errorInfo)
+        netBizLiveData?.value = ABizResult(requestDataType, null, errorMsg = errorInfo)
     }
 
     /**
@@ -144,7 +144,7 @@ abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
      * @param result 序列化后[如JSON序列化后] 的结果对象
      */
     protected open fun dealWithResponse(requestDataType: Int, result: R?) {
-        netRespLiveData?.value = ARespResult(requestDataType, result)
+        netBizLiveData?.value = ABizResult(requestDataType, result)
     }
 
     /**
@@ -244,7 +244,7 @@ abstract class ANetRepoByOkgoNetReq<R> : BaseRepository(), INetEvent<R> {
         e(null, " --> onCleared()")
     }
 
-    override fun initData() {
+    override fun init() {
 
 
     }

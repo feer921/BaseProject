@@ -1,8 +1,6 @@
 package common.base.views;
 
 import android.content.Context;
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -15,6 +13,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 
 import common.base.R;
 import common.base.WeakHandler;
@@ -214,7 +215,11 @@ public class OkToast {
         show(toastText,null,duration,showGravity,xOffset,yOffset,0,0);
     }
     private int defToastGravity,defXOffset,defYOffset;
-    private View.OnAttachStateChangeListener onAttachStateChangeListener = new View.OnAttachStateChangeListener() {
+
+    /**
+     * 用来监听 某个 View 与 Window 的依附状态
+     */
+    private final View.OnAttachStateChangeListener onAttachStateChangeListener = new View.OnAttachStateChangeListener() {
         @Override
         public void onViewAttachedToWindow(View v) {
 
@@ -230,6 +235,9 @@ public class OkToast {
             CommonLog.e("OkToast", "--> onViewDetachedFromWindow() v = " + v + " isCurToastView = " + isCurToastView);
             if (isCurToastView ) {
                 lastToastViewDetached = true;
+            }
+            if (v.getParent() != null) {
+
             }
         }
     };
@@ -341,6 +349,8 @@ public class OkToast {
 //    }
 
     public void cancelShow(boolean cancelToast) {
+        defToastViewRemoveListener();
+        toastViewRemoveListener();
         if (mToast != null) {
             if (cancelToast) {
                 mToast.cancel();

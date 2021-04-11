@@ -15,8 +15,12 @@ import android.widget.Toast
 import androidx.annotation.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelStoreOwner
 import common.base.R
+import common.base.mvx.vm.BaseViewModel
+import common.base.mvx.vm.ViewModelsProviderFactory
 import common.base.utils.CheckUtil
 import common.base.utils.CommonLog
 import common.base.utils.ImageUtil
@@ -65,7 +69,10 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
      * def = false 因为大多数情况下，我们在 XML中的根 View不会写 边距等属性
      */
     protected var isNeedKeepXmlRootViewParams = false
+
     /**
+     * 注：子类甚至是可以 不通过 [provideVLayoutRes]方式提供视图层的 布局资源的，
+     * 而是可以让 [provideVLayoutRes]=0而直接 重写本方法或者 重写[provideTheDelegateView]以提供本视图代理层最终对外提供的View
      * @param container 将要装载 本 视图层的容器 View; eg.: 当本视图层是提供给 [Fragment]时
      * @param savedInstanceState [Activity] 重绘时临时存储了状态数据的 对象
      * @return 本视图层最终创建的 视图 View
@@ -79,13 +86,25 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
             }
             rootView = LayoutInflater.from(mContext).inflate(provideVLayoutRes, theTempContainerView, false)
         }
+        else{
+            rootView = provideTheDelegateView()
+        }
         return peekRootView()
     }
 
     /**
+     * 子类可以 在不指定 [provideVLayoutRes]视图布局资源的情况下
+     * 重写该方法以提供本视图层
+     * def return null
+     */
+    protected open fun provideTheDelegateView(): View? {
+
+        return null
+    }
+    /**
      * 本 接口View 的根View，可以提供给 [Activity] 或者 [Fragment]
      */
-    override fun peekRootView(): View? = rootView
+    final override fun peekRootView(): View? = rootView
 
     var isEnableCachViews = true
 
@@ -382,5 +401,33 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         } else {
             null
         }
+    }
+
+    /**
+     * 观察 [LiveData]
+     * 便捷的让 [LiveData] 注册观察者
+     */
+    protected fun <D> observeLiveData(obserbleLiveData: LiveData<D>?, onDataChangedBlock: (D) -> Unit) {
+        obserbleLiveData?.observe(
+            mLifecycleOwner!!, { t -> onDataChangedBlock(t) })
+    }
+
+    /**
+     * 观察 [LiveData]
+     * @param obserbleLiveData [LiveData]对象,被观察的数据
+     * @param theObserver 观察者接口实现
+     */
+    protected fun <D> observeLiveData(obserbleLiveData: LiveData<D>?, theObserver: Observer<D>) {
+        obserbleLiveData?.observe(mLifecycleOwner!!,theObserver)
+    }
+
+    /**
+     * 获取 对应的 [ViewModel]
+     */
+    protected fun <VM : BaseViewModel> getViewModel(viewModelClass: Class<VM>): VM {
+        return ViewModelsProviderFactory.getViewModel(
+            mViewModelStoreOwner!!,
+            viewModelClass
+        )
     }
 }

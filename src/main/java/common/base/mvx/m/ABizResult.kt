@@ -12,7 +12,7 @@ package common.base.mvx.m
  * </p>
  * ******************(^_^)***********************
  */
-open class ARespResult<DataType,R>(
+open class ABizResult<DataType,R>(
     val dataType: DataType,
     val data: R?,
     val isNeedShowLoading: Boolean = false,
