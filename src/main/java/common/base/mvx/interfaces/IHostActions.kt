@@ -67,7 +67,7 @@ interface IHostActions {
      * 当宿主将要销毁时回调
      * 注：需要 视图层作释放相关逻辑
      */
-    fun finish() {
+    fun onHostFinish() {
 
     }
 

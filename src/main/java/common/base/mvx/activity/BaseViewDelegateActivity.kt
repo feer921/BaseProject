@@ -58,6 +58,10 @@ abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
         mViewModule?.onResume()
     }
 
+    override fun onPause() {
+        super.onPause()
+        mViewModule?.onPause()
+    }
     @CallSuper
     override fun onStop() {
         super.onStop()
@@ -72,7 +76,7 @@ abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
 
     @CallSuper
     override fun finish() {
-        mViewModule?.finish()
+        mViewModule?.onHostFinish()
         super.finish()
     }
 

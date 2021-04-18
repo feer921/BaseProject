@@ -248,9 +248,9 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
 
     //------- 关于 宿主生命周期 @start ----------
     @CallSuper
-    override fun finish() {
+    override fun onHostFinish() {
         okToast?.cancelShow(isNeedCancelToastAtFinish)
-        super.finish()
+        super.onHostFinish()
     }
     //------- 关于 宿主生命周期 @end   ----------
 
@@ -407,9 +407,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
      * 观察 [LiveData]
      * 便捷的让 [LiveData] 注册观察者
      */
-    protected fun <D> observeLiveData(obserbleLiveData: LiveData<D>?, onDataChangedBlock: (D) -> Unit) {
-        obserbleLiveData?.observe(
-            mLifecycleOwner!!, { t -> onDataChangedBlock(t) })
+    protected fun <D> observeLiveData(obserbleLiveData: LiveData<D>?, onDataChangedBlock: (D) -> Unit):Observer<D>? {
+        var aObserver: Observer<D>? = null
+        obserbleLiveData?.let {
+            aObserver = Observer(onDataChangedBlock)
+            it.observe(mLifecycleOwner!!,aObserver!!)
+        }
+        return aObserver
     }
 
     /**
@@ -421,6 +425,24 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         obserbleLiveData?.observe(mLifecycleOwner!!,theObserver)
     }
 
+    protected fun <D> observeLiveDataForever(
+        obserbleLiveData: LiveData<D>?,
+        theObserver: Observer<D>
+    ) {
+        obserbleLiveData?.observeForever(theObserver)
+    }
+    protected fun <D> observeLiveDataForever(obserbleLiveData: LiveData<D>?,onDataChangedBlock: (D) -> Unit): Observer<D>? {
+        var aObserver: Observer<D>? = null
+        obserbleLiveData?.let {
+            aObserver = Observer(onDataChangedBlock)
+            it.observeForever(aObserver!!)
+        }
+        return aObserver
+    }
+
+    protected fun <D> unObserveLiveData(obserbleLiveData: LiveData<D>?, theObserver: Observer<D>) {
+        obserbleLiveData?.removeObserver(theObserver)
+    }
     /**
      * 获取 对应的 [ViewModel]
      */

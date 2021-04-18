@@ -81,6 +81,10 @@ abstract class BaseViewDelegateFragment<V : IView>() : BaseFragment() {
         mViewModule?.onResume()
     }
 
+    override fun onPause() {
+        super.onPause()
+        mViewModule?.onPause()
+    }
     @CallSuper
     override fun onStop() {
         super.onStop()

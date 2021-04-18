@@ -13,9 +13,10 @@ package common.base.mvx.m
  * ******************(^_^)***********************
  */
 open class ABizResult<DataType,R>(
-    val dataType: DataType,
-    val data: R?,
-    val isNeedShowLoading: Boolean = false,
-    val errorMsg: String? = null,
-    val exception: Exception? = null
+    var dataType: DataType,
+    var data: R?,
+    var isNeedShowLoading: Boolean = false,
+    var errorMsg: String? = null,
+    var exception: Exception? = null,
+    var extraInfo:Any? = null
 )
