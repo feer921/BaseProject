@@ -153,13 +153,13 @@ public final class JsonUtil {
      */
     public static JSONObject assembleJSONObj(String[] keys,Object... values) {
         JSONObject paramJson = new JSONObject();
-        if (keys != null && values != null && values.length >= keys.length) {
-            int keyLen = keys.length;
-            for(int i = 0; i < keyLen;i++) {
+        if (keys != null && values != null) {
+            int keyLen = Math.min(keys.length, values.length);
+            for (int i = 0; i < keyLen; i++) {
                 String curKey = keys[i];
                 Object curV = values[i];
                 try {
-                    paramJson.put(curKey,curV);
+                    paramJson.put(curKey, curV);
                 } catch (JSONException e) {
                     CommonLog.e("info", "JsonUtil --> assembleJsonObj() put the key :" + curKey + " the value: " + curV + " occur :" + e);
                 }
@@ -178,5 +178,16 @@ public final class JsonUtil {
             }
         }
         return null;
+    }
+
+    public static void jsonPutKVIgnoreException(JSONObject jsonObj, String theKey, Object theValue) {
+        if (jsonObj != null) {
+            try {
+//                jsonObj.putOpt(theKey, theValue);//要求 key value 都不为空
+                jsonObj.put(theKey, theValue);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

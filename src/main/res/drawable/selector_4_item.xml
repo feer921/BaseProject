@@ -5,10 +5,11 @@
     <item android:state_pressed="true" >
         <shape>
             <!-- 渐变 -->
-            <gradient
-                android:startColor="#80EEEFEF"
-                android:endColor="#80eeefef"
-                />
+<!--            <gradient-->
+<!--                android:startColor="#80EEEFEF"-->
+<!--                android:endColor="#80eeefef"-->
+<!--                />-->
+            <solid android:color="#ffcccccc" />
             <!-- 描边 -->
 
             <!-- 圆角 -->

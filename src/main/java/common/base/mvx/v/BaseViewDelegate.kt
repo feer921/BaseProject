@@ -431,6 +431,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
     ) {
         obserbleLiveData?.observeForever(theObserver)
     }
+
     protected fun <D> observeLiveDataForever(obserbleLiveData: LiveData<D>?,onDataChangedBlock: (D) -> Unit): Observer<D>? {
         var aObserver: Observer<D>? = null
         obserbleLiveData?.let {
@@ -451,5 +452,22 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
             mViewModelStoreOwner!!,
             viewModelClass
         )
+    }
+
+    open fun visibleMe(isVisible: Boolean, isNeedGoneWhenNotVisible: Boolean = false) {
+        rootView?.visibility = if (isVisible) {
+            View.VISIBLE
+        } else {
+            if (isNeedGoneWhenNotVisible) {
+                View.GONE
+            } else {
+                View.INVISIBLE
+            }
+        }
+        onHiddenChanged(!isVisible)
+    }
+
+    open fun onHiddenChanged(isHidden: Boolean) {
+
     }
 }
