@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.SparseArray
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelStoreOwner
 import common.base.R
+import common.base.dialogs.SimpleHintDialog
 import common.base.mvx.vm.BaseViewModel
 import common.base.mvx.vm.ViewModelsProviderFactory
 import common.base.utils.CheckUtil
@@ -265,11 +267,72 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
 
     //------- 关于 调试日志输出 @end   ----------
 
+    protected var commonSimpleHintDialog: SimpleHintDialog? = null
 
     //------- 关于 通用提示性 Dialog @start ----------
+    protected open fun initCommonHintDialog(configBlock: (SimpleHintDialog) -> Unit) {
+        if (commonSimpleHintDialog == null) {
+            commonSimpleHintDialog = SimpleHintDialog(mContext)
+            configBlock(commonSimpleHintDialog!!)
+        }
+    }
 
+    protected open fun dialogHint(
+        @StringRes hintTitleRes: Int,
+        @StringRes hintMessageRes: Int,
+        @StringRes cancelBtnTextRes: Int,
+        @StringRes sureBtnTextRes: Int,
+        hintDialogInCase: Int
+    ) {
+        dialogHint(
+            getString(hintTitleRes),
+            getString(hintMessageRes),
+            cancelBtnText = getString(cancelBtnTextRes),
+            sureBtnText = getString(sureBtnTextRes),
+            dialogInCase = hintDialogInCase
+        )
+    }
+
+    protected open fun dialogHint(
+        hintTitle: CharSequence?,
+        hintMsg: CharSequence?,
+        hitMsgTextGravity: Int = Gravity.CENTER_HORIZONTAL,
+        cancelBtnText: CharSequence?,
+        sureBtnText: CharSequence?,
+        dialogInCase: Int
+    ) {
+        commonSimpleHintDialog?.run {
+            setTitle(hintTitle)
+            withDialogHint(hintMsg)
+            setHintMsgGravity(hitMsgTextGravity)
+            withCancelBtnText(cancelBtnText)
+            withCommitBtnText(sureBtnText)
+
+            showInCase(dialogInCase)
+        }
+    }
+
+    protected open fun dialogHint(
+        hintTitle: CharSequence?,
+        hintMsg: CharSequence?,
+        cancelBtnText: CharSequence?,
+        sureBtnText: CharSequence?,
+        dialogInCase: Int
+    ){
+        commonSimpleHintDialog?.run {
+            setTitle(hintTitle)
+            withDialogHint(hintMsg)
+            withCancelBtnText(cancelBtnText)
+            withCommitBtnText(sureBtnText)
+
+            showInCase(dialogInCase)
+        }
+    }
+
+    protected open fun dismissHintDialog() {
+        commonSimpleHintDialog?.dismiss()
+    }
     //------- 关于 通用提示性 Dialog @end   ----------
-
 
     //------- 关于 通用loading @start ----------
 
@@ -393,6 +456,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         } else {
             null
         }
+    }
+
+    /**
+     * 注：如果当前的 View是 [Fragment]的，则如果不是想把 宿主 [Activity]结束的话，则调用该方法不合适
+     */
+    fun reqHostFinish() {
+        peekContextAsActivity()?.finish()
     }
 
     fun peekContextAsAppCompatActivity(): AppCompatActivity? {

@@ -230,13 +230,16 @@ public final class StorageUtil {
     public static File createFileIfNotExisted(File mayNeedCreatedFile) {
         if (mayNeedCreatedFile != null) {
             File itsParentFile = mayNeedCreatedFile.getParentFile();
-            if (!itsParentFile.exists()) {
+            if (itsParentFile!= null && !itsParentFile.exists()) {
                 boolean mkOk = itsParentFile.mkdirs();
+                CommonLog.e(TAG, "--> createFileIfNotExisted() mkOk = " + mkOk + " mayNeedCreatedFile = " + mayNeedCreatedFile);
             }
             if (!mayNeedCreatedFile.exists()) {
                 try {
                     boolean isOptSuc = mayNeedCreatedFile.createNewFile();
-                } catch (IOException e) {
+                    CommonLog.d(TAG, "--> createFileIfNotExisted() createNewFile isOptSuc = " + isOptSuc,
+                            " mayNeedCreatedFile = " + mayNeedCreatedFile);
+                } catch (Exception e) {
                     CommonLog.e(TAG, "-->createFileIfNotExisted() " + mayNeedCreatedFile + "create occur: " + e);
                 }
             }
