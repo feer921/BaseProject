@@ -20,6 +20,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
 import androidx.annotation.DimenRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -32,14 +41,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.animation.AlphaInAnimation;
 import com.chad.library.adapter.base.animation.BaseAnimation;
@@ -491,6 +492,10 @@ public abstract class BaseQuickAdapter<T, K extends BaseViewHolder> extends Recy
      */
     public final void refreshNotifyItemChanged(int position) {
         notifyItemChanged(position + getHeaderLayoutCount());
+    }
+
+    public final void refreshNotifyItemChanged(int position, Object payload) {
+        notifyItemChanged(position + getHeaderLayoutCount(), payload);
     }
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with

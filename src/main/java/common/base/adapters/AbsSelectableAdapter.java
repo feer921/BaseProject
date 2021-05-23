@@ -28,6 +28,18 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
 
     protected int curAdapterMode = MODE_NORMAL;
     /**
+     * 在当用户退出选择模式时，是否需要清除已选中的数据
+     * def = true
+     */
+    protected boolean isNeedClearSelectedWhenExitSelectMode = true;
+
+    /**
+     * 是否采用 负载的方式 来更新列表
+     * 从而避免 整个 item的各UI元素重新刷新一遍
+     * def = false
+     */
+    protected boolean isUsePayloadToUpdateItems = false;
+    /**
      * 模式：正常模式
      */
     public static final int MODE_NORMAL = 0;
@@ -39,6 +51,20 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
      * 模式：多选模式
      */
     public static final int MODE_MULTY_CHOICE = MODE_SINGLE_CHOICE + 1;
+
+    /**
+     * items 变更负载：进入选择模式
+     */
+    public static final String PAYLOAD_ENTER_SELECT_MODE = "payload_enter_select_mode";
+    /**
+     * items 变更负载：退出选择模式
+     */
+    public static final String PAYLOAD_EXIT_SELECT_MODE = "payload_exit_select_mode";
+
+    /**
+     * items 变更负载：当前选中状态更改了
+     */
+    public static final String PAYLOAD_SELECTED_STATE_CHANGED = "payload_selected_state_changed";
 
     public AbsSelectableAdapter(@Nullable List<T> data) {
         super(data);
@@ -52,14 +78,16 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         if (this.curAdapterMode == adapterMode) {
             return;
         }
+        String payload = PAYLOAD_ENTER_SELECT_MODE;
         if (adapterMode == MODE_NORMAL) {
             //要切成正常模式时，把之前如果在选择模式下选择的清空
-            if (selectedUniqueMarks != null) {
+            if (isNeedClearSelectedWhenExitSelectMode && selectedUniqueMarks != null) {
                 selectedUniqueMarks.clear();
             }
+            payload = PAYLOAD_EXIT_SELECT_MODE;
         }
         this.curAdapterMode = adapterMode;
-        notifyDataSetChanged();
+        refreshAllItemsChangedByPayload(isUsePayloadToUpdateItems ? payload : null);
     }
 
     public int getCurAdapterMode() {
@@ -92,8 +120,7 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         boolean isAlreadyAdded = false;
         if (selectedUniqueMarks == null) {
             selectedUniqueMarks = new HashSet<>();
-        }
-        else{
+        } else {
             isAlreadyAdded = selectedUniqueMarks.contains(theUniqueMarkOfData);
             if (curAdapterMode == MODE_SINGLE_CHOICE) {//如果当前是单选模式
                 if (isAlreadyAdded) {//如果已经在选中集合里，可以不清空一遍并刷新列表了
@@ -106,20 +133,24 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         if (curAdapterMode == MODE_SINGLE_CHOICE) {//单选直接添加
             selectedUniqueMarks.add(theUniqueMarkOfData);
             isSelected = true;
-            notifyDataSetChanged();//单选情况下，是需要全局刷新一下的
-        }
-        else{
-//            boolean isAlready = selectedUniqueMarks.contains(theUniqueMarkOfData);
-//            isSelected = !isAlready;
+            //单选情况下，是需要全局刷新一下的
+            if (isUsePayloadToUpdateItems) {
+                refreshAllItemsChangedByPayload(PAYLOAD_SELECTED_STATE_CHANGED);
+            }else {
+                notifyDataSetChanged();
+            }
+        } else {
             isSelected = !isAlreadyAdded;
             if (isSelected) {
                 selectedUniqueMarks.add(theUniqueMarkOfData);
-            }
-            else{
+            } else {
                 selectedUniqueMarks.remove(theUniqueMarkOfData);
             }
-            refreshNotifyItemChanged(clickedPos);//modified by fee 2019-07-04: 修正可能存在的headerView 导致的不position位置不对的问题
-//            notifyItemChanged(clickedPos);
+            if (isUsePayloadToUpdateItems) {
+                refreshNotifyItemChanged(clickedPos,PAYLOAD_SELECTED_STATE_CHANGED);
+            }else {
+                refreshNotifyItemChanged(clickedPos);//modified by fee 2019-07-04: 修正可能存在的headerView 导致的不position位置不对的问题
+            }
         }
         //回调选中信息
         callbackSelectedCase();
@@ -142,31 +173,19 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
                 selectedUniqueMarks.add(toJudgeItemDataUniqueMark(itemData));
             }
             effected = true;
-        }
-        else{
+        } else {
             if (selectedUniqueMarks != null && !selectedUniqueMarks.isEmpty()) {
                 selectedUniqueMarks.clear();
                 effected = true;
             }
         }
-//        if (selectedUniqueMarks == null) {
-//            selectedUniqueMarks = new HashSet<>();
-//        }
-//        if (!toSelectAll) {//取消全选
-//            selectedUniqueMarks.clear();
-//        }
-//        else{//全选
-//            for (T itemData : mData) {
-//                selectedUniqueMarks.add(toJudgeItemDataUniqueMark(itemData));
-//            }
-//        }
         if (effected) {
-            notifyDataSetChanged();
+            refreshAllItemsChangedByPayload(isUsePayloadToUpdateItems ? PAYLOAD_SELECTED_STATE_CHANGED : null);
         }
         callbackSelectedCase();
     }
 
-    public boolean markItemDataSelectedOrNot(boolean isSelectOrNot,T itemData) {
+    public boolean markItemDataSelectedOrNot(boolean isSelectOrNot, T itemData) {
         if (itemData == null) {
             return false;
         }
@@ -192,14 +211,13 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
             if (curAdapterMode != MODE_NORMAL) {
                 if (selectedUniqueMarks == null) {
                     selectedUniqueMarks = new HashSet<>();
-                }
-                else{
+                } else {
                     if (curAdapterMode == MODE_SINGLE_CHOICE) {
                         selectedUniqueMarks.clear();
                     }
                 }
                 selectedUniqueMarks.add(itemDataUniqueMark);
-                notifyDataSetChanged();
+                refreshAllItemsChangedByPayload(isUsePayloadToUpdateItems ? PAYLOAD_SELECTED_STATE_CHANGED : null);
                 return true;
             }
         }
@@ -216,7 +234,8 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
             if (selectedUniqueMarks != null) {
                 boolean isEffected = selectedUniqueMarks.remove(itemDataUniqueMark);
                 if (isEffected) {
-                    notifyDataSetChanged();
+                    refreshAllItemsChangedByPayload(isUsePayloadToUpdateItems ? PAYLOAD_SELECTED_STATE_CHANGED : null);
+                    callbackSelectedCase();
                 }
                 return isEffected;
             }
@@ -229,7 +248,7 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
      * @param itemDataUniqueMarks 要选中/取消选中的 itemDatas 的标识
      * @return true:操作了(更新列表); false: do nothing
      */
-    public boolean markSelectedOrNot(boolean isToSelectOrNot,Collection<Object> itemDataUniqueMarks) {
+    public boolean markSelectedOrNot(boolean isToSelectOrNot, Collection<Object> itemDataUniqueMarks) {
         if (curAdapterMode == MODE_MULTY_CHOICE) {
             if (itemDataUniqueMarks != null && !itemDataUniqueMarks.isEmpty()) {
                 if (selectedUniqueMarks == null) {
@@ -237,23 +256,22 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
                         return false;
                     }
                     selectedUniqueMarks = new HashSet<>(itemDataUniqueMarks);
-                }
-                else{
+                } else {
                     if (isToSelectOrNot) {
                         selectedUniqueMarks.addAll(itemDataUniqueMarks);
-                    }
-                    else{
+                    } else {
                         selectedUniqueMarks.removeAll(itemDataUniqueMarks);
                     }
                 }
-                notifyDataSetChanged();
+                refreshAllItemsChangedByPayload(isUsePayloadToUpdateItems ? PAYLOAD_SELECTED_STATE_CHANGED : null);
+                callbackSelectedCase();
                 return true;
             }
         }
         return false;
     }
 
-    public boolean markItemDatasSelectedOrNot(boolean isToSelectOrNot,Collection<T> itemDatas) {
+    public boolean markItemDatasSelectedOrNot(boolean isToSelectOrNot, Collection<T> itemDatas) {
         if (curAdapterMode == MODE_MULTY_CHOICE) {
             if (!isToSelectOrNot) {
                 if (selectedUniqueMarks == null || selectedUniqueMarks.isEmpty()) {
@@ -280,14 +298,15 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
     }
 
     protected IChooseCallback callback;
+
     protected void callbackSelectedCase() {
         if (callback != null) {
             int hasSelectedCount = selectedUniqueMarks == null ? 0 : selectedUniqueMarks.size();
-            boolean isAllSelected = hasSelectedCount == getJustDataCount();
+            boolean isAllSelected = hasSelectedCount == mData.size();
             if (hasSelectedCount == 0) {
                 isAllSelected = false;
             }
-            callback.onSelected(this,hasSelectedCount, isAllSelected);
+            callback.onSelected(this, hasSelectedCount, isAllSelected);
         }
     }
 
@@ -295,7 +314,7 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         this.callback = callback;
     }
 
-    protected boolean isTheItemSelected(T theItemData) {
+    public boolean isTheItemSelected(T theItemData) {
         if (selectedUniqueMarks != null) {
             Object theItemUnqiuMark = toJudgeItemDataUniqueMark(theItemData);
 //            boolean isTheItemMarkIn = selectedUniqueMarks.contains(theItemUnqiuMark);
@@ -304,6 +323,7 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         }
         return false;
     }
+
     public List<T> pickOutSelectedDatas() {
         if (selectedUniqueMarks != null && !selectedUniqueMarks.isEmpty()) {
             List<T> selectedDatas = null;
@@ -321,11 +341,28 @@ public abstract class AbsSelectableAdapter<T, VH extends BaseViewHolder> extends
         }
         return null;
     }
-    public interface IChooseCallback{
-        void onSelected(AbsSelectableAdapter curAdapter,int selectedCount, boolean isAllSelected);
+
+    public interface IChooseCallback {
+        void onSelected(AbsSelectableAdapter curAdapter, int selectedCount, boolean isAllSelected);
     }
 
     public HashSet<Object> getSelectedUniqueMarks() {
         return selectedUniqueMarks;
+    }
+
+    public void setNeedClearSelectedWhenExitSelectMode(boolean isNeedClearSelectedWhenExitSelectMode) {
+        this.isNeedClearSelectedWhenExitSelectMode = isNeedClearSelectedWhenExitSelectMode;
+    }
+
+    public void setUsePayloadToUpdateItems(boolean isUsePayloadToUpdateItems) {
+        this.isUsePayloadToUpdateItems = isUsePayloadToUpdateItems;
+    }
+
+    protected void refreshAllItemsChangedByPayload(Object payload) {
+        if (payload == null) {
+            notifyDataSetChanged();
+        }else {
+            notifyItemRangeChanged(0,getItemCount(),payload);
+        }
     }
 }

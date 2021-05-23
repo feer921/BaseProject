@@ -17,7 +17,7 @@ import common.base.R;
 import common.base.utils.CommonLog;
 
 /**
- * User: fee(lifei@cloudtone.com.cn)
+ * Author: fee
  * Date: 2016-05-16
  * Time: 15:21
  * DESC: 通用Activity基类

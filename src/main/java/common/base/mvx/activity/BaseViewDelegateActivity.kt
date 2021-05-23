@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import common.base.annotations.InvokeStep
 import common.base.mvx.v.IView
+import common.base.utils.CommonLog
 
 /**
  * @author fee
@@ -44,6 +45,9 @@ abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
      * @step 3
      */
     override fun initViews() {
+        if (LIFE_CIRCLE_DEBUG) {
+            CommonLog.i(TAG, "--> initViews() mViewModule = $mViewModule ")
+        }
         mViewModule?.initViews(true,intent,null)
     }
 
