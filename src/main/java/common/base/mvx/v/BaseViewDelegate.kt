@@ -285,7 +285,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         hintDialogInCase: Int
     ) {
         dialogHint(
-            getString(hintTitleRes),
+            if (hintTitleRes ==0){""}else{getString(hintTitleRes)},
             getString(hintMessageRes),
             cancelBtnText = getString(cancelBtnTextRes),
             sureBtnText = getString(sureBtnTextRes),

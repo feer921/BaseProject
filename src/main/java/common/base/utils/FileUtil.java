@@ -1,5 +1,8 @@
 package common.base.utils;
 
+import androidx.annotation.WorkerThread;
+
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -36,5 +39,28 @@ public class FileUtil {
             }
         }
         return isWritenOk;
+    }
+
+    @WorkerThread
+    public static boolean deleteFileOrDir(String filePath) {
+        if (CheckUtil.isEmpty(filePath)) {
+            return false;
+        }
+        try {
+            boolean isOptSuc = false;
+            File theFile = new File(filePath);
+            if (theFile.exists()) {
+                if (theFile.isFile()) {
+                    isOptSuc = theFile.delete();
+                }else if(theFile.isDirectory()) {
+                    //文件夹需要递归删除
+                    StorageUtil.deleteFile(theFile);
+                }
+            }
+            return isOptSuc;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
