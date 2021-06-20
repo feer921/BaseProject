@@ -77,7 +77,7 @@ public class CommonViewDelegateActivity extends BaseViewDelegateActivity<IView> 
             try {
                 Class<IView> viewDelegateClass = (Class<IView>) startIntent.getSerializableExtra("viewDelegateClass");
                 Constructor<IView> declaredConstructor = viewDelegateClass.getDeclaredConstructor(Context.class);
-                return declaredConstructor.newInstance(this);
+                return declaredConstructor.newInstance(this);//注意：自定义的 [IView]的子类不能被混淆掉
             } catch (Exception e) {
                 e.printStackTrace();
             }

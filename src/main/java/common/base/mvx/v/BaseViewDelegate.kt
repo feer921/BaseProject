@@ -514,10 +514,11 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
     protected fun <D> unObserveLiveData(obserbleLiveData: LiveData<D>?, theObserver: Observer<D>) {
         obserbleLiveData?.removeObserver(theObserver)
     }
+
     /**
      * 获取 对应的 [ViewModel]
      */
-    protected fun <VM : BaseViewModel> getViewModel(viewModelClass: Class<VM>): VM {
+    protected fun <VM : BaseViewModel> getViewModel(viewModelClass: Class<out VM>): VM {
         return ViewModelsProviderFactory.getViewModel(
             mViewModelStoreOwner!!,
             viewModelClass
@@ -539,5 +540,13 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
 
     open fun onHiddenChanged(isHidden: Boolean) {
 
+    }
+
+    /**
+     * 本 View 层的 调试信息
+     * @return def = ""
+     */
+    override fun theDebugInfo(): String {
+        return TAG
     }
 }

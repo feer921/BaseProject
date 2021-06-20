@@ -9,6 +9,7 @@ import javax.xml.transform.dom.DOMResult
  * 一次业务执行的结果对象
  * </P>
  */
+@Deprecated(message = "",replaceWith = ReplaceWith(""))
 sealed class DoResult<out R>{
 
     fun isError() = this is Error
@@ -29,6 +30,9 @@ sealed class DoResult<out R>{
             is Success -> "Success[data = $resultData]"
             is Error -> "Error[errorMsg = $exceptionMsg,exception = $exception]"
             is Loading -> "Loading[isNeedShowLoading = $isNeedShowLoading]"
+            else -> {
+                ""
+            }
         }
     }
 }

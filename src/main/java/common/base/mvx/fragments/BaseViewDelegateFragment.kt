@@ -22,6 +22,7 @@ abstract class BaseViewDelegateFragment<V : IView>() : BaseFragment() {
 
     protected val mViewModule: V? by lazy(mode = LazyThreadSafetyMode.NONE) {
         provideVModule()?.apply {
+            extraInfoInLifeDebug = this.javaClass.simpleName
         attachViewModelStoreOwner(this@BaseViewDelegateFragment)
         attachLifecycleOwner(this@BaseViewDelegateFragment)
     } }

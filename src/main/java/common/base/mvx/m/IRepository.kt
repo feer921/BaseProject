@@ -3,6 +3,7 @@ package common.base.mvx.m
 /**
  * @author fee
  * <P> DESC:
+ * 数据层/业务层/数据仓库 的接口
  * </P>
  */
 interface IRepository {

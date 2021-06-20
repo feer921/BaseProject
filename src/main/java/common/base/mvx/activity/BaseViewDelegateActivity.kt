@@ -22,6 +22,8 @@ import common.base.utils.CommonLog
 abstract class BaseViewDelegateActivity<V : IView> : BaseActivity() {
 
     protected val mViewModule: V? by lazy(mode = LazyThreadSafetyMode.NONE) { provideVModule()?.apply {
+        extraLogInfo = theDebugInfo()
+        i(null,"--> initViewModule() $extraLogInfo")
         attachLifecycleOwner(this@BaseViewDelegateActivity)
         attachViewModelStoreOwner(this@BaseViewDelegateActivity)
     } }

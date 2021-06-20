@@ -40,11 +40,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     api 'androidx.appcompat:appcompat:1.2.0'
     api 'com.google.android.material:material:1.2.1'
-    api 'androidx.recyclerview:recyclerview:1.1.0'
+    api 'androidx.recyclerview:recyclerview:1.2.0'
     api 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    api 'com.squareup.retrofit2:retrofit:2.6.0'
-    api 'com.squareup.retrofit2:converter-jackson:2.6.0'
+    api 'com.squareup.retrofit2:retrofit:2.6.2'
+    api 'com.squareup.retrofit2:converter-jackson:2.6.2'
 
 //    Glide v4 need a minimum API level of 14.
 //    Glide v4 requires you to compile against API 26 or later
@@ -58,5 +58,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1' // kotlin coroutines 协程
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0"
-    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0'
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
 }

@@ -58,6 +58,10 @@ interface IView : IHostActions {
     fun <V : View> findView(@IdRes targetViewId: Int): V? =
         peekRootView()?.findViewById(targetViewId)
 
-
+    /**
+     * 本 View 层的 调试信息
+     * @return def = ""
+     */
+    fun theDebugInfo(): String = ""
 
 }

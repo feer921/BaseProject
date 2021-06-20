@@ -30,17 +30,21 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected Context appContext;
     protected Context mContext;
 
+    protected String extraLogInfo = "";
+
+
+
     /**
      * 会自动调用：
      * initViews();-->initData();
      *
-     * @param savedInstanceState
+     * @param savedInstanceState Bundle
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onCreate() " + (PRINT_TASK_ID ? " taskId: " + getTaskId() : ""));
+            CommonLog.i(TAG, "--> onCreate() " + (PRINT_TASK_ID ? " taskId: " + getTaskId() : "") + getExtraLogInfo());
         }
         appContext = getApplicationContext();
         mContext = this;
@@ -185,7 +189,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onRestart() {
         super.onRestart();
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onRestart()");
+            CommonLog.i(TAG, "---> onRestart()" + getExtraLogInfo());
         }
     }
 
@@ -193,7 +197,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onStart() {
         super.onStart();
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onStart()");
+            CommonLog.i(TAG, "---> onStart()"+ getExtraLogInfo());
         }
     }
 
@@ -201,7 +205,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onResume() {
         super.onResume();
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onResume()");
+            CommonLog.i(TAG, "---> onResume()"+ getExtraLogInfo());
         }
     }
 
@@ -209,7 +213,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "--> onNewIntent() intent = " + intent);
+            CommonLog.i(TAG, "--> onNewIntent() intent = " + intent + getExtraLogInfo());
         }
     }
 
@@ -217,7 +221,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onRestoreInstanceState() savedInstanceState = " + savedInstanceState);
+            CommonLog.i(TAG, "---> onRestoreInstanceState() savedInstanceState = " + savedInstanceState + getExtraLogInfo());
         }
     }
 
@@ -225,7 +229,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onPause() {
         super.onPause();
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onPause()");
+            CommonLog.i(TAG, "---> onPause()"+ getExtraLogInfo());
         }
     }
 
@@ -233,7 +237,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onStop() {
         super.onStop();
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onStop()");
+            CommonLog.i(TAG, "---> onStop()"+ getExtraLogInfo());
         }
     }
 
@@ -241,7 +245,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onSaveInstanceState()");
+            CommonLog.i(TAG, "---> onSaveInstanceState()"+ getExtraLogInfo());
         }
     }
 
@@ -271,7 +275,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void finish() {
         isResumeFinish = true;
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> finish()");
+            CommonLog.i(TAG, "---> finish()"+ getExtraLogInfo());
         }
         //changed by fee 2018-10-18:这里屏蔽来自onDestroy()方法内的调用finish()时,不再调用super.finish()
         if (!isResumeDestroy) {
@@ -289,7 +293,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         //added by fee 2018-10-18:解决Activity在自动销毁过程中,不走finish()而导致一些子Activity在finish()作释放功能没有执行的问题，或者不在本框架内处理
         isResumeDestroy = true;
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onDestroy()");
+            CommonLog.i(TAG, "---> onDestroy()"+ getExtraLogInfo());
         }
         if (!isResumeFinish) {
             finish();
@@ -302,14 +306,16 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onActivityResult() requestCode = " + requestCode + " resultCode = " + resultCode + " data = " + data);
+            CommonLog.i(TAG, "---> onActivityResult() requestCode = " + requestCode
+                    + " resultCode = " + resultCode + " data = " + data + getExtraLogInfo());
+
         }
     }
 
     @Override
     public void onBackPressed() {
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onBackPressed()");
+            CommonLog.i(TAG, "---> onBackPressed()"+ getExtraLogInfo());
         }
         super.onBackPressed();
     }
@@ -318,7 +324,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (LIFE_CIRCLE_DEBUG) {
-            CommonLog.i(TAG, "---> onConfigurationChanged() newConfig = " + newConfig);
+            CommonLog.i(TAG, "---> onConfigurationChanged() newConfig = " + newConfig + getExtraLogInfo());
         }
     }
 
@@ -328,7 +334,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (LIFE_CIRCLE_DEBUG && EXTRA_BORING_LOG_DEBUG) {
-            CommonLog.i(TAG, "---> onWindowFocusChanged() hasFocus = " + hasFocus);
+            CommonLog.i(TAG, "---> onWindowFocusChanged() hasFocus = " + hasFocus + getExtraLogInfo());
         }
     }
     //---------------------up up up 生命周期方法 up up up ----------(我是不漂亮的分隔线)---------------
@@ -383,5 +389,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
      */
     protected int dimenResPxValue(@DimenRes int dimenResId) {
         return getResources().getDimensionPixelSize(dimenResId);
+    }
+
+    protected String getExtraLogInfo() {
+        return " [" + extraLogInfo + "]";
     }
 }
