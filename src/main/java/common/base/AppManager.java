@@ -1,7 +1,6 @@
 package common.base;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 
 import java.util.Stack;
@@ -119,8 +118,10 @@ public class AppManager {
     public void exitWholeApp(Context context) {
         try {
             finishAllActivity();
-            ActivityManager activityMgr = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+//            ActivityManager activityMgr = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             //            activityMgr.restartPackage(context.getPackageName());
+//            android.os.SystemClock.sleep(300);
+//            android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
