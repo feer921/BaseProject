@@ -99,7 +99,7 @@ public class UIHintAgent {
                 hintDialog = new SimpleHintDialog(mContext);
                 isDialogCompatPadUi = false;
             }
-            extraConfigHintDialog(isDialogCompatPadUi);
+//            extraConfigHintDialog(isDialogCompatPadUi);
             //added
             hintDialog.setDialogBgBehindAlpha(hintDialogBgAlpha);
             hintDialog.edtViewCanEdit(false);
@@ -123,16 +123,16 @@ public class UIHintAgent {
         }
     }
 
-    /**
-     * 提升至外部可调用
-     * @param isCompatPadUi 是否 提示 Dialog要兼容 pad的显示布局
-     */
-    public void extraConfigHintDialog(boolean isCompatPadUi) {
-        if (hintDialog != null && hintDialog instanceof SimpleHintDialog) {
-            SimpleHintDialog simpleHintDialog = (SimpleHintDialog) hintDialog;
-            simpleHintDialog.defConfigDialogViews(isCompatPadUi);
-        }
-    }
+//    /**
+//     * 提升至外部可调用
+//     * @param isCompatPadUi 是否 提示 Dialog要兼容 pad的显示布局
+//     */
+//    public void extraConfigHintDialog(boolean isCompatPadUi) {
+//        if (hintDialog != null && hintDialog instanceof SimpleHintDialog) {
+//            SimpleHintDialog simpleHintDialog = (SimpleHintDialog) hintDialog;
+//            simpleHintDialog.defConfigDialogViews(isCompatPadUi);
+//        }
+//    }
     public void setHintDialogOnClickListener(DialogInterface.OnClickListener l) {
         mClickListenerForDialog = l;
         if (hintDialog != null) {
@@ -256,7 +256,6 @@ public class UIHintAgent {
      * 显示加载loading...对话框
      * @param hintMsg
      */
-    @Deprecated
     public void showLoading(String hintMsg) {
 //        if (loadingDialog == null) {
 //            loadingDialog = new CommonMdLoadialog(mContext);
@@ -307,14 +306,15 @@ public class UIHintAgent {
 //        }
     }
     /**
-     * @deprecated 目前loading dialog已经可以取消
+     * 目前loading dialog已经可以取消
      * @param hintMsg
      * @param timeOutMills
      */
     public void showLoadingAndTriggerTimer(String hintMsg,int timeOutMills){
         showLoading(hintMsg);
-        if(timeOutMills > 0)
-        triggerLoadingCaseTimer(timeOutMills, INetEvent.MANULLY_TIME_OUT);
+        if(timeOutMills > 0){
+            triggerLoadingCaseTimer(timeOutMills, INetEvent.MANULLY_TIME_OUT);
+        }
     }
     public void loadDialogDismiss() {
 //        if (loadingDialog != null) {
@@ -434,7 +434,6 @@ public class UIHintAgent {
     }
 
     /**
-     * @deprecated 
      * @param timeOutMills
      * @param triggerReason 触发原因，或者说计时完成后是什么原因要进行处理,见dealWithServerError()
      */
@@ -451,7 +450,6 @@ public class UIHintAgent {
         mHandler.sendEmptyMessageDelayed(0, timeOutMills);
     }
     /**
-     * @deprecated
      */
     public void cancelLoadingCaseTimer(){
         if(mHandler != null){

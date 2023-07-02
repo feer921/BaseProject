@@ -143,7 +143,7 @@ public class CommonRefreshWebViewActivity<T> extends BaseNetCallActivity<T> impl
         WebSettings webSettings = webView.getSettings();
 
         webSettings.setSavePassword(false);
-        webSettings.setAppCacheEnabled(true);
+//        webSettings.setAppCacheEnabled(true);
 
         // Enable Javascript
         webSettings.setJavaScriptEnabled(true);

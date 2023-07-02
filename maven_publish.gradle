@@ -1,0 +1,120 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+
+//加载配置参数
+Properties p = new Properties()
+p.load(project.file('maven.properties').newDataInputStream())
+//项目 GAV 信息
+def GROUP_ID = getProperty(p, 'GROUP_ID')
+def ARTIFACT_ID = getProperty(p, 'ARTIFACT_ID')
+def VERSION_NAME = getProperty(p, 'VERSION_NAME')
+// POM信息
+def POM_NAME = getProperty(p, 'POM_NAME')
+def POM_URL = getProperty(p, 'POM_URL')
+def POM_DESCRIPTION = getProperty(p, 'POM_DESCRIPTION')
+def POM_INCEPTION_YEAR = getProperty(p, 'POM_INCEPTION_YEAR')
+def POM_SCM_URL = getProperty(p, 'POM_SCM_URL')
+def POM_SCM_CONNECTION = getProperty(p, 'POM_SCM_CONNECTION')
+def POM_SCM_DEV_CONNECTION = getProperty(p, 'POM_SCM_DEV_CONNECTION')
+// 开源许可
+def POM_LICENCE_COMMENTS = getProperty(p, 'POM_LICENCE_COMMENTS')
+def POM_LICENCE_NAME = getProperty(p, 'POM_LICENCE_NAME')
+def POM_LICENCE_URL = getProperty(p, 'POM_LICENCE_URL')
+def POM_LICENCE_DIST = getProperty(p, 'POM_LICENCE_DIST')
+
+//开发者信息
+def POM_DEVELOPER_ID = getProperty(p, 'POM_DEVELOPER_ID')
+def POM_DEVELOPER_NAME = getProperty(p, 'POM_DEVELOPER_NAME')
+def POM_DEVELOPER_EMAIL = getProperty(p, 'POM_DEVELOPER_EMAIL')
+def POM_DEVELOPER_URL = getProperty(p, 'POM_DEVELOPER_URL')
+//issue 信息
+def POM_ISSUE_MANAGEMENT_SYSTEM = getProperty(p, 'POM_ISSUE_MANAGEMENT_SYSTEM')
+def POM_ISSUE_MANAGEMENT_URL = getProperty(p, 'POM_ISSUE_MANAGEMENT_URL')
+//MAVEN账密私密信息
+Properties p4Secret = new Properties()
+p4Secret.load(rootProject.file('maven-secret.properties').newDataInputStream())
+
+def MAVEN_USER_NAME = getProperty(p4Secret, 'MAVEN_USERNAME')
+def MAVEN_PW = getProperty(p4Secret, 'MAVEN_PASSWORD')
+def SIGN_KEYID = getProperty(p4Secret, 'signing.keyId')
+def SIGN_PW = getProperty(p4Secret, 'signing.password')
+def SIGN_SECRET_KEYRING_FILE = getProperty(p4Secret, 'signing.secretKeyRingFile')
+
+private def getProperty(Properties p, String key) {
+    return p.getProperty(key)
+}
+
+//afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+//                from components.release
+                groupId GROUP_ID //开通maven central时候定义的
+                artifactId ARTIFACT_ID //资源名称
+                version VERSION_NAME //版本名称
+                project.ext['signing.keyId'] = SIGN_KEYID
+                project.ext['signing.password'] = SIGN_PW
+                project.ext['signing.secretKeyRingFile'] = SIGN_SECRET_KEYRING_FILE
+
+                pom {
+                    name = POM_NAME
+                    description = POM_DESCRIPTION
+                    url = POM_URL
+                    inceptionYear = POM_INCEPTION_YEAR
+
+                    scm {
+                        url = POM_SCM_URL
+                        connection = POM_SCM_CONNECTION
+                        developerConnection = POM_SCM_DEV_CONNECTION
+                    }
+
+                    licenses {
+                        license {
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                            distribution = POM_LICENCE_DIST
+                            comments = POM_LICENCE_COMMENTS
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = POM_DEVELOPER_ID
+                            name = POM_DEVELOPER_NAME
+                            email = POM_DEVELOPER_EMAIL
+                            url = POM_DEVELOPER_URL
+                        }
+                    }
+
+                    issueManagement {
+                        system = POM_ISSUE_MANAGEMENT_SYSTEM
+                        url = POM_ISSUE_MANAGEMENT_URL
+                    }
+                }
+
+                afterEvaluate {
+                    from components.release
+                }
+            }
+        }
+        repositories {
+            maven {
+                // 指定要上传的maven仓库
+                url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                //Maven仓库用户名和密码
+                credentials {
+                    username MAVEN_USER_NAME
+                    password MAVEN_PW
+                }
+            }
+        }
+    }
+
+//}
+
+signing {
+    sign project.publishing.publications
+//    useInMemoryPgpKeys(SIGN_KEYID, SIGN_PW)
+//    sign stuffZip
+}

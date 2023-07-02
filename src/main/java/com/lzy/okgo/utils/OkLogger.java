@@ -17,7 +17,8 @@ package com.lzy.okgo.utils;
 
 import android.util.Log;
 
-import common.base.BuildConfig;
+import com.fee.thexselector.BuildConfig;
+
 
 /**
  * ================================================

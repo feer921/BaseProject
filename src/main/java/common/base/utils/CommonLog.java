@@ -2,7 +2,8 @@ package common.base.utils;
 
 
 import android.util.Log;
-import common.base.BuildConfig;
+
+import com.fee.thexselector.BuildConfig;
 
 /**
  * 日志输出

@@ -308,10 +308,10 @@ open class FloatWindowContainerView(context: Context) : FrameLayout(context), Va
         this.isEnabledAutoAdsorbEdge = enable
     }
 
-    override fun onAnimationUpdate(animation: ValueAnimator?) {
-        animation?.let {va->
+    override fun onAnimationUpdate(animation: ValueAnimator) {
+        animation.let { va->
             mFloatLayoutParams?.let {
-                lp->
+                    lp->
                 lp.x = va.animatedValue as Int
                 mWindowManager?.updateViewLayout(this, lp)
             }

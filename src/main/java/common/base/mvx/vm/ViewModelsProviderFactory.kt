@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import java.lang.Exception
 
 /**
  * ******************(^_^)***********************<br>
@@ -29,14 +30,23 @@ object ViewModelsProviderFactory {
         if (instanceAndroidViewModelFactory == null) {
             instanceAndroidViewModelFactory =
                 object : ViewModelProvider.AndroidViewModelFactory(application) {
-                    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         try {
-                            return modelClass.getConstructor(Application::class.java)
+                           return modelClass.getConstructor(Application::class.java)
                                 .newInstance(application)
-                        } catch (ex: Exception) {
+                        }catch (ignore: Exception){
+
                         }
                         return super.create(modelClass)
                     }
+//                    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+//                        try {
+//                            return modelClass.getConstructor(Application::class.java)
+//                                .newInstance(application)
+//                        } catch (ex: Exception) {
+//                        }
+//                        return super.create(modelClass)
+//                    }
                 }
         }
         return instanceAndroidViewModelFactory

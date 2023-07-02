@@ -11,11 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.android.xselector.selector.ShapeSelector;
+
+import com.fee.thexselector.ShapeSelector;
 
 import common.base.R;
 import common.base.utils.CheckUtil;
-import common.base.utils.SelectorUtil;
 
 /**
  * ******************(^_^)***********************<br>
@@ -302,59 +302,5 @@ public class SimpleHintDialog extends BaseDialog<SimpleHintDialog> {
         return this;
     }
 
-    /**
-     * added by fee 2020-4-10: 默认对 本Dialog的内的各控件设置样式
-     * 注：最好在 show()之前调用
-     */
-    public void defConfigDialogViews(boolean isPad) {
-        int provideDialogWidth = provideDialogWidth();
-        if (provideDialogWidth > 0) {
-            setDialogWidth(provideDialogWidth);
-        }
-        else {//默认的配置 dialog的最小宽
-            if(isPad){
-                setDialogWidth(mContext.getResources().getDimensionPixelSize(R.dimen.dp_348));
-            }
-            else {
-                setDialogWidth(mContext.getResources().getDimensionPixelSize(R.dimen.dp_300));
-            }
-        }
-        TextView tvDialogHint = tvHint;
-        tvDialogHint.setTextColor(0xff333333);
-        ShapeSelector shapeSelector = SelectorUtil.shapeSelector(
-                36,
-                "#ff6e50",
-                "",
-                "#cc5840",
-                ""
-        );
 
-        TextView tvDialogBtnCommit = tvBtnCommit;
-        tvDialogBtnCommit.setTextColor(0xffffffff);
-        shapeSelector.into(tvDialogBtnCommit);
-        SelectorUtil.colorSelector(
-                "#ffffff",
-                "",
-                "#b3ffffff",
-                ""
-        ).into(tvDialogBtnCommit);
-
-        TextView tvDialogBtnCancel = tvBtnCancel;
-        tvDialogBtnCancel.setTextColor(0xff333333);
-        shapeSelector.pressedBgColor("#eef2f4")
-                .defaultBgColor("#ffffffff")
-                .defaultStrokeColor("#abbec7")
-                .into(tvDialogBtnCancel);
-
-        SelectorUtil.colorSelector(
-                "#333333",
-                "",
-                "#b3333333",
-                ""
-        ).into(tvDialogBtnCancel);
-    }
-
-    protected int provideDialogWidth() {
-        return 0;
-    }
 }

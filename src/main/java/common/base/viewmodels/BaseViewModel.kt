@@ -1,6 +1,5 @@
 package common.base.viewmodels
 
-import android.content.Context
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

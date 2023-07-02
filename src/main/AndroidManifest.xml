@@ -14,8 +14,6 @@
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
     <uses-sdk tools:overrideLibrary="com.chad.library"/>
     <application
-        android:label="BaseProject"
-        android:supportsRtl="true"
         >
 
         <!--   通用的 可替换 ViewDelegate 的共用Activity
