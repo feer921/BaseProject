@@ -261,7 +261,7 @@ abstract class BaseViewDelegate(protected val mContext: Context) : IView, View.O
         CommonLog.i(logTag ?: TAG, logMsg)
     }
 
-    open fun e(logTag: String? = TAG, logMsg: String) {
+    open fun e(logTag: String? = TAG, logMsg: String?) {
         CommonLog.e(logTag ?: TAG, logMsg)
     }
 
